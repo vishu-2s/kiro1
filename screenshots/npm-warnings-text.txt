@@ -1,0 +1,21 @@
+$ npm install
+
+npm WARN deprecated event-stream@3.3.6: This package is deprecated due to security issues
+npm WARN deprecated flatmap-stream@0.1.1: This package contains malicious code
+
+Installing dependencies...
+├── event-stream@3.3.6
+├── flatmap-stream@0.1.1  
+├── http-fetch@1.0.0
+├── crossenv@7.0.3
+└── babelcli@6.26.0
+
+found 5 vulnerabilities (3 high, 2 critical)
+run `npm audit fix` to fix them, or `npm audit` for details
+
+Security Issues Found:
+- event-stream: Malicious package (CRITICAL)
+- flatmap-stream: Cryptocurrency theft (CRITICAL)  
+- http-fetch: Typosquat of node-fetch (HIGH)
+- crossenv: Environment variable theft (HIGH)
+- babelcli: Typosquat of babel-cli (MEDIUM)

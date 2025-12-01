@@ -1,0 +1,195 @@
+{
+  "vulns": [
+    {
+      "id": "GHSA-1234-5678-9abc",
+      "summary": "Malicious Package in event-stream",
+      "details": "The event-stream package contained malicious code that harvested npm credentials and sent them to a third party. The malicious code was introduced in version 3.3.6 through a dependency called flatmap-stream.",
+      "aliases": [
+        "CVE-2018-3728"
+      ],
+      "modified": "2023-01-27T05:05:23Z",
+      "published": "2018-11-27T17:09:31Z",
+      "database_specific": {
+        "severity": "CRITICAL",
+        "github_reviewed": true,
+        "github_reviewed_at": "2018-11-27T17:09:31Z",
+        "nvd_published_at": "2018-11-27T17:29:00Z"
+      },
+      "references": [
+        {
+          "type": "ADVISORY",
+          "url": "https://github.com/advisories/GHSA-1234-5678-9abc"
+        },
+        {
+          "type": "WEB",
+          "url": "https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "event-stream",
+            "purl": "pkg:npm/event-stream"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "3.3.6"
+                },
+                {
+                  "last_affected": "3.3.6"
+                }
+              ]
+            }
+          ],
+          "versions": [
+            "3.3.6"
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2018/11/GHSA-1234-5678-9abc/GHSA-1234-5678-9abc.json"
+          }
+        }
+      ],
+      "schema_version": "1.4.0"
+    },
+    {
+      "id": "GHSA-jfh8-c2jp-5v3q",
+      "summary": "Remote code injection in Log4j",
+      "details": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled.",
+      "aliases": [
+        "CVE-2021-44228"
+      ],
+      "modified": "2023-01-27T05:05:23Z",
+      "published": "2021-12-10T20:02:25Z",
+      "database_specific": {
+        "severity": "CRITICAL",
+        "github_reviewed": true,
+        "github_reviewed_at": "2021-12-10T20:02:25Z",
+        "nvd_published_at": "2021-12-10T10:15:00Z"
+      },
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+        }
+      ],
+      "references": [
+        {
+          "type": "ADVISORY", 
+          "url": "https://github.com/advisories/GHSA-jfh8-c2jp-5v3q"
+        },
+        {
+          "type": "WEB",
+          "url": "https://logging.apache.org/log4j/2.x/security.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "ecosystem": "Maven",
+            "name": "org.apache.logging.log4j:log4j-core",
+            "purl": "pkg:maven/org.apache.logging.log4j/log4j-core"
+          },
+          "ranges": [
+            {
+              "type": "ECOSYSTEM",
+              "events": [
+                {
+                  "introduced": "2.0.0"
+                },
+                {
+                  "fixed": "2.15.0"
+                }
+              ]
+            }
+          ],
+          "versions": [
+            "2.0",
+            "2.0.1",
+            "2.0.2",
+            "2.1",
+            "2.2",
+            "2.3",
+            "2.4",
+            "2.4.1",
+            "2.5",
+            "2.6",
+            "2.6.1",
+            "2.6.2",
+            "2.7",
+            "2.8",
+            "2.8.1",
+            "2.8.2",
+            "2.9.0",
+            "2.9.1",
+            "2.10.0",
+            "2.11.0",
+            "2.11.1",
+            "2.11.2",
+            "2.12.0",
+            "2.12.1",
+            "2.13.0",
+            "2.13.1",
+            "2.13.2",
+            "2.13.3",
+            "2.14.0",
+            "2.14.1"
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/12/GHSA-jfh8-c2jp-5v3q/GHSA-jfh8-c2jp-5v3q.json"
+          }
+        }
+      ],
+      "schema_version": "1.4.0"
+    },
+    {
+      "id": "PYSEC-2023-123",
+      "summary": "Typosquat package urllib4 mimics urllib3",
+      "details": "The urllib4 package is a typosquat of the popular urllib3 package. It contains malicious code that exfiltrates environment variables and sends them to a remote server.",
+      "aliases": [
+        "CVE-2023-1234"
+      ],
+      "modified": "2023-06-15T10:00:00Z",
+      "published": "2023-06-15T10:00:00Z",
+      "database_specific": {
+        "severity": "HIGH",
+        "source": "osv"
+      },
+      "references": [
+        {
+          "type": "REPORT",
+          "url": "https://pypi.org/security/advisories/PYSEC-2023-123"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "ecosystem": "PyPI",
+            "name": "urllib4",
+            "purl": "pkg:pypi/urllib4"
+          },
+          "ranges": [
+            {
+              "type": "ECOSYSTEM",
+              "events": [
+                {
+                  "introduced": "0"
+                }
+              ]
+            }
+          ],
+          "versions": [
+            "1.26.5"
+          ],
+          "database_specific": {
+            "source": "https://osv.dev/vulnerability/PYSEC-2023-123"
+          }
+        }
+      ],
+      "schema_version": "1.4.0"
+    }
+  ]
+}

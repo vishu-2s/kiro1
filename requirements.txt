@@ -1,0 +1,40 @@
+# Core AI and Multi-Agent Framework
+# Note: pyautogen requires Python <3.12, using alternative approach
+# pyautogen>=0.2.0
+openai>=1.0.0
+
+# HTTP and API Integration
+requests>=2.31.0
+httpx>=0.25.0
+
+# Data Processing and Validation
+pydantic>=2.0.0
+jsonschema>=4.19.0
+
+# File and Data Handling
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+toml>=0.10.2
+
+# Date and Time Handling
+python-dateutil>=2.8.2
+
+# Image Processing for VLM
+pillow>=10.0.0
+
+# Testing Framework
+pytest>=7.4.0
+hypothesis>=6.82.0
+
+# Logging and Utilities
+loguru>=0.7.0
+click>=8.1.0
+
+# Security and Cryptography
+cryptography>=41.0.0
+
+# Optional: For better JSON handling
+orjson>=3.9.0
+
+# Optional: For async operations
+aiohttp>=3.8.0

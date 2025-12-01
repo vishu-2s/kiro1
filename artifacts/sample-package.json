@@ -1,0 +1,38 @@
+{
+  "name": "vulnerable-backend-service",
+  "version": "1.0.0",
+  "description": "Sample backend service with known vulnerabilities for testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "express": "4.18.2",
+    "lodash": "4.17.21",
+    "event-stream": "3.3.6",
+    "flatmap-stream": "0.1.1",
+    "http-fetch": "1.0.0",
+    "crossenv": "7.0.3",
+    "babelcli": "6.26.0",
+    "cross-env.js": "1.0.0",
+    "axios": "0.27.2",
+    "moment": "2.29.4"
+  },
+  "devDependencies": {
+    "jest": "29.0.0",
+    "webpack": "5.74.0",
+    "eslint": "8.23.0",
+    "nodemv": "1.0.0",
+    "getcookies": "1.2.0"
+  },
+  "keywords": [
+    "backend",
+    "api",
+    "vulnerable",
+    "testing"
+  ],
+  "author": "Security Test Team",
+  "license": "MIT"
+}

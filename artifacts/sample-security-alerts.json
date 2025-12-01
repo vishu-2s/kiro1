@@ -1,0 +1,176 @@
+[
+  {
+    "alert_id": "GHSA-1234-5678-9abc",
+    "alert_number": 1,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "npm",
+        "name": "event-stream"
+      },
+      "manifest_path": "package.json",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-1234-5678-9abc",
+      "cve_id": "CVE-2018-3728",
+      "summary": "Malicious Package in event-stream",
+      "description": "The event-stream package contained malicious code that harvested npm credentials and sent them to a third party.",
+      "severity": "critical",
+      "identifiers": [
+        {
+          "value": "GHSA-1234-5678-9abc",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2018-3728", 
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/advisories/GHSA-1234-5678-9abc"
+        }
+      ],
+      "published_at": "2018-11-27T17:09:31Z",
+      "updated_at": "2023-01-27T05:05:23Z",
+      "withdrawn_at": null
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "npm",
+        "name": "event-stream"
+      },
+      "severity": "critical",
+      "vulnerable_version_range": "= 3.3.6",
+      "first_patched_version": null
+    },
+    "url": "https://api.github.com/repos/example/repo/security-advisories/1",
+    "html_url": "https://github.com/example/repo/security/advisories/1",
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T00:00:00Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": null
+  },
+  {
+    "alert_id": "GHSA-2345-6789-bcde",
+    "alert_number": 2,
+    "state": "open",
+    "dependency": {
+      "package": {
+        "ecosystem": "maven",
+        "name": "org.apache.logging.log4j:log4j-core"
+      },
+      "manifest_path": "pom.xml",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-2345-6789-bcde",
+      "cve_id": "CVE-2021-44228",
+      "summary": "Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints",
+      "description": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
+      "severity": "critical",
+      "identifiers": [
+        {
+          "value": "GHSA-2345-6789-bcde",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2021-44228",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/advisories/GHSA-2345-6789-bcde"
+        }
+      ],
+      "published_at": "2021-12-10T20:02:25Z",
+      "updated_at": "2023-01-27T05:05:23Z",
+      "withdrawn_at": null
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "maven",
+        "name": "org.apache.logging.log4j:log4j-core"
+      },
+      "severity": "critical",
+      "vulnerable_version_range": ">= 2.0.0, <= 2.14.1",
+      "first_patched_version": {
+        "identifier": "2.15.0"
+      }
+    },
+    "url": "https://api.github.com/repos/example/repo/security-advisories/2",
+    "html_url": "https://github.com/example/repo/security/advisories/2",
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T00:00:00Z",
+    "dismissed_at": null,
+    "dismissed_by": null,
+    "dismissed_reason": null,
+    "dismissed_comment": null,
+    "fixed_at": null
+  },
+  {
+    "alert_id": "GHSA-3456-789a-cdef",
+    "alert_number": 3,
+    "state": "dismissed",
+    "dependency": {
+      "package": {
+        "ecosystem": "pypi",
+        "name": "urllib4"
+      },
+      "manifest_path": "requirements.txt",
+      "scope": "runtime"
+    },
+    "security_advisory": {
+      "ghsa_id": "GHSA-3456-789a-cdef",
+      "cve_id": "CVE-2023-1234",
+      "summary": "Typosquat package urllib4 mimics urllib3",
+      "description": "The urllib4 package is a typosquat of the popular urllib3 package and contains malicious code.",
+      "severity": "high",
+      "identifiers": [
+        {
+          "value": "GHSA-3456-789a-cdef",
+          "type": "GHSA"
+        },
+        {
+          "value": "CVE-2023-1234",
+          "type": "CVE"
+        }
+      ],
+      "references": [
+        {
+          "url": "https://github.com/advisories/GHSA-3456-789a-cdef"
+        }
+      ],
+      "published_at": "2023-06-15T10:00:00Z",
+      "updated_at": "2023-06-15T10:00:00Z",
+      "withdrawn_at": null
+    },
+    "security_vulnerability": {
+      "package": {
+        "ecosystem": "pypi",
+        "name": "urllib4"
+      },
+      "severity": "high",
+      "vulnerable_version_range": "*",
+      "first_patched_version": null
+    },
+    "url": "https://api.github.com/repos/example/repo/security-advisories/3",
+    "html_url": "https://github.com/example/repo/security/advisories/3",
+    "created_at": "2023-06-15T10:00:00Z",
+    "updated_at": "2023-06-15T10:00:00Z",
+    "dismissed_at": "2023-06-16T09:00:00Z",
+    "dismissed_by": {
+      "login": "security-team",
+      "id": 12345,
+      "type": "User"
+    },
+    "dismissed_reason": "tolerable_risk",
+    "dismissed_comment": "This is a test environment package",
+    "fixed_at": null
+  }
+]

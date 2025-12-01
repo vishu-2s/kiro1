@@ -1,0 +1,11 @@
+⚠️ Security Warning
+
+This site may be harmful
+The site at malicious-site.tk contains malware that could harm your computer.
+
+Certificate Error: The security certificate for this site is not valid.
+
+[Go back to safety]  [Proceed anyway (not recommended)]
+
+URL: https://malicious-site.tk/download.php
+Status: Not secure

@@ -1,0 +1,18 @@
+🔒 Security Alert
+
+Critical vulnerability in log4j-core
+CVE-2021-44228 (Log4Shell)
+
+Affected versions: 2.0.0 - 2.14.1
+CVSS Score: 10.0 (Critical)
+
+Description:
+Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who can control log messages can execute arbitrary code.
+
+Recommendation:
+Update to version 2.15.0 or later immediately.
+
+[Create security update]  [Dismiss alert]
+
+First detected: December 10, 2021
+Last updated: January 27, 2023
