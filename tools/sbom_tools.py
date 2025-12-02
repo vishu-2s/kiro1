@@ -804,9 +804,92 @@ def extract_packages_from_file(file_path: str) -> Tuple[List[SBOMPackage], List[
     
     return packages, script_findings
 
+def _analyze_script_with_llm(script_content: str, package_name: str) -> Optional[Dict[str, Any]]:
+    """
+    Use LLM to analyze script for sophisticated/obfuscated malicious behavior.
+    
+    Args:
+        script_content: The script command string to analyze
+        package_name: Name of the package
+        
+    Returns:
+        Dictionary with LLM analysis results or None if LLM unavailable
+    """
+    from config import config
+    
+    # Skip if OpenAI not configured
+    if not config.OPENAI_API_KEY:
+        return None
+    
+    # Skip for very short/simple scripts to save API costs
+    if len(script_content) < 20:
+        return None
+    
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=config.OPENAI_API_KEY)
+        
+        prompt = f"""Analyze this npm lifecycle script for malicious behavior:
+
+Package: {package_name}
+Script: {script_content}
+
+Look for:
+1. Remote code execution (downloading and executing code)
+2. Data exfiltration (sending files/data to external servers)
+3. Obfuscation techniques (base64, hex encoding, eval)
+4. System modification (changing permissions, modifying system files)
+5. Credential theft (accessing environment variables, config files)
+6. Backdoors or persistence mechanisms
+
+Consider that legitimate scripts may:
+- Run local build tools (webpack, tsc, babel)
+- Create directories (mkdir)
+- Copy files to build folders
+- Run tests or linters
+
+Respond in JSON format:
+{{
+    "is_suspicious": true/false,
+    "confidence": 0.0-1.0,
+    "severity": "critical"/"high"/"medium"/"low",
+    "threats": ["list of specific threats found"],
+    "reasoning": "brief explanation"
+}}"""
+
+        response = client.chat.completions.create(
+            model=config.OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": "You are a security expert analyzing npm scripts for supply chain attacks. Be precise and avoid false positives."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=500
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        
+        # Parse JSON response
+        import json
+        # Extract JSON from markdown code blocks if present
+        if "```json" in result_text:
+            result_text = result_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in result_text:
+            result_text = result_text.split("```")[1].split("```")[0].strip()
+        
+        result = json.loads(result_text)
+        
+        logger.info(f"LLM analysis for '{package_name}': suspicious={result.get('is_suspicious')}, confidence={result.get('confidence')}")
+        
+        return result
+        
+    except Exception as e:
+        logger.warning(f"LLM analysis failed for '{package_name}': {e}")
+        return None
+
 def _detect_script_patterns(script_content: str) -> Dict[str, Any]:
     """
-    Detect suspicious patterns in an npm script.
+    Detect suspicious patterns in an npm script using regex patterns.
     
     Args:
         script_content: The script command string to analyze
@@ -931,11 +1014,51 @@ def _analyze_npm_scripts(scripts: Dict[str, str], package_name: str) -> List[Sec
             logger.warning(f"Script '{script_name}' in package '{package_name}' is not a string, skipping")
             continue
         
-        # Detect patterns in the script
+        # Step 1: Detect patterns with regex (fast)
         detection_result = _detect_script_patterns(script_command)
         
-        # If no malicious patterns found, skip
-        if not detection_result["patterns"]:
+        # Step 2: Use LLM for deeper analysis if:
+        # - Regex found something suspicious, OR
+        # - Script is complex/long (might be obfuscated)
+        llm_result = None
+        if detection_result["confidence"] > 0.3 or len(script_command) > 30:
+            llm_result = _analyze_script_with_llm(script_command, package_name)
+        
+        # Combine results
+        is_suspicious = False
+        combined_confidence = detection_result["confidence"]
+        combined_severity = detection_result["severity"]
+        combined_evidence = detection_result["evidence"].copy()
+        combined_patterns = detection_result["patterns"].copy()
+        
+        # If LLM found something
+        if llm_result and llm_result.get("is_suspicious"):
+            is_suspicious = True
+            llm_confidence = llm_result.get("confidence", 0.5)
+            llm_severity = llm_result.get("severity", "medium")
+            
+            # Take the higher confidence
+            combined_confidence = max(combined_confidence, llm_confidence)
+            
+            # Take the higher severity
+            severity_priority = {"critical": 3, "high": 2, "medium": 1, "low": 0}
+            if severity_priority.get(llm_severity, 0) > severity_priority.get(combined_severity, 0):
+                combined_severity = llm_severity
+            
+            # Add LLM evidence
+            if llm_result.get("threats"):
+                combined_evidence.append(f"LLM detected: {', '.join(llm_result['threats'])}")
+            if llm_result.get("reasoning"):
+                combined_evidence.append(f"Analysis: {llm_result['reasoning']}")
+            
+            combined_patterns.append("llm_detected_threat")
+        
+        # If regex found something, it's suspicious
+        if detection_result["patterns"]:
+            is_suspicious = True
+        
+        # Skip if nothing suspicious found
+        if not is_suspicious:
             continue
         
         # Build evidence list
@@ -943,8 +1066,8 @@ def _analyze_npm_scripts(scripts: Dict[str, str], package_name: str) -> List[Sec
             f"Script: {script_name}",
             f"Command: {script_command}"
         ]
-        evidence.extend([f"Pattern: {p}" for p in detection_result["patterns"]])
-        evidence.extend(detection_result["evidence"])
+        evidence.extend([f"Pattern: {p}" for p in combined_patterns])
+        evidence.extend(combined_evidence)
         
         # Generate recommendations based on severity
         recommendations = [
@@ -952,31 +1075,37 @@ def _analyze_npm_scripts(scripts: Dict[str, str], package_name: str) -> List[Sec
             "Check the package source and author reputation",
         ]
         
-        if detection_result["severity"] == "critical":
+        if combined_severity == "critical":
             recommendations.insert(0, "URGENT: Remove this package immediately")
             recommendations.append("Scan your system for signs of compromise")
             recommendations.append("Review all packages that depend on this one")
-        elif detection_result["severity"] == "high":
+        elif combined_severity == "high":
             recommendations.insert(0, "Remove or replace this package as soon as possible")
             recommendations.append("Audit your dependencies for similar patterns")
         else:
             recommendations.append("Consider using an alternative package if available")
+        
+        # Add LLM-specific recommendation if used
+        if llm_result:
+            recommendations.append("This script was flagged by AI analysis for suspicious behavior")
         
         # Create security finding
         finding = SecurityFinding(
             package=package_name,
             version="*",  # Script applies to all versions
             finding_type="malicious_script",
-            severity=detection_result["severity"],
-            confidence=detection_result["confidence"],
+            severity=combined_severity,
+            confidence=combined_confidence,
             evidence=evidence,
             recommendations=recommendations,
-            source="npm_script_analysis"
+            source="npm_script_analysis_enhanced" if llm_result else "npm_script_analysis"
         )
         
         findings.append(finding)
+        
+        analysis_method = "regex+LLM" if llm_result else "regex"
         logger.info(f"Detected malicious script '{script_name}' in package '{package_name}' "
-                   f"(severity: {detection_result['severity']}, confidence: {detection_result['confidence']:.2f})")
+                   f"(method: {analysis_method}, severity: {combined_severity}, confidence: {combined_confidence:.2f})")
     
     return findings
 

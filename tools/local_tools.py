@@ -23,8 +23,10 @@ from tools.sbom_tools import (
     extract_packages_from_file,
     generate_sbom_from_packages,
     validate_sbom_structure,
-    check_vulnerable_packages
+    check_vulnerable_packages,
+    _analyze_npm_scripts
 )
+from tools.dependency_analyzer import analyze_dependency_tree
 from config import config
 
 logger = logging.getLogger(__name__)
@@ -361,10 +363,26 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
         # Generate SBOM
         sbom_data = generate_local_sbom(str(validated_path))
         
+        # Analyze dependency tree for deep script analysis
+        dependency_analysis = analyze_dependency_tree(str(validated_path))
+        logger.info(f"Dependency tree analysis: {dependency_analysis.get('total_dependencies', 0)} total dependencies, "
+                   f"{len(dependency_analysis.get('packages_with_scripts', []))} with scripts")
+        
         # Check for vulnerabilities
         security_findings = []
         if sbom_data.get("packages"):
             security_findings = check_vulnerable_packages(sbom_data, use_osv=use_osv)
+        
+        # Analyze scripts in all dependencies
+        for pkg_info in dependency_analysis.get('packages_with_scripts', []):
+            if pkg_info.get('scripts'):
+                dep_findings = _analyze_npm_scripts(
+                    pkg_info['scripts'],
+                    f"{pkg_info['name']}@{pkg_info['version']} (depth: {pkg_info['depth']})"
+                )
+                security_findings.extend(dep_findings)
+                if dep_findings:
+                    logger.warning(f"Found {len(dep_findings)} malicious scripts in dependency {pkg_info['name']}")
         
         # Add script findings from SBOM
         script_findings_data = sbom_data.get("script_findings", [])

