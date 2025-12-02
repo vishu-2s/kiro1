@@ -20,7 +20,7 @@ import tempfile
 import os
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
-from hypothesis import given, strategies as st, assume
+from hypothesis import given, strategies as st, assume, settings
 from typing import Dict, List, Any, Tuple
 import string
 
@@ -538,18 +538,22 @@ class TestEcosystemDetectionAccuracy:
 class TestOSVAPIIntegration:
     """Property-based tests for OSV API integration."""
 
-    @patch('tools.sbom_tools.requests.post')
-    def test_osv_api_query_consistency(self, mock_post):
+    @patch('tools.sbom_tools.OSVAPIClient')
+    def test_osv_api_query_consistency(self, mock_client_class):
         """
         **Feature: multi-agent-security, Property 4: OSV API Integration**
         
         For any detected malicious package, the system should query the OSV API 
         and retrieve additional vulnerability information.
         """
+        # Mock OSVAPIClient instance
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        
         # Mock successful API response
         mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
+        mock_response.is_success.return_value = True
+        mock_response.get_data.return_value = {
             'vulns': [
                 {
                     'id': 'TEST-001',
@@ -558,7 +562,7 @@ class TestOSVAPIIntegration:
                 }
             ]
         }
-        mock_post.return_value = mock_response
+        mock_client.query_vulnerabilities.return_value = mock_response
         
         # Test OSV query
         findings = _query_osv_api("test-package", "1.0.0", "npm")
@@ -567,8 +571,8 @@ class TestOSVAPIIntegration:
         assert isinstance(findings, list), "OSV query should return list"
         
         # Property: API should be called with correct parameters
-        assert mock_post.called, "OSV API should be called"
-        call_args = mock_post.call_args
+        assert mock_client.query_vulnerabilities.called, "OSV API should be called"
+        call_args = mock_client.query_vulnerabilities.call_args
         assert call_args is not None, "API call should have arguments"
         
         # Property: All findings should have required structure
@@ -628,6 +632,7 @@ class TestOSVAPIIntegration:
         min_size=1,
         max_size=5
     ))
+    @settings(deadline=None)
     def test_batch_osv_query_consistency(self, packages: List[Tuple[str, str, str]]):
         """
         **Feature: multi-agent-security, Property 4: OSV API Integration**

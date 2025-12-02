@@ -8,49 +8,511 @@ from datetime import datetime
 
 # Version and metadata
 CONSTANTS_VERSION = "1.0.0"
-LAST_UPDATED = datetime.now().isoformat()
+LAST_UPDATED = "2025-12-01T22:15:07.157127"
 
 # Known malicious packages - will be updated by update_constants.py
 KNOWN_MALICIOUS_PACKAGES: Dict[str, List[Dict]] = {
     "npm": [
-        {"name": "event-stream", "version": "3.3.6", "reason": "Backdoor in dependency"},
-        {"name": "eslint-scope", "version": "3.7.2", "reason": "Credential harvesting"},
-        {"name": "flatmap-stream", "version": "0.1.1", "reason": "Cryptocurrency theft"},
-        {"name": "getcookies", "version": "*", "reason": "Data exfiltration"},
-        {"name": "http-fetch", "version": "*", "reason": "Typosquat of node-fetch"},
-        {"name": "nodemv", "version": "*", "reason": "Malicious code execution"},
-        {"name": "crossenv", "version": "*", "reason": "Environment variable theft"},
-        {"name": "babelcli", "version": "*", "reason": "Typosquat of babel-cli"},
-        {"name": "cross-env.js", "version": "*", "reason": "Typosquat of cross-env"}
+        {
+            "name": "event-stream",
+            "version": ">=3.3.6",
+            "reason": "Critical severity vulnerability that affects event-stream and flatmap-stream"
+        },
+        {
+            "name": "eslint-scope",
+            "version": ">=3.7.2",
+            "reason": "Malicious Package in eslint-scope"
+        },
+        {
+            "name": "flatmap-stream",
+            "version": "*",
+            "reason": "Malicious Package in flatmap-stream"
+        },
+        {
+            "name": "flatmap-stream",
+            "version": ">=3.3.6",
+            "reason": "Critical severity vulnerability that affects event-stream and flatmap-stream"
+        },
+        {
+            "name": "flatmap-stream",
+            "version": ">=0",
+            "reason": "Malicious code in flatmap-stream (npm)"
+        },
+        {
+            "name": "getcookies",
+            "version": ">=0",
+            "reason": "Malicious Package in getcookies"
+        },
+        {
+            "name": "getcookies",
+            "version": ">=0",
+            "reason": "Malicious code in getcookies (npm)"
+        },
+        {
+            "name": "http-fetch",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "nodemv",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "crossenv",
+            "version": ">=0",
+            "reason": "crossenv is malware"
+        },
+        {
+            "name": "babelcli",
+            "version": ">=0",
+            "reason": "babelcli is malware"
+        },
+        {
+            "name": "cross-env.js",
+            "version": ">=0.0.0",
+            "reason": "cross-env.js is malware"
+        }
     ],
     "pypi": [
-        {"name": "python3-dateutil", "version": "*", "reason": "Typosquat of python-dateutil"},
-        {"name": "jeIlyfish", "version": "*", "reason": "Typosquat of jellyfish (capital i as l)"},
-        {"name": "urllib4", "version": "*", "reason": "Typosquat of urllib3"},
-        {"name": "requessts", "version": "*", "reason": "Typosquat of requests"},
-        {"name": "beautifulsoup", "version": "*", "reason": "Typosquat of beautifulsoup4"},
-        {"name": "pip-tools", "version": "6.6.0", "reason": "Malicious version"},
-        {"name": "colorama", "version": "0.4.6", "reason": "Backdoored version"},
-        {"name": "ctx", "version": "*", "reason": "Password harvesting"},
-        {"name": "phpass", "version": "*", "reason": "Credential theft"}
+        {
+            "name": "python3-dateutil",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "jeIlyfish",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "urllib4",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "requessts",
+            "version": ">=0",
+            "reason": "Malicious code in requessts (PyPI)"
+        },
+        {
+            "name": "beautifulsoup",
+            "version": "*",
+            "reason": "Known malicious package"
+        },
+        {
+            "name": "ctx",
+            "version": ">=0",
+            "reason": "Malware in ctx"
+        },
+        {
+            "name": "ctx",
+            "version": ">=0.1.2-1",
+            "reason": "Embedded Malicious Code in ctx"
+        },
+        {
+            "name": "ctx",
+            "version": ">=0.1.2-1",
+            "reason": "Security vulnerability"
+        },
+        {
+            "name": "phpass",
+            "version": "*",
+            "reason": "Known malicious package"
+        }
     ],
     "maven": [
-        {"name": "org.apache.logging.log4j:log4j-core", "version": "2.14.1", "reason": "Log4Shell vulnerability"},
-        {"name": "com.thoughtworks.xstream:xstream", "version": "1.4.15", "reason": "Remote code execution"},
-        {"name": "org.springframework:spring-core", "version": "5.3.18", "reason": "Spring4Shell vulnerability"}
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.13.0",
+            "reason": "Incomplete fix for Apache Log4j vulnerability"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.0-beta7",
+            "reason": "Improper Input Validation and Injection in Apache Log4j2"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.0",
+            "reason": "Deserialization of Untrusted Data in Log4j"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.13.0",
+            "reason": "Remote code injection in Log4j"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.4.0",
+            "reason": "Apache Log4j2 vulnerable to Improper Input Validation and Uncontrolled Recursion"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=1.0.4",
+            "reason": "Apache Log4j 1.x (EOL) allows Denial of Service (DoS)"
+        },
+        {
+            "name": "org.apache.logging.log4j:log4j-core",
+            "version": ">=2.13.0",
+            "reason": "Improper validation of certificate with host mismatch in Apache Log4j SMTP appender"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream can cause a Denial of Service."
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "Server-Side Forgery Request can be activated unmarshalling with XStream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an attack using Regular Expression for a Denial of Service (ReDos)"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream can cause a Denial of Service"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary File Deletion on the local host when unmarshalling as long as the executing process has sufficient rights"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to a Remote Command Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "Denial of service in XStream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "Command Injection in Xstream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream can cause a Denial of Service by injecting deeply nested objects raising a stack overflow"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "Deserialization of Untrusted Data and Code Injection in xstream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to a Denial of Service attack due to stack overflow from a manipulated binary input stream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to a Remote Command Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream can cause Denial of Service via stack overflow"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to a Remote Command Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream vulnerable to an Arbitrary File Deletion on the local host when unmarshalling"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream can be used for Remote Code Execution"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XStream is vulnerable to an Arbitrary Code Execution attack"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "XML External Entity Injection in XStream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "Denial of Service by injecting highly recursive collections or maps in XStream"
+        },
+        {
+            "name": "com.thoughtworks.xstream:xstream",
+            "version": ">=0",
+            "reason": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host"
+        }
     ],
     "rubygems": [
-        {"name": "rest-client", "version": "1.6.10", "reason": "Code injection vulnerability"},
-        {"name": "strong_password", "version": "0.0.7", "reason": "Backdoor"},
-        {"name": "bootstrap-sass", "version": "3.2.0.2", "reason": "Malicious code"}
+        {
+            "name": "rest-client",
+            "version": ">=1.6.10",
+            "reason": "rest-client Gem Contains Malicious Code"
+        },
+        {
+            "name": "rest-client",
+            "version": ">=1.6.1.a",
+            "reason": "rest-client Gem Vulnerable to Session Fixation"
+        },
+        {
+            "name": "rest-client",
+            "version": ">=0",
+            "reason": "rest-client allows local users to obtain sensitive information by reading the log"
+        },
+        {
+            "name": "strong_password",
+            "version": ">=0.0.7",
+            "reason": "strong_password Ruby gem malicious version causing Remote Code Execution vulnerability"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=0",
+            "reason": "XSS vulnerability that affects bootstrap"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=4.0.0",
+            "reason": "Bootstrap vulnerable to Cross-Site Scripting (XSS)"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=2.0.4",
+            "reason": "Bootstrap Cross-site Scripting vulnerability"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=4.0.0",
+            "reason": "Bootstrap Cross-site Scripting vulnerability"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=0",
+            "reason": "Bootstrap Vulnerable to Cross-Site Scripting"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=0",
+            "reason": "bootstrap Cross-site Scripting vulnerability"
+        },
+        {
+            "name": "bootstrap-sass",
+            "version": ">=3.2.0.3",
+            "reason": "Bootstrap-sass contains code execution backdoor"
+        }
     ],
-    "crates": [
-        {"name": "rustdecimal", "version": "0.2.1", "reason": "Typosquat of rust_decimal"},
-        {"name": "rand-core", "version": "0.3.0", "reason": "Compromised randomness"}
+    "crates.io": [
+        {
+            "name": "rustdecimal",
+            "version": ">=0",
+            "reason": "`rustdecimal` is a malicious crate"
+        },
+        {
+            "name": "rustdecimal",
+            "version": ">=0",
+            "reason": "Malicious code in rustdecimal (crates.io)"
+        },
+        {
+            "name": "rustdecimal",
+            "version": ">=0.0.0-0",
+            "reason": "malicious crate `rustdecimal`"
+        },
+        {
+            "name": "rand-core",
+            "version": "*",
+            "reason": "Known malicious package"
+        }
     ],
     "go": [
-        {"name": "github.com/beego/beego", "version": "1.12.0", "reason": "Session hijacking"},
-        {"name": "github.com/unknwon/cae", "version": "0.0.0", "reason": "Backdoor"}
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=2.0.0",
+            "reason": "Access control bypass in Beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Beego allows Reflected/Stored XSS in Beego's RenderForm() Function Due to Unescaped User Input"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=2.0.0",
+            "reason": "Privilege escalation in beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Path Traversal in Beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Beego has Collision Hazards of MD5 in Cache Key Filenames"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Beego has a file creation race condition"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=2.0.0",
+            "reason": "Privilege escalation in beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Incorrect Default Permissions in Beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Access control bypass in beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Access control bypass due to broad route matching in github.com/beego/beego and beego/v2"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Path traversal in github.com/beego/beego and beego/v2"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Access control bypass via incorrect route lookup in github.com/beego/beego and beego/v2"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Beego has Collision Hazards of MD5 in Cache Key Filenames in github.com/beego/beego"
+        },
+        {
+            "name": "github.com/beego/beego",
+            "version": ">=0",
+            "reason": "Beego allows Reflected/Stored XSS in Beego's RenderForm() Function Due to Unescaped User Input in github.com/beego/beego"
+        },
+        {
+            "name": "github.com/unknwon/cae",
+            "version": ">=0",
+            "reason": "github.com/unknwon/cae Path Traversal vulnerability"
+        },
+        {
+            "name": "github.com/unknwon/cae",
+            "version": ">=0",
+            "reason": "Path Traversal in github.com/unknwon/cae/zip"
+        },
+        {
+            "name": "github.com/unknwon/cae",
+            "version": ">=0",
+            "reason": "Path Traversal in github.com/unknwon/cae"
+        },
+        {
+            "name": "github.com/unknwon/cae",
+            "version": ">=0",
+            "reason": "Path traversal in github.com/unknwon/cae"
+        }
     ]
 }
 
@@ -364,3 +826,134 @@ def detect_suspicious_network_patterns(content: str) -> List[Dict[str, str]]:
             })
     
     return suspicious_patterns
+
+
+# ============================================================================
+# NPM Script Analysis Constants
+# ============================================================================
+
+# Lifecycle scripts that should be analyzed for malicious patterns
+NPM_LIFECYCLE_SCRIPTS: List[str] = [
+    "preinstall",
+    "install",
+    "postinstall",
+    "preuninstall",
+    "uninstall",
+    "postuninstall",
+    "prepublish",
+    "preprepare",
+    "prepare",
+    "postprepare"
+]
+
+# Malicious script patterns organized by severity
+NPM_SCRIPT_PATTERNS: Dict[str, Dict[str, List[str]]] = {
+    "critical": {
+        "remote_code_execution": [
+            r'curl\s+[^\s]+\s*\|\s*(?:sh|bash|zsh|fish)',  # curl | sh
+            r'wget\s+[^\s]+\s*\|\s*(?:sh|bash|zsh|fish)',  # wget | sh
+            r'fetch\s+[^\s]+\s*\|\s*(?:sh|bash|zsh|fish)',  # fetch | sh
+            r'\|\s*(?:sh|bash|zsh|fish)\s*$',  # pipe to shell
+            r'eval\s*\(\s*(?:curl|wget|fetch)',  # eval with network request
+            r'bash\s+-c\s+["\'].*(?:curl|wget)',  # bash -c with network
+        ],
+        "obfuscated_execution": [
+            r'eval\s*\(\s*(?:atob|Buffer\.from|fromCharCode)',  # eval with decoding
+            r'exec\s*\(\s*(?:atob|Buffer\.from|fromCharCode)',  # exec with decoding
+            r'Function\s*\(\s*(?:atob|Buffer\.from)',  # Function constructor with decoding
+        ]
+    },
+    "high": {
+        "system_modification": [
+            r'rm\s+-rf\s+(?:/|~|\$HOME)',  # dangerous rm
+            r'chmod\s+\+[sx]',  # setuid/setgid
+            r'chown\s+root',  # change to root ownership
+            r'sudo\s+',  # sudo usage
+            r'>/etc/',  # write to /etc
+            r'export\s+(?:PATH|LD_PRELOAD|LD_LIBRARY_PATH)',  # dangerous env vars
+        ],
+        "encoded_commands": [
+            r'base64\s+-d',  # base64 decode
+            r'atob\s*\(',  # JavaScript base64 decode
+            r'Buffer\.from\s*\([^,]+,\s*["\']base64["\']',  # Node.js base64
+            r'echo\s+[A-Za-z0-9+/=]{20,}\s*\|\s*base64',  # base64 encoded data
+            r'0x[0-9a-fA-F]{8,}',  # hex encoded data
+        ],
+        "file_exfiltration": [
+            r'tar\s+.*\s*\|\s*(?:curl|wget)',  # tar and upload
+            r'zip\s+.*\s*&&\s*(?:curl|wget)',  # zip and upload
+            r'cat\s+.*\s*\|\s*(?:curl|wget)',  # cat and upload
+        ]
+    },
+    "medium": {
+        "suspicious_network": [
+            r'curl\s+.*\.(?:tk|ml|ga|cf|cc)\b',  # suspicious TLDs
+            r'wget\s+.*\.(?:tk|ml|ga|cf|cc)\b',
+            r'https?://(?:\d{1,3}\.){3}\d{1,3}',  # direct IP URLs
+            r'discord\.com/api/webhooks',  # Discord webhooks
+            r't\.me/',  # Telegram
+            r'pastebin\.com',  # Pastebin
+        ],
+        "dynamic_execution": [
+            r'\beval\s*\(',  # eval usage
+            r'\bexec\s*\(',  # exec usage
+            r'new\s+Function\s*\(',  # Function constructor
+            r'setTimeout\s*\([^,]+,',  # setTimeout with code
+            r'setInterval\s*\([^,]+,',  # setInterval with code
+        ],
+        "process_manipulation": [
+            r'child_process\.exec',  # child process execution
+            r'child_process\.spawn',
+            r'require\s*\(\s*["\']child_process["\']',
+            r'process\.env\.',  # environment variable access
+        ]
+    }
+}
+
+# Benign script patterns that should reduce confidence scores
+NPM_BENIGN_PATTERNS: Dict[str, List[str]] = {
+    "build_tools": [
+        r'^(?:npm|yarn|pnpm)\s+run\s+\w+',  # npm run commands
+        r'^(?:tsc|webpack|rollup|vite|esbuild)\b',  # build tools
+        r'^(?:babel|swc)\b',  # transpilers
+        r'^node\s+(?:build|dist|scripts)/',  # node scripts
+        r'^(?:ng|vue-cli-service)\s+build',  # framework CLIs
+    ],
+    "dev_tools": [
+        r'^(?:eslint|prettier|stylelint)\b',  # linters/formatters
+        r'^(?:jest|mocha|vitest|ava)\b',  # test runners
+        r'^(?:husky|lint-staged)\b',  # git hooks
+        r'^(?:nodemon|ts-node-dev)\b',  # dev servers
+    ],
+    "safe_file_ops": [
+        r'^mkdir\s+-p\s+(?:dist|build|out|lib)\b',  # create build dirs
+        r'^(?:cp|mv)\s+\S+\s+(?:dist|build|out|lib)/',  # copy to build dirs
+        r'^rm\s+-rf\s+(?:dist|build|out|lib|node_modules)\b',  # clean build dirs
+        r'^rimraf\s+(?:dist|build|out|lib)\b',  # rimraf clean
+    ],
+    "package_management": [
+        r'^(?:npm|yarn|pnpm)\s+install\b',  # package install
+        r'^(?:npm|yarn|pnpm)\s+ci\b',  # clean install
+        r'^(?:npm|yarn|pnpm)\s+update\b',  # package update
+    ]
+}
+
+# Severity level mapping for pattern categories
+NPM_PATTERN_SEVERITY: Dict[str, str] = {
+    "remote_code_execution": "critical",
+    "obfuscated_execution": "critical",
+    "system_modification": "high",
+    "encoded_commands": "high",
+    "file_exfiltration": "high",
+    "suspicious_network": "medium",
+    "dynamic_execution": "medium",
+    "process_manipulation": "medium"
+}
+
+# Confidence score weights for different pattern types
+NPM_CONFIDENCE_WEIGHTS: Dict[str, float] = {
+    "critical": 0.25,
+    "high": 0.20,
+    "medium": 0.15,
+    "benign": -0.10
+}

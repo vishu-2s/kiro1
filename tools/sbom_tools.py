@@ -758,17 +758,18 @@ def validate_sbom_structure(sbom_data: Dict[str, Any]) -> Tuple[bool, List[str]]
     
     return len(errors) == 0, errors
 
-def extract_packages_from_file(file_path: str) -> List[SBOMPackage]:
+def extract_packages_from_file(file_path: str) -> Tuple[List[SBOMPackage], List[SecurityFinding]]:
     """
-    Extract package information from various package manager files.
+    Extract package information and security findings from various package manager files.
     
     Args:
         file_path: Path to package file
     
     Returns:
-        List of SBOMPackage objects
+        Tuple of (packages, script_findings)
     """
     packages = []
+    script_findings = []
     path = Path(file_path)
     
     if not path.exists():
@@ -781,7 +782,7 @@ def extract_packages_from_file(file_path: str) -> List[SBOMPackage]:
             content = f.read()
         
         if ecosystem == "npm" and path.name == "package.json":
-            packages = _extract_npm_packages(content)
+            packages, script_findings = _extract_npm_packages(content)
         elif ecosystem == "pypi" and path.name == "requirements.txt":
             packages = _extract_pip_packages(content)
         elif ecosystem == "maven" and path.name == "pom.xml":
@@ -801,15 +802,201 @@ def extract_packages_from_file(file_path: str) -> List[SBOMPackage]:
         logger.error(f"Error extracting packages from {file_path}: {e}")
         raise ValueError(f"Failed to extract packages from {file_path}: {e}")
     
-    return packages
+    return packages, script_findings
 
-def _extract_npm_packages(content: str) -> List[SBOMPackage]:
-    """Extract packages from npm package.json."""
+def _detect_script_patterns(script_content: str) -> Dict[str, Any]:
+    """
+    Detect suspicious patterns in an npm script.
+    
+    Args:
+        script_content: The script command string to analyze
+        
+    Returns:
+        Dictionary with:
+        - patterns: List of detected pattern types
+        - severity: Calculated severity level
+        - confidence: Confidence score (0.0-1.0)
+        - evidence: List of evidence strings
+    """
+    import re
+    from constants import (
+        NPM_SCRIPT_PATTERNS,
+        NPM_BENIGN_PATTERNS,
+        NPM_PATTERN_SEVERITY,
+        NPM_CONFIDENCE_WEIGHTS
+    )
+    
+    detected_patterns = []
+    evidence = []
+    severity_levels = []
+    
+    # Check for malicious patterns
+    for severity_level, pattern_categories in NPM_SCRIPT_PATTERNS.items():
+        for pattern_type, patterns in pattern_categories.items():
+            for pattern in patterns:
+                if re.search(pattern, script_content, re.IGNORECASE):
+                    detected_patterns.append(pattern_type)
+                    severity_levels.append(severity_level)
+                    
+                    # Generate evidence description
+                    evidence_map = {
+                        "remote_code_execution": "Downloads and executes remote code",
+                        "obfuscated_execution": "Uses obfuscated code execution",
+                        "system_modification": "Modifies system files or permissions",
+                        "encoded_commands": "Contains encoded/obfuscated commands",
+                        "file_exfiltration": "May exfiltrate files to remote server",
+                        "suspicious_network": "Connects to suspicious domains",
+                        "dynamic_execution": "Uses dynamic code execution (eval/exec)",
+                        "process_manipulation": "Manipulates processes or environment"
+                    }
+                    
+                    if pattern_type in evidence_map:
+                        evidence.append(evidence_map[pattern_type])
+                    break  # Only count each pattern type once
+    
+    # Check for benign patterns
+    benign_count = 0
+    for category, patterns in NPM_BENIGN_PATTERNS.items():
+        for pattern in patterns:
+            if re.search(pattern, script_content, re.IGNORECASE):
+                benign_count += 1
+                break  # Only count each category once
+    
+    # If no malicious patterns found, return empty result
+    if not detected_patterns:
+        return {
+            "patterns": [],
+            "severity": "low",
+            "confidence": 0.0,
+            "evidence": []
+        }
+    
+    # Calculate severity (highest severity wins)
+    severity_priority = {"critical": 3, "high": 2, "medium": 1, "low": 0}
+    max_severity = max(severity_levels, key=lambda s: severity_priority.get(s, 0))
+    
+    # Calculate confidence score
+    base_confidence = 0.5
+    
+    # Add confidence for detected patterns
+    critical_count = severity_levels.count("critical")
+    high_count = severity_levels.count("high")
+    medium_count = severity_levels.count("medium")
+    
+    confidence = base_confidence
+    confidence += NPM_CONFIDENCE_WEIGHTS["critical"] * critical_count
+    confidence += NPM_CONFIDENCE_WEIGHTS["high"] * high_count
+    confidence += NPM_CONFIDENCE_WEIGHTS["medium"] * medium_count
+    confidence += NPM_CONFIDENCE_WEIGHTS["benign"] * benign_count
+    
+    # Clamp confidence to [0.0, 1.0]
+    confidence = max(0.0, min(1.0, confidence))
+    
+    # Remove duplicate evidence
+    evidence = list(dict.fromkeys(evidence))
+    
+    return {
+        "patterns": list(set(detected_patterns)),
+        "severity": max_severity,
+        "confidence": confidence,
+        "evidence": evidence
+    }
+
+def _analyze_npm_scripts(scripts: Dict[str, str], package_name: str) -> List[SecurityFinding]:
+    """
+    Analyze npm lifecycle scripts for malicious patterns.
+    
+    Args:
+        scripts: Dictionary of script names to commands
+        package_name: Name of the package being analyzed
+        
+    Returns:
+        List of security findings for malicious scripts
+    """
+    from constants import NPM_LIFECYCLE_SCRIPTS
+    
+    findings = []
+    
+    if not scripts or not isinstance(scripts, dict):
+        return findings
+    
+    # Analyze each lifecycle script
+    for script_name, script_command in scripts.items():
+        # Only analyze lifecycle scripts
+        if script_name not in NPM_LIFECYCLE_SCRIPTS:
+            continue
+        
+        # Skip if command is not a string
+        if not isinstance(script_command, str):
+            logger.warning(f"Script '{script_name}' in package '{package_name}' is not a string, skipping")
+            continue
+        
+        # Detect patterns in the script
+        detection_result = _detect_script_patterns(script_command)
+        
+        # If no malicious patterns found, skip
+        if not detection_result["patterns"]:
+            continue
+        
+        # Build evidence list
+        evidence = [
+            f"Script: {script_name}",
+            f"Command: {script_command}"
+        ]
+        evidence.extend([f"Pattern: {p}" for p in detection_result["patterns"]])
+        evidence.extend(detection_result["evidence"])
+        
+        # Generate recommendations based on severity
+        recommendations = [
+            "Review the script content manually to verify if it's malicious",
+            "Check the package source and author reputation",
+        ]
+        
+        if detection_result["severity"] == "critical":
+            recommendations.insert(0, "URGENT: Remove this package immediately")
+            recommendations.append("Scan your system for signs of compromise")
+            recommendations.append("Review all packages that depend on this one")
+        elif detection_result["severity"] == "high":
+            recommendations.insert(0, "Remove or replace this package as soon as possible")
+            recommendations.append("Audit your dependencies for similar patterns")
+        else:
+            recommendations.append("Consider using an alternative package if available")
+        
+        # Create security finding
+        finding = SecurityFinding(
+            package=package_name,
+            version="*",  # Script applies to all versions
+            finding_type="malicious_script",
+            severity=detection_result["severity"],
+            confidence=detection_result["confidence"],
+            evidence=evidence,
+            recommendations=recommendations,
+            source="npm_script_analysis"
+        )
+        
+        findings.append(finding)
+        logger.info(f"Detected malicious script '{script_name}' in package '{package_name}' "
+                   f"(severity: {detection_result['severity']}, confidence: {detection_result['confidence']:.2f})")
+    
+    return findings
+
+def _extract_npm_packages(content: str) -> Tuple[List[SBOMPackage], List[SecurityFinding]]:
+    """
+    Extract packages and analyze scripts from npm package.json.
+    
+    Args:
+        content: The package.json file content
+        
+    Returns:
+        Tuple of (packages, script_findings)
+    """
     packages = []
+    script_findings = []
     
     try:
         data = json.loads(content)
         
+        # Extract dependencies
         for dep_type in ['dependencies', 'devDependencies', 'peerDependencies']:
             deps = data.get(dep_type, {})
             for name, version in deps.items():
@@ -819,11 +1006,19 @@ def _extract_npm_packages(content: str) -> List[SBOMPackage]:
                     metadata={"dependency_type": dep_type}
                 )
                 packages.append(package)
+        
+        # Analyze scripts for malicious patterns
+        scripts = data.get('scripts', {})
+        package_name = data.get('name', 'unknown')
+        
+        if scripts:
+            script_findings = _analyze_npm_scripts(scripts, package_name)
+            logger.debug(f"Analyzed {len(scripts)} scripts in package '{package_name}', found {len(script_findings)} malicious scripts")
     
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON in package.json: {e}")
     
-    return packages
+    return packages, script_findings
 
 def _extract_pip_packages(content: str) -> List[SBOMPackage]:
     """Extract packages from pip requirements.txt."""

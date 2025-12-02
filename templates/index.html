@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Security Analysis System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #e8e8e8;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .control-panel {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background: #f0f0ff;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-bar {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-bar.idle {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-bar.running {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-bar.completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-bar.failed {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .logs-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 4px 0;
+        }
+
+        .log-timestamp {
+            color: #858585;
+        }
+
+        .log-level {
+            font-weight: bold;
+            margin: 0 8px;
+        }
+
+        .log-level.info {
+            color: #4fc3f7;
+        }
+
+        .log-level.success {
+            color: #66bb6a;
+        }
+
+        .log-level.error {
+            color: #ef5350;
+        }
+
+        .log-level.warning {
+            color: #ffa726;
+        }
+
+        .report-container {
+            padding: 20px;
+        }
+
+        .report-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .report-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .finding-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .finding-card.critical {
+            border-left-color: #d32f2f;
+        }
+
+        .finding-card.high {
+            border-left-color: #f57c00;
+        }
+
+        .finding-card.medium {
+            border-left-color: #ffa726;
+        }
+
+        .finding-card.low {
+            border-left-color: #66bb6a;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .finding-package {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .severity-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-badge.critical {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .severity-badge.high {
+            background: #f57c00;
+            color: white;
+        }
+
+        .severity-badge.medium {
+            background: #ffa726;
+            color: white;
+        }
+
+        .severity-badge.low {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .no-report {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-report svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Multi-Agent Security Analysis System</h1>
+            <p>AI-Powered Supply Chain Security Analysis</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')">
+                📊 Dashboard
+            </div>
+            <div class="tab" onclick="switchTab('report')">
+                📄 Report
+            </div>
+        </div>
+
+        <div id="dashboard" class="tab-content active">
+            <div class="control-panel">
+                <h2 style="margin-bottom: 20px;">Analysis Configuration</h2>
+                
+                <div class="form-group">
+                    <label>Analysis Mode</label>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" onclick="setMode('github')">
+                            🌐 GitHub Repository
+                        </button>
+                        <button class="mode-btn" onclick="setMode('local')">
+                            📁 Local Directory
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="target">Target</label>
+                    <input 
+                        type="text" 
+                        id="target" 
+                        placeholder="Enter GitHub repository URL (e.g., https://github.com/owner/repo)"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="skip-update">
+                            Skip database update (faster)
+                        </label>
+                        <label>
+                            <input type="checkbox" id="skip-osv">
+                            Skip OSV API queries (faster)
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">
+                    🚀 Start Analysis
+                </button>
+            </div>
+
+            <div id="status-container"></div>
+
+            <div class="logs-container" id="logs">
+                <div class="log-entry">
+                    <span class="log-timestamp">[Ready]</span>
+                    <span class="log-level info">[INFO]</span>
+                    <span>System ready. Configure analysis and click "Start Analysis"</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="report" class="tab-content">
+            <div class="report-container" id="report-content">
+                <div class="no-report">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3>No Report Available</h3>
+                    <p>Run an analysis to generate a security report</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'github';
+        let pollingInterval = null;
+
+        const placeholders = {
+            github: 'Enter GitHub repository URL (e.g., https://github.com/owner/repo)',
+            local: 'Enter local directory path (e.g., C:\\Projects\\myapp or /home/user/myapp)'
+        };
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'report') {
+                loadReport();
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('target').placeholder = placeholders[mode];
+        }
+
+        async function startAnalysis() {
+            const target = document.getElementById('target').value.trim();
+            const skipUpdate = document.getElementById('skip-update').checked;
+            const skipOsv = document.getElementById('skip-osv').checked;
+
+            if (!target) {
+                alert('Please enter a target');
+                return;
+            }
+
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '⏳ Starting...';
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mode: currentMode,
+                        target: target,
+                        skip_update: skipUpdate,
+                        skip_osv: skipOsv
+                    })
+                });
+
+                if (response.ok) {
+                    startPolling();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = '🚀 Start Analysis';
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🚀 Start Analysis';
+            }
+        }
+
+        function startPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            pollingInterval = setInterval(updateStatus, 1000);
+            updateStatus();
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                updateStatusBar(data);
+                updateLogs(data.logs);
+
+                if (!data.running) {
+                    stopPolling();
+                    const analyzeBtn = document.getElementById('analyze-btn');
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = '🚀 Start Analysis';
+
+                    if (data.status === 'completed') {
+                        setTimeout(() => {
+                            switchTab('report');
+                            document.querySelectorAll('.tab')[1].classList.add('active');
+                        }, 1000);
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        function updateStatusBar(data) {
+            const container = document.getElementById('status-container');
+            const statusClass = data.status || 'idle';
+            
+            let statusText = {
+                idle: '⏸️ Idle',
+                running: '⚙️ Analysis in progress...',
+                completed: '✅ Analysis completed',
+                failed: '❌ Analysis failed'
+            }[statusClass];
+
+            let html = `<div class="status-bar ${statusClass}">`;
+            if (data.running) {
+                html += '<div class="spinner"></div>';
+            }
+            html += `<strong>${statusText}</strong>`;
+            if (data.start_time) {
+                html += ` <span style="margin-left: auto; opacity: 0.8;">Started: ${new Date(data.start_time).toLocaleTimeString()}</span>`;
+            }
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function updateLogs(logs) {
+            const logsContainer = document.getElementById('logs');
+            const shouldScroll = logsContainer.scrollHeight - logsContainer.scrollTop <= logsContainer.clientHeight + 50;
+
+            logsContainer.innerHTML = logs.map(log => {
+                const levelClass = log.level || 'info';
+                return `
+                    <div class="log-entry">
+                        <span class="log-timestamp">[${log.timestamp}]</span>
+                        <span class="log-level ${levelClass}">[${log.level.toUpperCase()}]</span>
+                        <span>${escapeHtml(log.message)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            if (shouldScroll) {
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        }
+
+        async function loadReport() {
+            const reportContent = document.getElementById('report-content');
+            
+            try {
+                const response = await fetch('/api/report');
+                
+                if (!response.ok) {
+                    reportContent.innerHTML = `
+                        <div class="no-report">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <h3>No Report Available</h3>
+                            <p>Run an analysis to generate a security report</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Report data loaded:', data); // Debug log
+                renderReport(data);
+            } catch (error) {
+                console.error('Error loading report:', error);
+                reportContent.innerHTML = `
+                    <div class="no-report">
+                        <h3>Error Loading Report</h3>
+                        <p>${escapeHtml(error.message)}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderReport(data) {
+            console.log('renderReport called with data:', data);
+            const reportContent = document.getElementById('report-content');
+            
+            try {
+                // Handle both 'findings' and 'security_findings' keys
+                const findings = data.findings || data.security_findings || [];
+                const metadata = data.metadata || {};
+                const summary = data.summary || {};
+                
+                console.log('Findings count:', findings.length);
+                console.log('Metadata:', metadata);
+            
+            const severityCounts = {
+                critical: findings.filter(f => f.severity === 'critical').length,
+                high: findings.filter(f => f.severity === 'high').length,
+                medium: findings.filter(f => f.severity === 'medium').length,
+                low: findings.filter(f => f.severity === 'low').length
+            };
+
+            let html = `
+                <h2 style="margin-bottom: 20px;">Security Analysis Report</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${findings.length}</div>
+                        <div class="stat-label">Total Findings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #d32f2f;">${severityCounts.critical}</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #f57c00;">${severityCounts.high}</div>
+                        <div class="stat-label">High</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #ffa726;">${severityCounts.medium}</div>
+                        <div class="stat-label">Medium</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #66bb6a;">${severityCounts.low}</div>
+                        <div class="stat-label">Low</div>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h3>📋 Analysis Metadata</h3>
+                    <p><strong>Target:</strong> ${escapeHtml(metadata.target || 'N/A')}</p>
+                    <p><strong>Analysis Type:</strong> ${escapeHtml(metadata.analysis_type || 'N/A')}</p>
+                    <p><strong>Start Time:</strong> ${metadata.start_time ? new Date(metadata.start_time).toLocaleString() : (metadata.timestamp ? new Date(metadata.timestamp).toLocaleString() : 'N/A')}</p>
+                    <p><strong>End Time:</strong> ${metadata.end_time ? new Date(metadata.end_time).toLocaleString() : 'N/A'}</p>
+                    <p><strong>Total Packages:</strong> ${metadata.total_packages || summary.total_packages || 'N/A'}</p>
+                    <p><strong>Confidence Threshold:</strong> ${metadata.confidence_threshold || 'N/A'}</p>
+                </div>
+
+                <div class="report-section">
+                    <h3>🔍 Security Findings</h3>
+            `;
+
+            if (findings.length === 0) {
+                html += '<p>No security findings detected. ✅</p>';
+            } else {
+                // Group findings by package name first
+                const packageGroups = {};
+                findings.forEach(finding => {
+                    const pkgKey = `${finding.package || 'Unknown'}@${finding.version || 'unknown'}`;
+                    if (!packageGroups[pkgKey]) {
+                        packageGroups[pkgKey] = {
+                            package: finding.package || 'Unknown',
+                            version: finding.version || 'unknown',
+                            findings: []
+                        };
+                    }
+                    packageGroups[pkgKey].findings.push(finding);
+                });
+                
+                // Render each package with its findings
+                Object.values(packageGroups).forEach(pkgGroup => {
+                    const highestSeverity = pkgGroup.findings.reduce((max, f) => {
+                        const severities = ['low', 'medium', 'high', 'critical'];
+                        const currentIdx = severities.indexOf(f.severity);
+                        const maxIdx = severities.indexOf(max);
+                        return currentIdx > maxIdx ? f.severity : max;
+                    }, 'low');
+                    
+                    html += `
+                        <div class="finding-card ${highestSeverity}" style="margin-bottom: 25px;">
+                            <div class="finding-header">
+                                <div class="finding-package">
+                                    <div style="font-size: 1.2em; font-weight: 700; margin-bottom: 8px;">
+                                        📦 ${escapeHtml(pkgGroup.package)} ${pkgGroup.version !== 'unknown' ? 'v' + escapeHtml(pkgGroup.version) : ''}
+                                    </div>
+                                    <div style="font-size: 0.9em; color: #666; margin-bottom: 12px;">
+                                        ${pkgGroup.findings.length} security ${pkgGroup.findings.length === 1 ? 'issue' : 'issues'} found
+                                    </div>
+                                </div>
+                                <span class="severity-badge ${highestSeverity}">${highestSeverity}</span>
+                            </div>
+                    `;
+                    
+                    // Render each finding for this package
+                    pkgGroup.findings.forEach((finding, idx) => {
+                        let title = '';
+                        let subtitle = '';
+                        
+                        if (finding.finding_type === 'malicious_package') {
+                            const reasonEvidence = finding.evidence?.find(e => e.includes('Reason:'));
+                            if (reasonEvidence) {
+                                title = '🚨 Malicious Package';
+                                subtitle = reasonEvidence.split('Reason:')[1]?.trim() || 'Detected';
+                            } else {
+                                title = '🚨 Malicious Package Detected';
+                            }
+                        } else if (finding.finding_type === 'vulnerability') {
+                            const vulnEvidence = finding.evidence?.find(e => e.includes('vulnerability:') || e.includes('CVE-') || e.includes('GHSA-'));
+                            if (vulnEvidence) {
+                                const match = vulnEvidence.match(/(GHSA-[a-z0-9-]+|CVE-\d{4}-\d+|MAL-\d{4}-\d+)/i);
+                                if (match) {
+                                    title = match[1];
+                                } else {
+                                    title = 'Known Vulnerability';
+                                }
+                            } else {
+                                title = 'Known Vulnerability';
+                            }
+                            
+                            const summaryEvidence = finding.evidence?.find(e => e.includes('Summary:'));
+                            if (summaryEvidence) {
+                                subtitle = summaryEvidence.split('Summary:')[1]?.trim() || '';
+                            }
+                        } else {
+                            title = escapeHtml(finding.finding_type || 'Security Issue').replace(/_/g, ' ');
+                        }
+                        
+                        html += `
+                            <div style="border-left: 3px solid #ddd; padding-left: 15px; margin: 15px 0 15px 10px;">
+                                <div style="font-weight: 600; font-size: 1.05em; margin-bottom: 4px;">${title}</div>
+                                ${subtitle ? `<div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">${escapeHtml(subtitle)}</div>` : ''}
+                                <div style="font-size: 0.85em; color: #888; margin-bottom: 8px;">
+                                    Type: ${escapeHtml(finding.finding_type || 'N/A').replace(/_/g, ' ')} | 
+                                    Confidence: ${(finding.confidence * 100).toFixed(0)}%
+                                </div>
+                                ${finding.evidence && finding.evidence.length > 0 ? `
+                                    <details style="margin-top: 8px;">
+                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">Evidence</summary>
+                                        <ul style="margin: 8px 0 0 20px; font-size: 0.9em;">
+                                            ${finding.evidence.map(e => `<li>${escapeHtml(e)}</li>`).join('')}
+                                        </ul>
+                                    </details>
+                                ` : ''}
+                                ${finding.recommendations && finding.recommendations.length > 0 ? `
+                                    <details style="margin-top: 8px;">
+                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">Recommendations</summary>
+                                        <ul style="margin: 8px 0 0 20px; font-size: 0.9em;">
+                                            ${finding.recommendations.map(r => `<li>${escapeHtml(r)}</li>`).join('')}
+                                        </ul>
+                                    </details>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                });
+
+            }
+
+                html += '</div>';
+                reportContent.innerHTML = html;
+            } catch (error) {
+                console.error('Error rendering report:', error);
+                reportContent.innerHTML = `
+                    <div class="no-report">
+                        <h3>Error Rendering Report</h3>
+                        <p>${error.message}</p>
+                        <p>Check browser console for details</p>
+                    </div>
+                `;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Multi-Agent Security Analysis System initialized');
+        });
+    </script>
+</body>
+</html>

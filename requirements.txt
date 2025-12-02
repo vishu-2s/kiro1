@@ -38,3 +38,6 @@ orjson>=3.9.0
 
 # Optional: For async operations
 aiohttp>=3.8.0
+
+# Web Application Framework
+flask>=3.0.0

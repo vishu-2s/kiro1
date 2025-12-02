@@ -23,6 +23,7 @@ from update_constants import (
     OSVAPIClient,
     MaliciousPackageUpdater
 )
+from tools.api_integration import APIResponse
 
 
 # Strategies for property-based testing
@@ -251,51 +252,56 @@ class TestDatabaseUpdateConsistency:
                         
                         assert isinstance(actual_result, bool), "Update decision should return boolean"
 
-    @patch('requests.Session')
-    def test_osv_api_response_processing_consistency(self, mock_session_class):
+    def test_osv_api_response_processing_consistency(self):
         """
         **Feature: multi-agent-security, Property 9: Database Update Consistency**
         
         For any OSV API response, the processing should consistently extract
         vulnerability information and structure it properly.
         """
-        mock_session = Mock()
-        mock_session_class.return_value = mock_session
-        
-        client = OSVAPIClient()
-        
-        # Test with valid response
-        mock_response = Mock()
-        mock_response.raise_for_status.return_value = None
-        mock_response.json.return_value = {
-            'vulns': [
-                {
-                    'id': 'TEST-001',
-                    'summary': 'Test vulnerability',
-                    'severity': [{'score': 8.5}],
-                    'affected': [
-                        {
-                            'ranges': [
-                                {
-                                    'events': [
-                                        {'introduced': '1.0.0'},
-                                        {'fixed': '1.0.1'}
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-        mock_session.post.return_value = mock_response
-        
-        # Property: Valid response should be processed consistently
-        result = client.query_vulnerabilities('npm', 'test-package')
-        
-        assert isinstance(result, list), "Query result should be a list"
-        if result:  # If we got results
-            assert all(isinstance(vuln, dict) for vuln in result), "All vulnerabilities should be dictionaries"
+        with patch('requests.Session') as mock_session_class:
+            mock_session = Mock()
+            mock_session_class.return_value = mock_session
+            
+            client = OSVAPIClient()
+            
+            # Test with valid response
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_response.content = True
+            mock_response.headers = {}
+            mock_response.json.return_value = {
+                'vulns': [
+                    {
+                        'id': 'TEST-001',
+                        'summary': 'Test vulnerability',
+                        'severity': [{'score': 8.5}],
+                        'affected': [
+                            {
+                                'ranges': [
+                                    {
+                                        'events': [
+                                            {'introduced': '1.0.0'},
+                                            {'fixed': '1.0.1'}
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+            mock_session.request.return_value = mock_response
+            
+            # Property: Valid response should be processed consistently
+            result = client.query_vulnerabilities('test-package', 'npm')
+            
+            assert isinstance(result, APIResponse), "Query result should be an APIResponse"
+            assert result.is_success(), "Query should be successful"
+            data = result.get_data()
+            assert isinstance(data, dict), "Response data should be a dictionary"
+            if data.get('vulns'):  # If we got vulnerabilities
+                assert all(isinstance(vuln, dict) for vuln in data['vulns']), "All vulnerabilities should be dictionaries"
 
     @given(st.dictionaries(
         keys=st.sampled_from(['npm', 'pypi', 'maven']),
@@ -356,29 +362,26 @@ class TestDatabaseUpdateConsistency:
         save_result = cache.save_cache({"test": "data"})
         assert isinstance(save_result, bool), "Save should return boolean even on error"
 
-    @patch('update_constants.requests.Session')
-    def test_api_error_handling_consistency(self, mock_session_class):
+    def test_api_error_handling_consistency(self):
         """
         **Feature: multi-agent-security, Property 9: Database Update Consistency**
         
         For any API error conditions, the client should handle them consistently
         and return appropriate default values.
         """
-        mock_session = Mock()
-        mock_session_class.return_value = mock_session
-        
-        # We need to patch the session creation in the OSVAPIClient constructor
-        with patch.object(OSVAPIClient, '_create_session', return_value=mock_session):
+        with patch('requests.Session') as mock_session_class:
+            mock_session = Mock()
+            mock_session_class.return_value = mock_session
+            
             client = OSVAPIClient()
-            client.session = mock_session  # Ensure we use our mock
             
             # Test with network error
-            mock_session.post.side_effect = Exception("Network error")
+            mock_session.request.side_effect = Exception("Network error")
             
             # Property: Network errors should be handled gracefully
-            result = client.query_vulnerabilities('npm', 'test-package')
-            assert isinstance(result, list), "Error should return empty list"
-            assert len(result) == 0, "Error should return empty list"
+            result = client.query_vulnerabilities('test-package', 'npm')
+            assert isinstance(result, APIResponse), "Error should return APIResponse"
+            assert not result.is_success(), "Error response should not be successful"
 
     def test_batch_processing_consistency(self):
         """
@@ -387,7 +390,7 @@ class TestDatabaseUpdateConsistency:
         For any batch of queries, the processing should be consistent
         with individual query processing.
         """
-        with patch('update_constants.requests.Session') as mock_session_class:
+        with patch('requests.Session') as mock_session_class:
             mock_session = Mock()
             mock_session_class.return_value = mock_session
             
@@ -395,9 +398,11 @@ class TestDatabaseUpdateConsistency:
             
             # Mock successful batch response
             mock_response = Mock()
-            mock_response.raise_for_status.return_value = None
+            mock_response.status_code = 200
+            mock_response.content = True
+            mock_response.headers = {}
             mock_response.json.return_value = {'results': []}
-            mock_session.post.return_value = mock_response
+            mock_session.request.return_value = mock_response
             
             queries = [
                 {'package': {'name': 'test1', 'ecosystem': 'npm'}},
@@ -406,7 +411,7 @@ class TestDatabaseUpdateConsistency:
             
             # Property: Batch query should return consistent structure
             result = client.batch_query_vulnerabilities(queries)
-            assert isinstance(result, list), "Batch query should return list"
+            assert isinstance(result, APIResponse), "Batch query should return APIResponse"
 
     def test_updater_initialization_consistency(self):
         """

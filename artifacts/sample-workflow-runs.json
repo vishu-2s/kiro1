@@ -1,0 +1,155 @@
+[
+  {
+    "id": 123456789,
+    "name": "CI/CD Pipeline",
+    "head_branch": "main",
+    "head_sha": "abc123def456789",
+    "path": ".github/workflows/ci.yml",
+    "display_title": "Security scan and build",
+    "run_number": 42,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_id": 987654321,
+    "check_suite_id": 456789123,
+    "check_suite_node_id": "CS_kwDOABCD123456",
+    "url": "https://api.github.com/repos/example/repo/actions/runs/123456789",
+    "html_url": "https://github.com/example/repo/actions/runs/123456789",
+    "pull_requests": [],
+    "created_at": "2024-12-01T10:00:00Z",
+    "updated_at": "2024-12-01T10:15:00Z",
+    "actor": {
+      "login": "developer",
+      "id": 12345,
+      "type": "User"
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2024-12-01T10:00:00Z",
+    "triggering_actor": {
+      "login": "developer", 
+      "id": 12345,
+      "type": "User"
+    },
+    "jobs_url": "https://api.github.com/repos/example/repo/actions/runs/123456789/jobs",
+    "logs_url": "https://api.github.com/repos/example/repo/actions/runs/123456789/logs",
+    "check_suite_url": "https://api.github.com/repos/example/repo/check-suites/456789123",
+    "artifacts_url": "https://api.github.com/repos/example/repo/actions/runs/123456789/artifacts",
+    "cancel_url": "https://api.github.com/repos/example/repo/actions/runs/123456789/cancel",
+    "rerun_url": "https://api.github.com/repos/example/repo/actions/runs/123456789/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/example/repo/actions/workflows/987654321",
+    "head_commit": {
+      "id": "abc123def456789",
+      "tree_id": "def456abc123789",
+      "message": "Add vulnerable dependencies for testing",
+      "timestamp": "2024-12-01T09:55:00Z",
+      "author": {
+        "name": "Developer",
+        "email": "developer@example.com"
+      },
+      "committer": {
+        "name": "Developer", 
+        "email": "developer@example.com"
+      }
+    },
+    "repository": {
+      "id": 987654321,
+      "name": "vulnerable-app",
+      "full_name": "example/vulnerable-app",
+      "private": false,
+      "html_url": "https://github.com/example/vulnerable-app"
+    },
+    "head_repository": {
+      "id": 987654321,
+      "name": "vulnerable-app",
+      "full_name": "example/vulnerable-app",
+      "private": false,
+      "html_url": "https://github.com/example/vulnerable-app"
+    }
+  },
+  {
+    "id": 123456790,
+    "name": "Security Scan",
+    "head_branch": "feature/security-fixes",
+    "head_sha": "def456abc789123",
+    "path": ".github/workflows/security.yml",
+    "display_title": "Dependency security scan",
+    "run_number": 15,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 987654322,
+    "check_suite_id": 456789124,
+    "check_suite_node_id": "CS_kwDOABCD123457",
+    "url": "https://api.github.com/repos/example/repo/actions/runs/123456790",
+    "html_url": "https://github.com/example/repo/actions/runs/123456790",
+    "pull_requests": [
+      {
+        "id": 789123456,
+        "number": 42,
+        "url": "https://api.github.com/repos/example/repo/pulls/42",
+        "html_url": "https://github.com/example/repo/pull/42",
+        "head": {
+          "ref": "feature/security-fixes",
+          "sha": "def456abc789123"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "abc123def456789"
+        }
+      }
+    ],
+    "created_at": "2024-12-01T11:00:00Z",
+    "updated_at": "2024-12-01T11:10:00Z",
+    "actor": {
+      "login": "security-team",
+      "id": 54321,
+      "type": "User"
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2024-12-01T11:00:00Z",
+    "triggering_actor": {
+      "login": "security-team",
+      "id": 54321,
+      "type": "User"
+    },
+    "jobs_url": "https://api.github.com/repos/example/repo/actions/runs/123456790/jobs",
+    "logs_url": "https://api.github.com/repos/example/repo/actions/runs/123456790/logs",
+    "check_suite_url": "https://api.github.com/repos/example/repo/check-suites/456789124",
+    "artifacts_url": "https://api.github.com/repos/example/repo/actions/runs/123456790/artifacts",
+    "cancel_url": "https://api.github.com/repos/example/repo/actions/runs/123456790/cancel",
+    "rerun_url": "https://api.github.com/repos/example/repo/actions/runs/123456790/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/example/repo/actions/workflows/987654322",
+    "head_commit": {
+      "id": "def456abc789123",
+      "tree_id": "abc789def123456",
+      "message": "Fix security vulnerabilities in dependencies",
+      "timestamp": "2024-12-01T10:55:00Z",
+      "author": {
+        "name": "Security Team",
+        "email": "security@example.com"
+      },
+      "committer": {
+        "name": "Security Team",
+        "email": "security@example.com"
+      }
+    },
+    "repository": {
+      "id": 987654321,
+      "name": "vulnerable-app",
+      "full_name": "example/vulnerable-app", 
+      "private": false,
+      "html_url": "https://github.com/example/vulnerable-app"
+    },
+    "head_repository": {
+      "id": 987654321,
+      "name": "vulnerable-app",
+      "full_name": "example/vulnerable-app",
+      "private": false,
+      "html_url": "https://github.com/example/vulnerable-app"
+    }
+  }
+]

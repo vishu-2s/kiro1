@@ -255,7 +255,7 @@ class TestConfigurationManagement:
         alphabet=string.ascii_letters + string.digits + "_-",
         min_size=1, 
         max_size=20
-    ).filter(lambda x: x and x.isalnum()))
+    ).filter(lambda x: x and x.isalnum() and x.upper() not in ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9']))
     def test_logging_configuration_consistency(self, log_level: str, log_filename: str):
         """
         **Feature: multi-agent-security, Property 21: Configuration Management**

@@ -158,7 +158,7 @@ class TestDataSourceProcessing:
             with pytest.raises(ValueError):
                 parse_github_url(url)
 
-    @patch('tools.github_tools.GitHubClient')
+    @patch('tools.github_tools.GitHubAPIClient')
     def test_repository_data_fetching_structure(self, mock_client_class):
         """
         **Feature: multi-agent-security, Property 1: Data Source Processing**
@@ -166,25 +166,25 @@ class TestDataSourceProcessing:
         For any valid GitHub repository, the system should fetch comprehensive
         data with consistent structure.
         """
-        # Mock GitHubClient instance
+        # Mock GitHubAPIClient instance
         mock_client = Mock()
         mock_client_class.return_value = mock_client
         
-        # Mock API responses
-        mock_client._make_request.side_effect = [
-            # Repository info
-            {
-                "name": "test-repo",
-                "full_name": "owner/test-repo",
-                "default_branch": "main",
-                "language": "Python",
-                "created_at": "2024-01-01T00:00:00Z",
-                "updated_at": "2024-01-02T00:00:00Z",
-                "size": 1000,
-                "stargazers_count": 10,
-                "forks_count": 2
-            }
-        ]
+        # Mock successful API response
+        mock_response = Mock()
+        mock_response.is_success.return_value = True
+        mock_response.get_data.return_value = {
+            "name": "test-repo",
+            "full_name": "owner/test-repo",
+            "default_branch": "main",
+            "language": "Python",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-02T00:00:00Z",
+            "size": 1000,
+            "stargazers_count": 10,
+            "forks_count": 2
+        }
+        mock_client.get_repository.return_value = mock_response
         
         # Mock other functions
         with patch('tools.github_tools.fetch_repository_contents', return_value=[]), \
@@ -333,9 +333,12 @@ class TestDataSourceProcessing:
             }
         ]
         
-        # Mock GitHubClient
+        # Mock GitHubAPIClient
         mock_client = Mock()
-        mock_client._make_request.return_value = contents_data
+        mock_response = Mock()
+        mock_response.is_success.return_value = True
+        mock_response.get_data.return_value = contents_data
+        mock_client.get_repository_contents.return_value = mock_response
         
         with patch('tools.github_tools.fetch_file_content', return_value="test content"):
             result = fetch_repository_contents("owner", "repo", mock_client)
@@ -370,10 +373,13 @@ class TestDataSourceProcessing:
         test_content = "test file content"
         encoded_content = base64.b64encode(test_content.encode()).decode()
         
-        mock_client._make_request.return_value = {
+        mock_response = Mock()
+        mock_response.is_success.return_value = True
+        mock_response.get_data.return_value = {
             "content": encoded_content,
             "encoding": "base64"
         }
+        mock_client.get_repository_contents.return_value = mock_response
         
         result = fetch_file_content("owner", "repo", "test.txt", mock_client)
         
@@ -381,7 +387,7 @@ class TestDataSourceProcessing:
         assert result == test_content, "Should decode base64 content correctly"
         
         # Test direct content
-        mock_client._make_request.return_value = {
+        mock_response.get_data.return_value = {
             "content": test_content,
             "encoding": "utf-8"
         }

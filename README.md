@@ -2,8 +2,20 @@
 
 An AI-powered security analysis platform that uses multiple specialized agents to detect malicious packages, vulnerabilities, and supply chain attacks in software projects.
 
+## 🌟 New: Web Application Interface
+
+**Now with a beautiful web UI!** Run security analysis through your browser with live logs and interactive reports.
+
+```bash
+python app.py
+# Open http://localhost:5000
+```
+
+See [WEBAPP_QUICKSTART.md](WEBAPP_QUICKSTART.md) for details.
+
 ## Features
 
+- **🌐 Web Interface**: Modern UI with live logs and interactive reports
 - **Multi-Agent Architecture**: Specialized AI agents for different security analysis tasks
 - **Supply Chain Security**: Comprehensive SBOM analysis and vulnerability detection
 - **Visual Security Analysis**: GPT-4 Vision integration for screenshot analysis

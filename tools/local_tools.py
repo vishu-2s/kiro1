@@ -266,6 +266,7 @@ def generate_local_sbom(directory_path: str, include_dev_dependencies: bool = Tr
         })
     
     all_packages = []
+    all_script_findings = []
     processing_errors = []
     
     # Process each package file
@@ -278,8 +279,11 @@ def generate_local_sbom(directory_path: str, include_dev_dependencies: bool = Tr
                 logger.warning(f"Unknown ecosystem for file: {file_path}")
                 continue
             
-            # Extract packages from file
-            packages = extract_packages_from_file(file_path)
+            # Extract packages and script findings from file
+            packages, script_findings = extract_packages_from_file(file_path)
+            
+            # Collect script findings
+            all_script_findings.extend(script_findings)
             
             # Filter development dependencies if requested
             if not include_dev_dependencies:
@@ -297,7 +301,7 @@ def generate_local_sbom(directory_path: str, include_dev_dependencies: bool = Tr
                 })
             
             all_packages.extend([pkg.to_dict() for pkg in packages])
-            logger.debug(f"Extracted {len(packages)} packages from {file_path}")
+            logger.debug(f"Extracted {len(packages)} packages and {len(script_findings)} script findings from {file_path}")
         
         except Exception as e:
             error_msg = f"Failed to process {file_info['path']}: {e}"
@@ -311,11 +315,15 @@ def generate_local_sbom(directory_path: str, include_dev_dependencies: bool = Tr
         "scanned_at": datetime.now().isoformat(),
         "package_files_found": len(package_files),
         "packages_extracted": len(all_packages),
+        "script_findings_detected": len(all_script_findings),
         "include_dev_dependencies": include_dev_dependencies,
         "processing_errors": processing_errors
     }
     
     sbom = generate_sbom_from_packages(all_packages, source_info)
+    
+    # Add script findings to SBOM
+    sbom["script_findings"] = [finding.to_dict() for finding in all_script_findings]
     
     # Validate SBOM structure
     is_valid, errors = validate_sbom_structure(sbom)
@@ -323,7 +331,7 @@ def generate_local_sbom(directory_path: str, include_dev_dependencies: bool = Tr
         logger.warning(f"Generated SBOM has validation errors: {errors}")
         sbom["validation_errors"] = errors
     
-    logger.info(f"Generated SBOM with {len(all_packages)} packages from {len(package_files)} files")
+    logger.info(f"Generated SBOM with {len(all_packages)} packages and {len(all_script_findings)} script findings from {len(package_files)} files")
     return sbom
 
 def analyze_local_directory(directory_path: str, output_dir: Optional[str] = None, 
@@ -358,6 +366,22 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
         if sbom_data.get("packages"):
             security_findings = check_vulnerable_packages(sbom_data, use_osv=use_osv)
         
+        # Add script findings from SBOM
+        script_findings_data = sbom_data.get("script_findings", [])
+        for finding_dict in script_findings_data:
+            # Convert dict back to SecurityFinding object
+            finding = SecurityFinding(
+                package=finding_dict.get("package", "unknown"),
+                version=finding_dict.get("version", "*"),
+                finding_type=finding_dict.get("finding_type", "malicious_script"),
+                severity=finding_dict.get("severity", "medium"),
+                confidence=finding_dict.get("confidence", 0.5),
+                evidence=finding_dict.get("evidence", []),
+                recommendations=finding_dict.get("recommendations", []),
+                source=finding_dict.get("source", "npm_script_analysis")
+            )
+            security_findings.append(finding)
+        
         # Compile analysis results
         analysis_results = {
             "analysis_type": "local_directory",
@@ -373,6 +397,7 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
                 "high_findings": len([f for f in security_findings if f.severity == "high"]),
                 "medium_findings": len([f for f in security_findings if f.severity == "medium"]),
                 "low_findings": len([f for f in security_findings if f.severity == "low"]),
+                "script_findings": len(script_findings_data),
                 "ecosystems_found": list(set(pkg.get("ecosystem", "unknown") 
                                            for pkg in sbom_data.get("packages", []))),
                 "package_files_scanned": sbom_data.get("source", {}).get("package_files_found", 0)

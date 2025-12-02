@@ -1,0 +1,138 @@
+{
+  "id": 987654321,
+  "node_id": "R_kgDOABCD123456",
+  "name": "vulnerable-backend-service",
+  "full_name": "example/vulnerable-backend-service",
+  "private": false,
+  "owner": {
+    "login": "example",
+    "id": 12345,
+    "type": "Organization",
+    "site_admin": false
+  },
+  "html_url": "https://github.com/example/vulnerable-backend-service",
+  "description": "Sample backend service with known vulnerabilities for security testing",
+  "fork": false,
+  "url": "https://api.github.com/repos/example/vulnerable-backend-service",
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2024-12-01T10:00:00Z",
+  "pushed_at": "2024-12-01T09:55:00Z",
+  "git_url": "git://github.com/example/vulnerable-backend-service.git",
+  "ssh_url": "git@github.com:example/vulnerable-backend-service.git",
+  "clone_url": "https://github.com/example/vulnerable-backend-service.git",
+  "svn_url": "https://github.com/example/vulnerable-backend-service",
+  "homepage": "https://example.com/vulnerable-backend",
+  "size": 1024,
+  "stargazers_count": 5,
+  "watchers_count": 5,
+  "language": "JavaScript",
+  "has_issues": true,
+  "has_projects": true,
+  "has_wiki": false,
+  "has_pages": false,
+  "has_downloads": true,
+  "archived": false,
+  "disabled": false,
+  "open_issues_count": 8,
+  "license": {
+    "key": "mit",
+    "name": "MIT License",
+    "spdx_id": "MIT",
+    "url": "https://api.github.com/licenses/mit"
+  },
+  "allow_forking": true,
+  "is_template": false,
+  "web_commit_signoff_required": false,
+  "topics": [
+    "security",
+    "testing",
+    "vulnerabilities",
+    "backend",
+    "nodejs"
+  ],
+  "visibility": "public",
+  "forks": 2,
+  "open_issues": 8,
+  "watchers": 5,
+  "default_branch": "main",
+  "permissions": {
+    "admin": false,
+    "maintain": false,
+    "push": false,
+    "triage": false,
+    "pull": true
+  },
+  "security_and_analysis": {
+    "secret_scanning": {
+      "status": "enabled"
+    },
+    "secret_scanning_push_protection": {
+      "status": "enabled"
+    },
+    "dependabot_security_updates": {
+      "status": "enabled"
+    },
+    "secret_scanning_validity_checks": {
+      "status": "enabled"
+    }
+  },
+  "network_count": 2,
+  "subscribers_count": 3,
+  "package_files": [
+    {
+      "name": "package.json",
+      "path": "package.json",
+      "sha": "abc123def456789",
+      "size": 1024,
+      "url": "https://api.github.com/repos/example/vulnerable-backend-service/contents/package.json",
+      "html_url": "https://github.com/example/vulnerable-backend-service/blob/main/package.json",
+      "git_url": "https://api.github.com/repos/example/vulnerable-backend-service/git/blobs/abc123def456789",
+      "download_url": "https://raw.githubusercontent.com/example/vulnerable-backend-service/main/package.json",
+      "type": "file"
+    },
+    {
+      "name": "package-lock.json",
+      "path": "package-lock.json", 
+      "sha": "def456abc789123",
+      "size": 15360,
+      "url": "https://api.github.com/repos/example/vulnerable-backend-service/contents/package-lock.json",
+      "html_url": "https://github.com/example/vulnerable-backend-service/blob/main/package-lock.json",
+      "git_url": "https://api.github.com/repos/example/vulnerable-backend-service/git/blobs/def456abc789123",
+      "download_url": "https://raw.githubusercontent.com/example/vulnerable-backend-service/main/package-lock.json",
+      "type": "file"
+    },
+    {
+      "name": "requirements.txt",
+      "path": "scripts/requirements.txt",
+      "sha": "789abc123def456",
+      "size": 512,
+      "url": "https://api.github.com/repos/example/vulnerable-backend-service/contents/scripts/requirements.txt",
+      "html_url": "https://github.com/example/vulnerable-backend-service/blob/main/scripts/requirements.txt",
+      "git_url": "https://api.github.com/repos/example/vulnerable-backend-service/git/blobs/789abc123def456",
+      "download_url": "https://raw.githubusercontent.com/example/vulnerable-backend-service/main/scripts/requirements.txt",
+      "type": "file"
+    },
+    {
+      "name": "pom.xml",
+      "path": "java-service/pom.xml",
+      "sha": "456789abc123def",
+      "size": 2048,
+      "url": "https://api.github.com/repos/example/vulnerable-backend-service/contents/java-service/pom.xml",
+      "html_url": "https://github.com/example/vulnerable-backend-service/blob/main/java-service/pom.xml",
+      "git_url": "https://api.github.com/repos/example/vulnerable-backend-service/git/blobs/456789abc123def",
+      "download_url": "https://raw.githubusercontent.com/example/vulnerable-backend-service/main/java-service/pom.xml",
+      "type": "file"
+    }
+  ],
+  "vulnerability_alerts": {
+    "total_count": 4,
+    "open_count": 3,
+    "fixed_count": 1,
+    "dismissed_count": 0
+  },
+  "security_advisories": {
+    "total_count": 3,
+    "open_count": 2,
+    "published_count": 1
+  }
+}

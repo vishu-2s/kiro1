@@ -1,0 +1,210 @@
+{
+  "test_data_version": "1.0.0",
+  "created_at": "2024-12-01T10:00:00Z",
+  "description": "Comprehensive test data for Multi-Agent Security Analysis System",
+  "categories": {
+    "sbom_files": {
+      "description": "Software Bill of Materials files for testing SBOM processing",
+      "files": [
+        {
+          "name": "backend-sbom.json",
+          "format": "cyclonedx",
+          "ecosystems": ["npm", "pypi", "maven", "rubygems", "crates", "go"],
+          "vulnerable_packages": 9,
+          "total_packages": 12,
+          "purpose": "Testing SBOM parsing and vulnerability detection"
+        }
+      ]
+    },
+    "package_files": {
+      "description": "Package manager files with vulnerable dependencies",
+      "files": [
+        {
+          "name": "sample-package.json",
+          "ecosystem": "npm",
+          "vulnerable_packages": 6,
+          "total_packages": 10,
+          "purpose": "Testing npm package analysis"
+        },
+        {
+          "name": "sample-requirements.txt", 
+          "ecosystem": "pypi",
+          "vulnerable_packages": 9,
+          "total_packages": 14,
+          "purpose": "Testing Python package analysis"
+        },
+        {
+          "name": "sample-pom.xml",
+          "ecosystem": "maven",
+          "vulnerable_packages": 3,
+          "total_packages": 6,
+          "purpose": "Testing Maven dependency analysis"
+        }
+      ]
+    },
+    "security_data": {
+      "description": "Security alerts and vulnerability data",
+      "files": [
+        {
+          "name": "sample-security-alerts.json",
+          "alert_count": 3,
+          "severity_levels": ["critical", "high"],
+          "alert_states": ["open", "dismissed"],
+          "purpose": "Testing security alert processing"
+        },
+        {
+          "name": "sample-dependabot-alerts.json",
+          "alert_count": 4,
+          "severity_levels": ["critical", "high", "medium"],
+          "alert_states": ["open", "fixed", "dismissed"],
+          "purpose": "Testing Dependabot alert integration"
+        },
+        {
+          "name": "sample-osv-response.json",
+          "vulnerability_count": 3,
+          "ecosystems": ["npm", "maven", "pypi"],
+          "cve_count": 3,
+          "purpose": "Testing OSV API response processing"
+        }
+      ]
+    },
+    "ci_cd_data": {
+      "description": "CI/CD logs and workflow data",
+      "files": [
+        {
+          "name": "sample-ci-logs.txt",
+          "log_entries": 46,
+          "suspicious_activities": 8,
+          "security_issues": ["malicious_packages", "network_requests", "mining", "data_exfiltration"],
+          "purpose": "Testing CI/CD log analysis"
+        },
+        {
+          "name": "sample-workflow-runs.json",
+          "workflow_count": 2,
+          "statuses": ["completed"],
+          "conclusions": ["failure", "success"],
+          "purpose": "Testing GitHub workflow analysis"
+        },
+        {
+          "name": "sample-repository-data.json",
+          "package_file_count": 4,
+          "security_features": ["secret_scanning", "dependabot", "push_protection"],
+          "vulnerability_alerts": 4,
+          "purpose": "Testing repository metadata processing"
+        }
+      ]
+    },
+    "visual_data": {
+      "description": "Visual security indicators for VLM testing",
+      "files": [
+        {
+          "name": "screenshot-descriptions.md",
+          "screenshot_types": 10,
+          "security_indicators": ["warnings", "malware", "phishing", "alerts", "anomalies"],
+          "purpose": "Documentation for creating test screenshots"
+        },
+        {
+          "name": "screenshots/security-warning-text.txt",
+          "indicator_type": "browser_security_warning",
+          "threat_level": "high",
+          "purpose": "Testing security warning detection"
+        },
+        {
+          "name": "screenshots/npm-warnings-text.txt",
+          "indicator_type": "package_manager_warnings",
+          "threat_level": "critical",
+          "purpose": "Testing package vulnerability warnings"
+        },
+        {
+          "name": "screenshots/github-alert-text.txt",
+          "indicator_type": "security_alert",
+          "threat_level": "critical",
+          "purpose": "Testing security alert interface detection"
+        },
+        {
+          "name": "screenshots/phishing-page-text.txt",
+          "indicator_type": "phishing_attempt",
+          "threat_level": "high",
+          "purpose": "Testing phishing page detection"
+        },
+        {
+          "name": "screenshots/malware-download-text.txt",
+          "indicator_type": "malware_download",
+          "threat_level": "critical",
+          "purpose": "Testing malware download detection"
+        }
+      ]
+    }
+  },
+  "vulnerability_coverage": {
+    "cves": [
+      "CVE-2018-3728",
+      "CVE-2021-44228", 
+      "CVE-2023-32681",
+      "CVE-2021-23337",
+      "CVE-2023-1234"
+    ],
+    "attack_types": [
+      "malicious_packages",
+      "typosquatting",
+      "supply_chain_injection",
+      "dependency_confusion",
+      "code_injection",
+      "data_exfiltration",
+      "cryptocurrency_mining",
+      "credential_harvesting"
+    ],
+    "ecosystems": [
+      "npm",
+      "pypi", 
+      "maven",
+      "rubygems",
+      "crates",
+      "go"
+    ]
+  },
+  "testing_scenarios": [
+    {
+      "name": "SBOM Vulnerability Detection",
+      "files": ["backend-sbom.json"],
+      "expected_findings": 9,
+      "test_properties": ["Property 2", "Property 3"]
+    },
+    {
+      "name": "Package File Analysis",
+      "files": ["sample-package.json", "sample-requirements.txt", "sample-pom.xml"],
+      "expected_findings": 18,
+      "test_properties": ["Property 1", "Property 6"]
+    },
+    {
+      "name": "Security Alert Processing",
+      "files": ["sample-security-alerts.json", "sample-dependabot-alerts.json"],
+      "expected_findings": 7,
+      "test_properties": ["Property 19", "Property 20"]
+    },
+    {
+      "name": "CI/CD Log Analysis",
+      "files": ["sample-ci-logs.txt"],
+      "expected_findings": 8,
+      "test_properties": ["Property 13"]
+    },
+    {
+      "name": "Visual Security Analysis",
+      "files": ["screenshots/*.txt"],
+      "expected_findings": 5,
+      "test_properties": ["Property 14", "Property 15", "Property 16"]
+    },
+    {
+      "name": "Multi-Agent Collaboration",
+      "files": ["backend-sbom.json", "sample-security-alerts.json", "screenshots/*.txt"],
+      "expected_findings": 22,
+      "test_properties": ["Property 11", "Property 12", "Property 17"]
+    }
+  ],
+  "validation": {
+    "script": "validate_test_data.py",
+    "last_validated": "2024-12-01T10:00:00Z",
+    "status": "passed",
+    "total_files": 16
+  }
+}
