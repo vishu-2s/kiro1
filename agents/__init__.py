@@ -1,5 +1,6 @@
 """
-Multi-Agent Security Analysis System - Agents Module
+Spyder - AI Agents Module
+AI-Powered Supply Chain Security Scanner
 
 This module contains the specialized AI agents for security analysis:
 - SupplyChainAgent: Dependency analysis and malicious package detection
@@ -8,7 +9,7 @@ This module contains the specialized AI agents for security analysis:
 """
 
 __version__ = "1.0.0"
-__author__ = "Multi-Agent Security Analysis System"
+__author__ = "Spyder Security Scanner"
 
 from typing import Dict, Any, Optional, List
 from datetime import datetime

@@ -1,8 +1,8 @@
-# 🚀 Web Application Quick Start Guide
+# 🚀 Spyder Web Application Quick Start Guide
 
 ## What You Get
 
-A beautiful, modern web interface for running security analysis with:
+A beautiful, modern web interface for Spyder security analysis with:
 
 ✅ **3 Analysis Modes**: GitHub repos, local folders, or SBOM files  
 ✅ **Live Logs**: Watch the analysis happen in real-time  

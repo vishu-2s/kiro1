@@ -1,5 +1,6 @@
 """
-Core analysis engine for Multi-Agent Security Analysis System.
+Spyder - Core Analysis Engine
+AI-Powered Supply Chain Security Scanner
 
 This module provides the main analysis logic for processing SBOM data,
 vulnerability detection, and suspicious activity analysis with finding

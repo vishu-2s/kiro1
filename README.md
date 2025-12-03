@@ -1,10 +1,12 @@
-# Multi-Agent Security Analysis System
+# Spyder 🕷️
 
-An AI-powered security analysis platform that uses multiple specialized agents to detect malicious packages, vulnerabilities, and supply chain attacks in software projects.
+**AI-Powered Supply Chain Security Scanner**
 
-## 🌟 New: Web Application Interface
+An intelligent security analysis platform that uses multiple specialized AI agents to detect malicious packages, vulnerabilities, and supply chain attacks in software projects.
 
-**Now with a beautiful web UI!** Run security analysis through your browser with live logs and interactive reports.
+## 🌟 Web Application Interface
+
+**Beautiful web UI included!** Run Spyder through your browser with live logs and interactive reports.
 
 ```bash
 python app.py
@@ -25,7 +27,7 @@ See [WEBAPP_QUICKSTART.md](WEBAPP_QUICKSTART.md) for details.
 ## Project Structure
 
 ```
-multi-agent-security/
+spyder/
 ├── agents/                 # AI agent implementations
 ├── tools/                  # Analysis tools and utilities
 ├── artifacts/              # Sample artifacts and test data
@@ -43,7 +45,7 @@ multi-agent-security/
 
 ```bash
 # Clone the repository and navigate to the project directory
-cd multi-agent-security
+cd spyder
 
 # Run the setup script to create virtual environment and install dependencies
 python setup_venv.py

@@ -1,6 +1,8 @@
-# Multi-Agent Security Analysis System - Web Application
+# Spyder - Web Application
 
-A modern web interface for the Multi-Agent Security Analysis System that allows you to analyze GitHub repositories, local directories, and SBOM files for security vulnerabilities.
+**AI-Powered Supply Chain Security Scanner**
+
+A modern web interface for Spyder that allows you to analyze GitHub repositories, local directories, and SBOM files for security vulnerabilities.
 
 ## Features
 

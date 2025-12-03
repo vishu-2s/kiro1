@@ -1,5 +1,6 @@
 """
-Configuration management for Multi-Agent Security Analysis System.
+Spyder - Configuration Management
+AI-Powered Supply Chain Security Scanner
 Handles loading configuration from environment variables and .env files.
 """
 
@@ -12,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Configuration class for the Multi-Agent Security Analysis System."""
+    """Configuration class for Spyder - AI-Powered Supply Chain Security Scanner."""
     
     # OpenAI Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
