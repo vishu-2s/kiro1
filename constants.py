@@ -1,5 +1,6 @@
 """
-Security constants and signatures for Multi-Agent Security Analysis System.
+Spyder - Security Constants and Signatures
+AI-Powered Supply Chain Security Scanner
 This file contains malicious package signatures, legitimate packages, and detection patterns.
 """
 

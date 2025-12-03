@@ -41,3 +41,6 @@ aiohttp>=3.8.0
 
 # Web Application Framework
 flask>=3.0.0
+
+# PDF Generation
+reportlab>=4.0.0

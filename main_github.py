@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Main orchestration system for Multi-Agent Security Analysis System.
+Spyder - Main Orchestration System
+AI-Powered Supply Chain Security Scanner
 
 This module provides the command-line interface, configuration management,
 analysis workflow coordination, and error handling for the security analysis system.
@@ -69,7 +70,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
         Configured argument parser
     """
     parser = argparse.ArgumentParser(
-        description="Multi-Agent Security Analysis System",
+        description="Spyder - AI-Powered Supply Chain Security Scanner",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -192,7 +193,7 @@ Examples:
     parser.add_argument(
         "--version",
         action="version",
-        version="Multi-Agent Security Analysis System v1.0.0"
+        version="Spyder v1.0.0 - AI-Powered Supply Chain Security Scanner"
     )
     
     return parser
@@ -471,7 +472,7 @@ def main() -> int:
     logger = logging.getLogger(__name__)
     
     try:
-        logger.info("Multi-Agent Security Analysis System starting...")
+        logger.info("Spyder - AI-Powered Security Scanner starting...")
         
         # Validate configuration if requested
         if args.validate_config:

@@ -1,8 +1,8 @@
-# 🚀 START HERE - Web Application Quick Launch
+# 🚀 START HERE - Spyder Web Application
 
 ## Welcome! 👋
 
-You now have a **beautiful web interface** for the Multi-Agent Security Analysis System!
+You now have a **beautiful web interface** for **Spyder** - your AI-powered supply chain security scanner!
 
 ## ⚡ Super Quick Start (30 seconds)
 
