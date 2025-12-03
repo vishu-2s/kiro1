@@ -960,6 +960,126 @@
                 grid-template-columns: 1fr !important;
             }
         }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: #1A1A1A;
+            color: #FFFFFF;
+            padding: 16px 20px;
+            border-left: 4px solid #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            font-size: 14px;
+            min-width: 300px;
+        }
+
+        .toast.success {
+            border-left-color: #4ADE80;
+        }
+
+        .toast.error {
+            border-left-color: #DC2626;
+        }
+
+        .toast.warning {
+            border-left-color: #FBBF24;
+        }
+
+        .toast.info {
+            border-left-color: #60A5FA;
+        }
+
+        .toast-close {
+            margin-left: auto;
+            cursor: pointer;
+            opacity: 0.7;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.removing {
+            animation: slideOut 0.3s ease;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #F0F0F0 25%, #E0E0E0 50%, #F0F0F0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Lazy Load Placeholder */
+        .findings-lazy-load {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .findings-lazy-load button {
+            padding: 12px 32px;
+            background: #FFFFFF;
+            border: 1px solid #D4D4D4;
+            color: #1A1A1A;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .findings-lazy-load button:hover {
+            background: #1A1A1A;
+            color: #FFFFFF;
+            border-color: #1A1A1A;
+        }
     </style>
 </head>
 <body>
@@ -1040,6 +1160,9 @@
                     <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()" style="width: 100%;">
                         Start Analysis
                     </button>
+                    <button class="btn btn-primary" id="cancel-btn" onclick="cancelAnalysis()" style="width: 100%; display: none; background: #666666;">
+                        Cancel Analysis
+                    </button>
                 </div>
 
                 <!-- Recent Scans Panel -->
@@ -1107,11 +1230,73 @@
     <script>
         let currentMode = 'github';
         let pollingInterval = null;
+        let pollCount = 0;
+        const INITIAL_POLL_INTERVAL = 500;  // 500ms for first 10 polls
+        const NORMAL_POLL_INTERVAL = 2000;  // 2s after that
+        let findingsPage = 1;
+        const FINDINGS_PER_PAGE = 20;
 
         const placeholders = {
             github: 'Enter GitHub repository URL (e.g., https://github.com/owner/repo)',
             local: 'Enter local directory path (e.g., C:\\Projects\\myapp or /home/user/myapp)'
         };
+
+        // Toast notification system
+        function showToast(message, type = 'info', duration = 5000) {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${escapeHtml(message)}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+            `;
+            
+            container.appendChild(toast);
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.classList.add('removing');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+
+            return toast;
+        }
+
+        // Cancel analysis
+        async function cancelAnalysis() {
+            const cancelBtn = document.getElementById('cancel-btn');
+            cancelBtn.disabled = true;
+            cancelBtn.textContent = 'Cancelling...';
+
+            try {
+                const response = await fetch('/api/cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showToast('Analysis cancellation requested', 'warning');
+                } else {
+                    const error = await response.json();
+                    showToast('Error: ' + error.error, 'error');
+                    cancelBtn.disabled = false;
+                    cancelBtn.textContent = 'Cancel Analysis';
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+                cancelBtn.disabled = false;
+                cancelBtn.textContent = 'Cancel Analysis';
+            }
+        }
 
         function showReportTab() {
             const reportTab = document.getElementById('report-tab');
@@ -1161,9 +1346,22 @@
         }
 
         async function loadDashboard() {
+            // Show loading state
+            document.getElementById('dash-total-scans').textContent = '...';
+            document.getElementById('dash-total-threats').textContent = '...';
+            document.getElementById('dash-total-packages').textContent = '...';
+            document.getElementById('recent-scans-list').innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #A0A0A0; font-size: 13px;">
+                    <div class="spinner" style="margin: 0 auto 12px;"></div>
+                    Loading...
+                </div>
+            `;
+            
             try {
-                const response = await fetch('/api/reports');
-                const reports = await response.json();
+                // Only fetch metadata for recent reports (limit 10)
+                const response = await fetch('/api/reports?per_page=10&page=1');
+                const data = await response.json();
+                const reports = data.reports || [];
 
                 // Calculate dashboard stats
                 let totalScans = reports.length;
@@ -1171,26 +1369,47 @@
                 let totalPackages = 0;
                 let lastScanDate = 'Never';
 
-                // Load metadata for all reports
+                // Load metadata for recent reports (already included in response if available)
                 const reportsWithData = await Promise.all(
                     reports.slice(0, 10).map(async (report) => {
                         try {
-                            const dataResponse = await fetch(`/outputs/${report.filename}`);
-                            const data = await dataResponse.json();
-                            const metadata = data.metadata || {};
-                            const findings = data.findings || data.security_findings || [];
-                            
-                            totalThreats += findings.length;
-                            totalPackages += metadata.total_packages || 0;
+                            // Check if metadata is already included
+                            if (report.metadata && report.findings_count !== undefined) {
+                                totalThreats += report.findings_count;
+                                totalPackages += report.metadata.total_packages || 0;
+                                
+                                // Load full data only for severity calculation
+                                const dataResponse = await fetch(`/outputs/${report.filename}`);
+                                const data = await dataResponse.json();
+                                const findings = data.findings || data.security_findings || [];
+                                
+                                return {
+                                    filename: report.filename,
+                                    name: extractReportName(report.metadata.target),
+                                    date: report.modified,
+                                    findings: report.findings_count,
+                                    severity: getHighestSeverity(findings),
+                                    metadata: report.metadata
+                                };
+                            } else {
+                                // Fallback: load full data
+                                const dataResponse = await fetch(`/outputs/${report.filename}`);
+                                const data = await dataResponse.json();
+                                const metadata = data.metadata || {};
+                                const findings = data.findings || data.security_findings || [];
+                                
+                                totalThreats += findings.length;
+                                totalPackages += metadata.total_packages || 0;
 
-                            return {
-                                filename: report.filename,
-                                name: extractReportName(metadata.target),
-                                date: report.modified,
-                                findings: findings.length,
-                                severity: getHighestSeverity(findings),
-                                metadata: metadata
-                            };
+                                return {
+                                    filename: report.filename,
+                                    name: extractReportName(metadata.target),
+                                    date: report.modified,
+                                    findings: findings.length,
+                                    severity: getHighestSeverity(findings),
+                                    metadata: metadata
+                                };
+                            }
                         } catch (e) {
                             return null;
                         }
@@ -1261,13 +1480,16 @@
             const target = document.getElementById('target').value.trim();
 
             if (!target) {
-                alert('Please enter a target');
+                showToast('Please enter a target', 'warning');
                 return;
             }
 
             const analyzeBtn = document.getElementById('analyze-btn');
-            analyzeBtn.disabled = true;
-            analyzeBtn.textContent = 'Starting...';
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            analyzeBtn.style.display = 'none';
+            cancelBtn.style.display = 'block';
+            cancelBtn.disabled = false;
 
             try {
                 const response = await fetch('/api/analyze', {
@@ -1282,17 +1504,18 @@
                 });
 
                 if (response.ok) {
+                    showToast('Analysis started', 'success');
                     startPolling();
                 } else {
                     const error = await response.json();
-                    alert('Error: ' + error.error);
-                    analyzeBtn.disabled = false;
-                    analyzeBtn.textContent = 'Start Analysis';
+                    showToast('Error: ' + error.error, 'error');
+                    analyzeBtn.style.display = 'block';
+                    cancelBtn.style.display = 'none';
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
-                analyzeBtn.disabled = false;
-                analyzeBtn.textContent = 'Start Analysis';
+                showToast('Error: ' + error.message, 'error');
+                analyzeBtn.style.display = 'block';
+                cancelBtn.style.display = 'none';
             }
         }
 
@@ -1300,7 +1523,18 @@
             if (pollingInterval) {
                 clearInterval(pollingInterval);
             }
-            pollingInterval = setInterval(updateStatus, 1000);
+            pollCount = 0;
+            // Start with faster polling, then slow down
+            pollingInterval = setInterval(() => {
+                pollCount++;
+                const interval = pollCount < 10 ? INITIAL_POLL_INTERVAL : NORMAL_POLL_INTERVAL;
+                if (pollCount === 10) {
+                    // Switch to slower polling after 10 fast polls
+                    clearInterval(pollingInterval);
+                    pollingInterval = setInterval(updateStatus, NORMAL_POLL_INTERVAL);
+                }
+                updateStatus();
+            }, INITIAL_POLL_INTERVAL);
             updateStatus();
         }
 
@@ -1322,15 +1556,22 @@
                 if (!data.running) {
                     stopPolling();
                     const analyzeBtn = document.getElementById('analyze-btn');
-                    analyzeBtn.disabled = false;
-                    analyzeBtn.textContent = 'Start Analysis';
+                    const cancelBtn = document.getElementById('cancel-btn');
+                    
+                    analyzeBtn.style.display = 'block';
+                    cancelBtn.style.display = 'none';
 
                     if (data.status === 'completed') {
+                        showToast('Analysis completed successfully!', 'success');
                         setTimeout(() => {
                             showReportTab();
                             loadReport();
                             switchTab('report');
                         }, 1000);
+                    } else if (data.status === 'cancelled') {
+                        showToast('Analysis was cancelled', 'warning');
+                    } else if (data.status === 'failed') {
+                        showToast('Analysis failed. Check logs for details.', 'error');
                     }
                 }
             } catch (error) {
@@ -1418,6 +1659,7 @@
         // Global variable to store current report data
         let currentReportData = null;
         let currentFilter = null;
+        let displayedFindings = FINDINGS_PER_PAGE;
 
         function filterFindings(severity) {
             if (!currentReportData) return;
@@ -1429,6 +1671,12 @@
                 currentFilter = severity;
             }
             
+            displayedFindings = FINDINGS_PER_PAGE; // Reset pagination
+            renderReport(currentReportData);
+        }
+
+        function loadMoreFindings() {
+            displayedFindings += FINDINGS_PER_PAGE;
             renderReport(currentReportData);
         }
 
@@ -1713,9 +1961,18 @@
         async function loadReportHistory() {
             const historyList = document.getElementById('history-list');
             
+            // Show loading state
+            historyList.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: #A0A0A0;">
+                    <div class="spinner" style="margin: 0 auto 12px;"></div>
+                    <p>Loading report history...</p>
+                </div>
+            `;
+            
             try {
-                const response = await fetch('/api/reports');
-                const reports = await response.json();
+                const response = await fetch('/api/reports?per_page=100&page=1');
+                const data = await response.json();
+                const reports = data.reports || [];
                 
                 if (reports.length === 0) {
                     historyList.innerHTML = `

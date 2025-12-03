@@ -27,7 +27,9 @@ analysis_state = {
     'status': 'idle',
     'result_file': None,
     'start_time': None,
-    'end_time': None
+    'end_time': None,
+    'process': None,  # Store the subprocess for cancellation
+    'cancelled': False
 }
 
 def log_message(message, level='info'):
@@ -49,6 +51,7 @@ def run_analysis(mode, target, skip_update, skip_osv):
         analysis_state['logs'] = []
         analysis_state['start_time'] = datetime.now().isoformat()
         analysis_state['result_file'] = None
+        analysis_state['cancelled'] = False
         
         log_message(f"Starting {mode} analysis for: {target}")
         
@@ -82,8 +85,23 @@ def run_analysis(mode, target, skip_update, skip_osv):
             universal_newlines=True
         )
         
+        # Store process for cancellation
+        analysis_state['process'] = process
+        
         # Stream output
         for line in process.stdout:
+            # Check if cancelled
+            if analysis_state['cancelled']:
+                log_message("Analysis cancelled by user", 'warning')
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+                analysis_state['status'] = 'cancelled'
+                return
+            
             line = line.strip()
             if line:
                 log_message(line)
@@ -121,6 +139,7 @@ def run_analysis(mode, target, skip_update, skip_osv):
     
     finally:
         analysis_state['running'] = False
+        analysis_state['process'] = None
         analysis_state['end_time'] = datetime.now().isoformat()
         print(f"Analysis finished. Status: {analysis_state['status']}")  # Debug print
 
@@ -176,6 +195,17 @@ def get_status():
         'end_time': analysis_state['end_time']
     })
 
+@app.route('/api/cancel', methods=['POST'])
+def cancel_analysis():
+    """Cancel the running analysis"""
+    if not analysis_state['running']:
+        return jsonify({'error': 'No analysis is running'}), 400
+    
+    analysis_state['cancelled'] = True
+    log_message("Cancellation requested by user", 'warning')
+    
+    return jsonify({'status': 'cancelling'})
+
 @app.route('/api/report')
 def get_report():
     """Get the analysis report"""
@@ -201,18 +231,48 @@ def list_reports():
     if not os.path.exists(output_dir):
         return jsonify([])
     
+    # Get pagination parameters
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    metadata_only = request.args.get('metadata_only', 'false').lower() == 'true'
+    
     reports = []
     for filename in os.listdir(output_dir):
         if filename.endswith('.json'):
             filepath = os.path.join(output_dir, filename)
-            reports.append({
+            report_info = {
                 'filename': filename,
                 'size': os.path.getsize(filepath),
                 'modified': datetime.fromtimestamp(os.path.getmtime(filepath)).isoformat()
-            })
+            }
+            
+            # Only load full metadata if requested (for dashboard)
+            if not metadata_only:
+                try:
+                    with open(filepath, 'r') as f:
+                        data = json.load(f)
+                        report_info['metadata'] = data.get('metadata', {})
+                        report_info['findings_count'] = len(data.get('findings', data.get('security_findings', [])))
+                except:
+                    pass
+            
+            reports.append(report_info)
     
     reports.sort(key=lambda x: x['modified'], reverse=True)
-    return jsonify(reports)
+    
+    # Pagination
+    total = len(reports)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_reports = reports[start:end]
+    
+    return jsonify({
+        'reports': paginated_reports,
+        'total': total,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': (total + per_page - 1) // per_page
+    })
 
 @app.route('/outputs/<path:filename>')
 def download_file(filename):
