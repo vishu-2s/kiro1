@@ -644,6 +644,43 @@ def generate_reportlab_pdf(data, pdf_path):
     # Build PDF
     doc.build(story)
 
+@app.route('/api/export-pdf', methods=['POST'])
+def export_pdf():
+    """Export report data to PDF"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No report data provided'}), 400
+        
+        # For now, save as JSON (PDF generation requires additional libraries)
+        # You can add weasyprint or reportlab later for actual PDF generation
+        output_dir = app.config['OUTPUT_FOLDER']
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Extract target name for filename
+        target = data.get('metadata', {}).get('target', 'report')
+        safe_target = secure_filename(target.replace('/', '_').replace('\\', '_'))
+        
+        filename = f"report_{safe_target}_{timestamp}.json"
+        filepath = os.path.join(output_dir, filename)
+        
+        # Save the report data
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        log_message(f"Report exported: {filename}")
+        
+        return jsonify({
+            'success': True,
+            'filename': filename,
+            'path': f'/outputs/{filename}',
+            'message': 'Report exported successfully (JSON format)'
+        })
+        
+    except Exception as e:
+        log_message(f"Error exporting report: {str(e)}", 'error')
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Ensure output directory exists
     os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)

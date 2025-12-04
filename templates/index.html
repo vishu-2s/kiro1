@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spyder - AI-Powered Supply Chain Security Scanner</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,9 +15,9 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
-            background: #FAFAFA;
+            background: #F5F7FA;
             min-height: 100vh;
-            color: #1A1A1A;
+            color: #1F2937;
             line-height: 1.6;
         }
 
@@ -29,10 +30,10 @@
         }
 
         .header {
-            background: #1A1A1A;
+            background: #1F2937;
             color: #FFFFFF;
             padding: 20px 40px;
-            border-bottom: 1px solid #E5E5E5;
+            border-bottom: 1px solid #E5E7EB;
             position: relative;
             overflow: hidden;
         }
@@ -85,15 +86,16 @@
 
         .header h1 {
             font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
+            font-weight: 900;
+            letter-spacing: 0.05em;
             margin-bottom: 4px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Orbitron', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            text-transform: uppercase;
         }
 
         .header p {
             font-size: 14px;
-            color: #A0A0A0;
+            color: #9CA3AF;
             font-weight: 400;
             letter-spacing: 0.01em;
         }
@@ -117,15 +119,15 @@
         }
 
         .header-badge.status {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #4ADE80;
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #10B981;
         }
 
         .tabs {
             display: flex;
             background: #FFFFFF;
-            border-bottom: 1px solid #E5E5E5;
+            border-bottom: 1px solid #E5E7EB;
             padding: 0 40px;
         }
 
@@ -134,20 +136,20 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 14px;
-            color: #666666;
+            color: #6B7280;
             border-bottom: 2px solid transparent;
             transition: all 0.2s ease;
             background: transparent;
         }
 
         .tab:hover {
-            color: #1A1A1A;
-            background: #F5F5F5;
+            color: #1F2937;
+            background: #F9FAFB;
         }
 
         .tab.active {
-            color: #1A1A1A;
-            border-bottom-color: #DC2626;
+            color: #1F2937;
+            border-bottom-color: #EF4444;
             background: transparent;
         }
 
@@ -163,9 +165,9 @@
         }
 
         .control-panel {
-            background: #FAFAFA;
+            background: #F9FAFB;
             padding: 32px;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
             border-radius: 4px;
             margin-bottom: 32px;
         }
@@ -179,7 +181,7 @@
             margin-bottom: 8px;
             font-weight: 500;
             font-size: 13px;
-            color: #1A1A1A;
+            color: #374151;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -193,9 +195,9 @@
         .mode-btn {
             flex: 1;
             padding: 12px 20px;
-            border: 1px solid #D4D4D4;
+            border: 1px solid #D1D5DB;
             background: #FFFFFF;
-            color: #1A1A1A;
+            color: #374151;
             cursor: pointer;
             font-weight: 500;
             font-size: 14px;
@@ -204,15 +206,15 @@
         }
 
         .mode-btn:hover {
-            background: #1A1A1A;
+            background: #1F2937;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #1F2937;
         }
 
         .mode-btn.active {
-            background: #1A1A1A;
+            background: #1F2937;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #1F2937;
         }
 
         input[type="text"],
@@ -220,23 +222,23 @@
         select {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #D4D4D4;
+            border: 1px solid #D1D5DB;
             font-size: 14px;
             font-family: 'Inter', sans-serif;
             background: #FFFFFF;
-            color: #1A1A1A;
+            color: #1F2937;
             transition: all 0.2s ease;
         }
 
         input:focus,
         select:focus {
             outline: none;
-            border-color: #1A1A1A;
-            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         input::placeholder {
-            color: #A0A0A0;
+            color: #9CA3AF;
         }
 
         .btn {
@@ -252,26 +254,26 @@
         }
 
         .btn-primary {
-            background: #DC2626;
+            background: #EF4444;
             color: #FFFFFF;
         }
 
         .btn-primary:hover:not(:disabled) {
-            background: #B91C1C;
+            background: #DC2626;
         }
 
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background: #D4D4D4;
-            color: #666666;
+            background: #D1D5DB;
+            color: #6B7280;
         }
 
         .btn-export {
             padding: 10px 24px;
-            background: #1A1A1A;
+            background: #1F2937;
             color: #FFFFFF;
-            border: 1px solid #1A1A1A;
+            border: 1px solid #1F2937;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
@@ -282,8 +284,8 @@
         }
 
         .btn-export:hover:not(:disabled) {
-            background: #FFFFFF;
-            color: #1A1A1A;
+            background: #374151;
+            color: #FFFFFF;
         }
 
         .btn-export:disabled {
@@ -299,15 +301,15 @@
 
         .history-card {
             background: #FFFFFF;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
             padding: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .history-card:hover {
-            border-color: #1A1A1A;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #3B82F6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
             transform: translateY(-2px);
         }
 
@@ -327,10 +329,10 @@
         .history-number {
             font-size: 12px;
             font-weight: 600;
-            color: #666666;
-            background: #FAFAFA;
+            color: #6B7280;
+            background: #F9FAFB;
             padding: 4px 12px;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
         }
 
         .history-card-body {
@@ -340,7 +342,7 @@
         .history-title {
             font-size: 16px;
             font-weight: 600;
-            color: #1A1A1A;
+            color: #1F2937;
             margin-bottom: 12px;
         }
 
@@ -349,7 +351,7 @@
             flex-direction: column;
             gap: 6px;
             font-size: 13px;
-            color: #666666;
+            color: #6B7280;
         }
 
         .history-date,
@@ -380,25 +382,25 @@
         }
 
         .history-btn-view {
-            background: #1A1A1A;
+            background: #3B82F6;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #3B82F6;
         }
 
         .history-btn-view:hover {
-            background: #FFFFFF;
-            color: #1A1A1A;
+            background: #2563EB;
+            color: #FFFFFF;
         }
 
         .history-btn-download {
             background: #FFFFFF;
-            color: #1A1A1A;
-            border-color: #D4D4D4;
+            color: #374151;
+            border-color: #D1D5DB;
         }
 
         .history-btn-download:hover {
-            border-color: #1A1A1A;
-            background: #FAFAFA;
+            border-color: #3B82F6;
+            background: #F9FAFB;
         }
 
         @media (max-width: 768px) {
@@ -409,7 +411,7 @@
 
         .history-table-container {
             overflow-x: auto;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
             background: #FFFFFF;
         }
 
@@ -420,15 +422,15 @@
         }
 
         .history-table thead {
-            background: #FAFAFA;
-            border-bottom: 2px solid #E5E5E5;
+            background: #F9FAFB;
+            border-bottom: 2px solid #E5E7EB;
         }
 
         .history-table th {
             padding: 12px 16px;
             text-align: left;
             font-weight: 600;
-            color: #1A1A1A;
+            color: #374151;
             text-transform: uppercase;
             font-size: 11px;
             letter-spacing: 0.05em;
@@ -437,21 +439,21 @@
         }
 
         .history-table th:hover {
-            background: #F0F0F0;
+            background: #F3F4F6;
         }
 
         .history-table tbody tr {
-            border-bottom: 1px solid #E5E5E5;
+            border-bottom: 1px solid #E5E7EB;
             transition: background 0.2s ease;
         }
 
         .history-table tbody tr:hover {
-            background: #FAFAFA;
+            background: #F9FAFB;
         }
 
         .history-table td {
             padding: 12px 16px;
-            color: #1A1A1A;
+            color: #1F2937;
             vertical-align: middle;
         }
 
@@ -461,44 +463,52 @@
             font-size: 11px;
             font-weight: 500;
             text-transform: capitalize;
-            border: 1px solid #D4D4D4;
+            border: 1px solid #D1D5DB;
             background: #FFFFFF;
-            color: #666666;
+            color: #6B7280;
         }
 
         .type-badge.github_repository {
-            border-color: #1A1A1A;
-            background: #1A1A1A;
+            border-color: #1F2937;
+            background: #1F2937;
             color: #FFFFFF;
         }
 
         .type-badge.local_directory {
-            border-color: #666666;
-            background: #666666;
+            border-color: #3B82F6;
+            background: #3B82F6;
             color: #FFFFFF;
         }
 
         .type-badge.sbom_file {
-            border-color: #A0A0A0;
-            background: #FFFFFF;
-            color: #666666;
+            border-color: #8B5CF6;
+            background: #8B5CF6;
+            color: #FFFFFF;
+        }
+
+        .type-badge.backup {
+            border-color: #F59E0B;
+            background: #FEF3C7;
+            color: #D97706;
+            font-weight: 600;
         }
 
         .findings-badge {
             display: inline-block;
             padding: 4px 10px;
             font-weight: 600;
-            background: #FAFAFA;
-            border: 1px solid #E5E5E5;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
             min-width: 30px;
             text-align: center;
+            color: #1F2937;
         }
 
         .table-btn-view,
         .table-btn-download {
             padding: 6px 12px;
             margin: 0 4px;
-            border: 1px solid #D4D4D4;
+            border: 1px solid #D1D5DB;
             background: #FFFFFF;
             cursor: pointer;
             font-size: 11px;
@@ -507,18 +517,18 @@
             letter-spacing: 0.05em;
             transition: all 0.2s ease;
             font-family: 'Inter', sans-serif;
-            color: #1A1A1A;
+            color: #374151;
         }
 
         .table-btn-view:hover {
-            background: #1A1A1A;
+            background: #3B82F6;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #3B82F6;
         }
 
         .table-btn-download:hover {
-            background: #FAFAFA;
-            border-color: #1A1A1A;
+            background: #F9FAFB;
+            border-color: #3B82F6;
         }
 
         @media (max-width: 768px) {
@@ -538,33 +548,33 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
             background: #FFFFFF;
             font-size: 14px;
             font-weight: 500;
         }
 
         .status-bar.idle {
-            border-left: 3px solid #666666;
+            border-left: 3px solid #9CA3AF;
         }
 
         .status-bar.running {
-            border-left: 3px solid #1A1A1A;
+            border-left: 3px solid #3B82F6;
         }
 
         .status-bar.completed {
-            border-left: 3px solid #1A1A1A;
+            border-left: 3px solid #10B981;
         }
 
         .status-bar.failed {
-            border-left: 3px solid #DC2626;
+            border-left: 3px solid #EF4444;
         }
 
         .spinner {
             width: 16px;
             height: 16px;
-            border: 2px solid #E5E5E5;
-            border-top-color: #1A1A1A;
+            border: 2px solid #E5E7EB;
+            border-top-color: #3B82F6;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -574,10 +584,10 @@
         }
 
         .logs-container {
-            background: #1A1A1A;
-            color: #E5E5E5;
+            background: #1F2937;
+            color: #F3F4F6;
             padding: 24px;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #374151;
             max-height: 450px;
             overflow-y: auto;
             font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
@@ -593,7 +603,7 @@
         }
 
         .log-timestamp {
-            color: #666666;
+            color: #9CA3AF;
             font-weight: 500;
         }
 
@@ -607,26 +617,26 @@
         }
 
         .log-level.info {
-            color: #E5E5E5;
-            border: 1px solid #666666;
+            color: #60A5FA;
+            border: 1px solid #60A5FA;
         }
 
         .log-level.success {
-            color: #FFFFFF;
-            background: #1A1A1A;
-            border: 1px solid #FFFFFF;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10B981;
         }
 
         .log-level.error {
             color: #FFFFFF;
-            background: #DC2626;
-            border: 1px solid #DC2626;
+            background: #EF4444;
+            border: 1px solid #EF4444;
         }
 
         .log-level.warning {
-            color: #1A1A1A;
-            background: #FFFFFF;
-            border: 1px solid #FFFFFF;
+            color: #1F2937;
+            background: #FBBF24;
+            border: 1px solid #FBBF24;
         }
 
         .report-container {
@@ -639,21 +649,23 @@
         }
 
         .report-section {
-            margin-bottom: 40px;
+            margin-bottom: 24px;
             padding: 32px;
-            background: #FAFAFA;
-            border: 1px solid #E5E5E5;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
         .report-section h3 {
             margin-bottom: 24px;
-            color: #1A1A1A;
+            color: #1F2937;
             font-size: 13px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            border-bottom: 2px solid #1A1A1A;
+            border-bottom: 2px solid #E5E7EB;
             padding-bottom: 12px;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
         }
@@ -663,7 +675,7 @@
             margin-bottom: 12px;
             line-height: 1.8;
             font-size: 14px;
-            color: #1A1A1A;
+            color: #374151;
         }
 
         .report-section p:last-child {
@@ -673,7 +685,7 @@
         .report-section strong {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
             font-weight: 600;
-            color: #1A1A1A;
+            color: #1F2937;
             display: inline-block;
             min-width: 180px;
         }
@@ -682,25 +694,25 @@
             background: #FFFFFF;
             padding: 24px;
             margin-bottom: 16px;
-            border: 1px solid #E5E5E5;
-            border-left: 3px solid #666666;
+            border: 1px solid #E5E7EB;
+            border-left: 3px solid #9CA3AF;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
         }
 
         .finding-card.critical {
-            border-left-color: #DC2626;
+            border-left-color: #EF4444;
         }
 
         .finding-card.high {
-            border-left-color: #1A1A1A;
+            border-left-color: #F59E0B;
         }
 
         .finding-card.medium {
-            border-left-color: #666666;
+            border-left-color: #3B82F6;
         }
 
         .finding-card.low {
-            border-left-color: #D4D4D4;
+            border-left-color: #10B981;
         }
 
         .finding-header {
@@ -715,7 +727,7 @@
         }
 
         .finding-header:hover {
-            background: #FAFAFA;
+            background: #F9FAFB;
         }
 
         .finding-header::after {
@@ -742,7 +754,7 @@
         .finding-package {
             font-weight: 600;
             font-size: 15px;
-            color: #1A1A1A;
+            color: #1F2937;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
         }
 
@@ -756,27 +768,27 @@
         }
 
         .severity-badge.critical {
-            background: #DC2626;
+            background: #EF4444;
             color: #FFFFFF;
-            border-color: #DC2626;
+            border-color: #EF4444;
         }
 
         .severity-badge.high {
-            background: #1A1A1A;
+            background: #F59E0B;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #F59E0B;
         }
 
         .severity-badge.medium {
-            background: #FFFFFF;
-            color: #666666;
-            border-color: #666666;
+            background: #3B82F6;
+            color: #FFFFFF;
+            border-color: #3B82F6;
         }
 
         .severity-badge.low {
-            background: #FFFFFF;
-            color: #A0A0A0;
-            border-color: #D4D4D4;
+            background: #10B981;
+            color: #FFFFFF;
+            border-color: #10B981;
         }
 
         .stats-grid {
@@ -802,21 +814,27 @@
             background: #FFFFFF;
             padding: 32px 24px;
             text-align: center;
-            border: 1px solid #E5E5E5;
-            transition: all 0.2s ease;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            cursor: pointer;
         }
 
         .stat-card:hover {
-            background: #FAFAFA;
-            border-color: #1A1A1A;
+            background: #F9FAFB;
+            border-color: #3B82F6;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+        }
+        
+        .stat-card:active {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.1);
         }
 
         .stat-card.active {
-            background: #1A1A1A;
-            border-color: #1A1A1A;
+            background: #3B82F6;
+            border-color: #3B82F6;
         }
 
         .stat-card.active .stat-value {
@@ -832,17 +850,17 @@
         .stat-value {
             font-size: 48px;
             font-weight: 600;
-            color: #1A1A1A;
+            color: #1F2937;
             line-height: 1;
             margin-bottom: 8px;
         }
 
         .stat-card.critical .stat-value {
-            color: #DC2626;
+            color: #EF4444;
         }
 
         .stat-label {
-            color: #666666;
+            color: #6B7280;
             font-size: 12px;
             font-weight: 500;
             text-transform: uppercase;
@@ -852,13 +870,13 @@
         .no-report {
             text-align: center;
             padding: 80px 20px;
-            color: #A0A0A0;
-            background: #FAFAFA;
-            border: 1px solid #E5E5E5;
+            color: #9CA3AF;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
         }
 
         .no-report h3 {
-            color: #1A1A1A;
+            color: #1F2937;
             margin-bottom: 8px;
             font-size: 18px;
             font-weight: 600;
@@ -872,14 +890,14 @@
             width: 64px;
             height: 64px;
             margin-bottom: 24px;
-            opacity: 0.2;
-            stroke: #1A1A1A;
+            opacity: 0.3;
+            stroke: #6B7280;
         }
 
         /* Dashboard Recent Scans */
         .recent-scan-item {
             background: #FFFFFF;
-            border: 1px solid #E5E5E5;
+            border: 1px solid #E5E7EB;
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
@@ -887,8 +905,8 @@
         }
 
         .recent-scan-item:hover {
-            border-color: #1A1A1A;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-color: #3B82F6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
         }
 
         .recent-scan-item:last-child {
@@ -905,7 +923,7 @@
         .recent-scan-name {
             font-weight: 600;
             font-size: 14px;
-            color: #1A1A1A;
+            color: #1F2937;
         }
 
         .recent-scan-badge {
@@ -918,38 +936,38 @@
         }
 
         .recent-scan-badge.critical {
-            background: #DC2626;
+            background: #EF4444;
             color: #FFFFFF;
-            border-color: #DC2626;
+            border-color: #EF4444;
         }
 
         .recent-scan-badge.high {
-            background: #1A1A1A;
+            background: #F59E0B;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #F59E0B;
         }
 
         .recent-scan-badge.medium {
-            background: #FFFFFF;
-            color: #666666;
-            border-color: #666666;
+            background: #3B82F6;
+            color: #FFFFFF;
+            border-color: #3B82F6;
         }
 
         .recent-scan-badge.low {
-            background: #FFFFFF;
-            color: #A0A0A0;
-            border-color: #D4D4D4;
+            background: #10B981;
+            color: #FFFFFF;
+            border-color: #10B981;
         }
 
         .recent-scan-badge.clean {
-            background: #FFFFFF;
-            color: #1A1A1A;
-            border-color: #1A1A1A;
+            background: #10B981;
+            color: #FFFFFF;
+            border-color: #10B981;
         }
 
         .recent-scan-meta {
             font-size: 12px;
-            color: #666666;
+            color: #6B7280;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -974,7 +992,7 @@
         }
 
         .toast {
-            background: #1A1A1A;
+            background: #1F2937;
             color: #FFFFFF;
             padding: 16px 20px;
             border-left: 4px solid #FFFFFF;
@@ -988,19 +1006,19 @@
         }
 
         .toast.success {
-            border-left-color: #4ADE80;
+            border-left-color: #10B981;
         }
 
         .toast.error {
-            border-left-color: #DC2626;
+            border-left-color: #EF4444;
         }
 
         .toast.warning {
-            border-left-color: #FBBF24;
+            border-left-color: #F59E0B;
         }
 
         .toast.info {
-            border-left-color: #60A5FA;
+            border-left-color: #3B82F6;
         }
 
         .toast-close {
@@ -1067,8 +1085,8 @@
         .findings-lazy-load button {
             padding: 12px 32px;
             background: #FFFFFF;
-            border: 1px solid #D4D4D4;
-            color: #1A1A1A;
+            border: 1px solid #D1D5DB;
+            color: #374151;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
@@ -1076,9 +1094,9 @@
         }
 
         .findings-lazy-load button:hover {
-            background: #1A1A1A;
+            background: #3B82F6;
             color: #FFFFFF;
-            border-color: #1A1A1A;
+            border-color: #3B82F6;
         }
     </style>
 </head>
@@ -1115,7 +1133,7 @@
 
         <div id="dashboard" class="tab-content active">
             <!-- Dashboard Stats Overview -->
-            <div class="stats-grid" style="margin-bottom: 32px; grid-template-columns: repeat(3, 1fr);">
+            <div class="stats-grid" style="margin-bottom: 32px; grid-template-columns: repeat(2, 1fr);">
                 <div class="stat-card">
                     <div class="stat-value" id="dash-total-scans">0</div>
                     <div class="stat-label">Total Scans</div>
@@ -1123,10 +1141,6 @@
                 <div class="stat-card">
                     <div class="stat-value" id="dash-total-threats">0</div>
                     <div class="stat-label">Threats Found</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="dash-total-packages">0</div>
-                    <div class="stat-label">Packages Analyzed</div>
                 </div>
             </div>
 
@@ -1349,7 +1363,6 @@
             // Show loading state
             document.getElementById('dash-total-scans').textContent = '...';
             document.getElementById('dash-total-threats').textContent = '...';
-            document.getElementById('dash-total-packages').textContent = '...';
             document.getElementById('recent-scans-list').innerHTML = `
                 <div style="text-align: center; padding: 40px 20px; color: #A0A0A0; font-size: 13px;">
                     <div class="spinner" style="margin: 0 auto 12px;"></div>
@@ -1365,9 +1378,6 @@
 
                 // Calculate dashboard stats
                 let totalScans = reports.length;
-                let totalThreats = 0;
-                let totalPackages = 0;
-                let lastScanDate = 'Never';
 
                 // Load metadata for recent reports (already included in response if available)
                 const reportsWithData = await Promise.all(
@@ -1375,9 +1385,6 @@
                         try {
                             // Check if metadata is already included
                             if (report.metadata && report.findings_count !== undefined) {
-                                totalThreats += report.findings_count;
-                                totalPackages += report.metadata.total_packages || 0;
-                                
                                 // Load full data only for severity calculation
                                 const dataResponse = await fetch(`/outputs/${report.filename}`);
                                 const data = await dataResponse.json();
@@ -1388,6 +1395,7 @@
                                     name: extractReportName(report.metadata.target),
                                     date: report.modified,
                                     findings: report.findings_count,
+                                    packages: report.metadata.total_packages || 0,
                                     severity: getHighestSeverity(findings),
                                     metadata: report.metadata
                                 };
@@ -1397,29 +1405,32 @@
                                 const data = await dataResponse.json();
                                 const metadata = data.metadata || {};
                                 const findings = data.findings || data.security_findings || [];
-                                
-                                totalThreats += findings.length;
-                                totalPackages += metadata.total_packages || 0;
 
                                 return {
                                     filename: report.filename,
                                     name: extractReportName(metadata.target),
                                     date: report.modified,
                                     findings: findings.length,
+                                    packages: metadata.total_packages || 0,
                                     severity: getHighestSeverity(findings),
                                     metadata: metadata
                                 };
                             }
                         } catch (e) {
+                            console.error('Error loading report:', e);
                             return null;
                         }
                     })
                 );
 
+                // Calculate totals from loaded data
+                const validReports = reportsWithData.filter(r => r !== null);
+                const totalThreats = validReports.reduce((sum, report) => sum + (report.findings || 0), 0);
+                const totalPackages = validReports.reduce((sum, report) => sum + (report.packages || 0), 0);
+
                 // Update stats
                 document.getElementById('dash-total-scans').textContent = totalScans;
                 document.getElementById('dash-total-threats').textContent = totalThreats;
-                document.getElementById('dash-total-packages').textContent = totalPackages;
 
                 // Render recent scans
                 renderRecentScans(reportsWithData.filter(r => r !== null).slice(0, 3));
@@ -1713,6 +1724,27 @@
             const uniquePackages = new Set(allFindings.map(f => `${f.package || 'Unknown'}@${f.version || 'unknown'}`));
             const vulnerablePackagesCount = uniquePackages.size;
 
+            // Separate rule-based and agent-based findings (for metadata display only)
+            const ruleBasedFindings = allFindings.filter(f => {
+                const source = f.evidence?.source || (Array.isArray(f.evidence) ? f.evidence[0] : '');
+                return source.includes('sbom_tools') || source.includes('osv') || source.includes('rule') || 
+                       source.includes('npm_script') || source.includes('script_analysis');
+            });
+            
+            const agentBasedFindings = allFindings.filter(f => {
+                const source = f.evidence?.source || (Array.isArray(f.evidence) ? f.evidence[0] : '');
+                return source.includes('agent') || source.includes('llm') || source.includes('code_agent') || 
+                       source.includes('vulnerability_agent') || source.includes('supply_chain_agent');
+            });
+            
+            // Calculate combined severity counts (for unified display)
+            const combinedSeverity = {
+                critical: allFindings.filter(f => f.severity === 'critical').length,
+                high: allFindings.filter(f => f.severity === 'high').length,
+                medium: allFindings.filter(f => f.severity === 'medium').length,
+                low: allFindings.filter(f => f.severity === 'low').length
+            };
+
             let html = `
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="margin: 0;">Security Analysis Report</h2>
@@ -1721,211 +1753,263 @@
                     </button>
                 </div>
                 
-                ${currentFilter ? `
-                <div style="background: #FAFAFA; border: 1px solid #E5E5E5; border-left: 3px solid #DC2626; padding: 12px 16px; margin-bottom: 24px; font-size: 14px;">
-                    <strong>Filter Active:</strong> Showing only <strong>${currentFilter}</strong> severity findings. 
-                    <a href="javascript:filterFindings(null)" style="color: #DC2626; text-decoration: underline; margin-left: 8px;">Clear filter</a>
-                </div>
-                ` : `
-                <div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 12px 16px; margin-bottom: 24px; font-size: 14px; color: #666666;">
-                    <strong>Tip:</strong> Click on any statistic card below to filter findings by severity.
-                </div>
-                `}
-                
-                <div class="stats-grid">
-                    <div class="stat-card" style="cursor: default; background: #1A1A1A; border-color: #1A1A1A;">
-                        <div class="stat-value" style="color: #FFFFFF;">${vulnerablePackagesCount}</div>
-                        <div class="stat-label" style="color: #FFFFFF;">Vulnerable Packages</div>
-                    </div>
-                    <div class="stat-card ${currentFilter === null ? 'active' : ''}" onclick="filterFindings(null)" style="cursor: pointer;">
-                        <div class="stat-value">${allFindings.length}</div>
-                        <div class="stat-label">Total Findings</div>
-                    </div>
-                    <div class="stat-card critical ${currentFilter === 'critical' ? 'active' : ''}" onclick="filterFindings('critical')" style="cursor: pointer;">
-                        <div class="stat-value">${severityCounts.critical}</div>
-                        <div class="stat-label">Critical</div>
-                    </div>
-                    <div class="stat-card ${currentFilter === 'high' ? 'active' : ''}" onclick="filterFindings('high')" style="cursor: pointer;">
-                        <div class="stat-value">${severityCounts.high}</div>
-                        <div class="stat-label">High</div>
-                    </div>
-                    <div class="stat-card ${currentFilter === 'medium' ? 'active' : ''}" onclick="filterFindings('medium')" style="cursor: pointer;">
-                        <div class="stat-value">${severityCounts.medium}</div>
-                        <div class="stat-label">Medium</div>
-                    </div>
-                    <div class="stat-card ${currentFilter === 'low' ? 'active' : ''}" onclick="filterFindings('low')" style="cursor: pointer;">
-                        <div class="stat-value">${severityCounts.low}</div>
-                        <div class="stat-label">Low</div>
-                    </div>
-                </div>
-
-                <div class="report-section">
-                    <h3>Analysis Metadata</h3>
-                    <p><strong>Target:</strong> ${escapeHtml(metadata.target || 'N/A')}</p>
-                    <p><strong>Analysis Type:</strong> ${escapeHtml(metadata.analysis_type || 'N/A')}</p>
-                    <p><strong>Start Time:</strong> ${metadata.start_time ? new Date(metadata.start_time).toLocaleString() : (metadata.timestamp ? new Date(metadata.timestamp).toLocaleString() : 'N/A')}</p>
-                    <p><strong>End Time:</strong> ${metadata.end_time ? new Date(metadata.end_time).toLocaleString() : 'N/A'}</p>
-                    <p><strong>Total Packages:</strong> ${metadata.total_packages || summary.total_packages || 'N/A'}</p>
-                    <p><strong>Confidence Threshold:</strong> ${metadata.confidence_threshold || 'N/A'}</p>
-                </div>
-
-                <div class="report-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 2px solid #1A1A1A; padding-bottom: 12px;">
-                        <h3 style="margin: 0; border: none; padding: 0;">Security Findings ${currentFilter ? `<span style="font-weight: 400; color: #666666; font-size: 14px; margin-left: 12px;">(Filtered: ${currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)} - ${findings.length} of ${allFindings.length})</span>` : `<span style="font-weight: 400; color: #666666; font-size: 14px; margin-left: 12px;">(${findings.length} findings across ${vulnerablePackagesCount} packages)</span>`}</h3>
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="expandAllPackages()" style="padding: 6px 12px; background: #FFFFFF; border: 1px solid #D4D4D4; color: #1A1A1A; cursor: pointer; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Inter', sans-serif;">Expand All</button>
-                            <button onclick="collapseAllPackages()" style="padding: 6px 12px; background: #FFFFFF; border: 1px solid #D4D4D4; color: #1A1A1A; cursor: pointer; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Inter', sans-serif;">Collapse All</button>
+                <!-- METADATA SECTION -->
+                <div class="report-section" style="padding: 24px 32px; background: #FAFAFA; border: none;">
+                    <h3 style="margin-bottom: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #666;">Analysis Overview</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease;">
+                            <div style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 600;">Target</div>
+                            <div style="font-size: 15px; font-weight: 600; color: #1A1A1A; word-break: break-word; line-height: 1.4;">${escapeHtml(extractReportName(metadata.target) || 'N/A')}</div>
+                        </div>
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease;">
+                            <div style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-weight: 600;">Confidence</div>
+                            <div style="font-size: 15px; font-weight: 600; color: #1A1A1A;">${
+                                metadata.confidence ? (metadata.confidence * 100).toFixed(0) + '%' : 
+                                (summary.total_findings > 0 ? '90%' : 'N/A')
+                            }</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- UNIFIED SECURITY FINDINGS SECTION -->
+                <div class="report-section" style="padding: 24px 32px;">
+                    <h3 style="margin-bottom: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #666;">Security Findings</h3>
+                    
+                    <!-- Combined Statistics -->
+                    <div style="display: grid; grid-template-columns: repeat(${allFindings.length === 0 ? '6' : '5'}, 1fr); gap: 12px; margin-bottom: 20px; max-width: 100%;">
+                        ${allFindings.length === 0 ? `
+                        <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); background: #10B981; border: 2px solid #10B981; position: relative; overflow: hidden; transition: all 0.2s ease;">
+                            <!-- Content -->
+                            <div style="position: relative; z-index: 1; text-align: center;">
+                                <!-- Shield Icon -->
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 6px; display: block;">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <path d="M9 12l2 2 4-4"></path>
+                                </svg>
+                                
+                                <div style="font-size: 16px; font-weight: 700; color: #FFFFFF; margin-bottom: 2px; line-height: 1.2;">All Clear</div>
+                                <div style="font-size: 10px; color: #FFFFFF; font-weight: 500; line-height: 1.3; margin-top: 6px; opacity: 0.9;">No vulnerabilities</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
+                            <div class="stat-value" style="font-size: 36px; font-weight: 700;">${allFindings.length}</div>
+                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Total Findings</div>
+                        </div>
+                        <div class="stat-card critical" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15); transition: all 0.2s ease;">
+                            <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.critical}</div>
+                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Critical</div>
+                        </div>
+                        <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
+                            <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.high}</div>
+                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">High</div>
+                        </div>
+                        <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
+                            <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.medium}</div>
+                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Medium</div>
+                        </div>
+                        <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
+                            <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.low}</div>
+                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Low</div>
+                        </div>
+                    </div>
+                    
+                    ${allFindings.length > 0 ? `
+                        <div style="background: #F5F5F5; border-left: 3px solid #1A1A1A; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #666666;">
+                            <strong style="color: #1A1A1A;">Detection Methods:</strong> 
+                            ${ruleBasedFindings.length > 0 ? `Pattern Matching (${ruleBasedFindings.length})` : ''}
+                            ${ruleBasedFindings.length > 0 && agentBasedFindings.length > 0 ? ' • ' : ''}
+                            ${agentBasedFindings.length > 0 ? `AI Analysis (${agentBasedFindings.length})` : ''}
+                        </div>
+                    ` : ''}
             `;
-
-            if (findings.length === 0 && currentFilter) {
-                html += `<p>No ${currentFilter} severity findings detected. <a href="javascript:filterFindings(null)" style="color: #DC2626; text-decoration: underline;">Clear filter</a></p>`;
-            } else if (findings.length === 0) {
-                html += '<p>No security findings detected.</p>';
-            } else {
-                // Calculate vulnerable packages count for current findings
-                const currentUniquePackages = new Set(findings.map(f => `${f.package || 'Unknown'}@${f.version || 'unknown'}`));
-                const currentVulnerablePackagesCount = currentUniquePackages.size;
-                
-                // Group findings by package name first
-                const packageGroups = {};
-                findings.forEach(finding => {
-                    const pkgKey = `${finding.package || 'Unknown'}@${finding.version || 'unknown'}`;
-                    if (!packageGroups[pkgKey]) {
-                        packageGroups[pkgKey] = {
-                            package: finding.package || 'Unknown',
-                            version: finding.version || 'unknown',
-                            findings: []
-                        };
-                    }
-                    packageGroups[pkgKey].findings.push(finding);
-                });
-                
-                // Render each package with its findings
-                let pkgIndex = 0;
-                Object.values(packageGroups).forEach(pkgGroup => {
-                    const highestSeverity = pkgGroup.findings.reduce((max, f) => {
-                        const severities = ['low', 'medium', 'high', 'critical'];
-                        const currentIdx = severities.indexOf(f.severity);
-                        const maxIdx = severities.indexOf(max);
-                        return currentIdx > maxIdx ? f.severity : max;
-                    }, 'low');
-                    
-                    html += `
-                        <div class="finding-card ${highestSeverity} collapsed" id="pkg-card-${pkgIndex}" style="margin-bottom: 25px;">
-                            <div class="finding-header" onclick="togglePackageCard('pkg-card-${pkgIndex}')">
-                                <div class="finding-package">
-                                    <div style="font-size: 1.2em; font-weight: 700; margin-bottom: 8px;">
-                                        ${escapeHtml(pkgGroup.package)} ${pkgGroup.version !== 'unknown' ? 'v' + escapeHtml(pkgGroup.version) : ''}
-                                    </div>
-                                    <div style="font-size: 0.9em; color: #666; margin-bottom: 12px;">
-                                        ${pkgGroup.findings.length} security ${pkgGroup.findings.length === 1 ? 'issue' : 'issues'} found
-                                    </div>
-                                </div>
-                                <span class="severity-badge ${highestSeverity}">${highestSeverity}</span>
-                            </div>
-                    `;
-                    
-                    html += '<div class="finding-body">';
-                    
-                    // Render each finding for this package
-                    pkgGroup.findings.forEach((finding, idx) => {
-                        let title = '';
-                        let subtitle = '';
-                        
-                        if (finding.finding_type === 'malicious_package') {
-                            const reasonEvidence = finding.evidence?.find(e => e.includes('Reason:'));
-                            if (reasonEvidence) {
-                                title = 'Malicious Package';
-                                subtitle = reasonEvidence.split('Reason:')[1]?.trim() || 'Detected';
-                            } else {
-                                title = 'Malicious Package Detected';
-                            }
-                        } else if (finding.finding_type === 'vulnerability') {
-                            const vulnEvidence = finding.evidence?.find(e => e.includes('vulnerability:') || e.includes('CVE-') || e.includes('GHSA-') || e.includes('PYSEC-'));
-                            if (vulnEvidence) {
-                                const match = vulnEvidence.match(/(GHSA-[a-z0-9-]+|CVE-\d{4}-\d+|MAL-\d{4}-\d+|PYSEC-\d{4}-\d+)/i);
-                                if (match) {
-                                    title = makeCVEClickable(match[1]);
-                                } else {
-                                    title = 'Known Vulnerability';
-                                }
-                            } else {
-                                title = 'Known Vulnerability';
-                            }
-                            
-                            const summaryEvidence = finding.evidence?.find(e => e.includes('Summary:'));
-                            if (summaryEvidence) {
-                                subtitle = summaryEvidence.split('Summary:')[1]?.trim() || '';
-                            }
-                        } else {
-                            title = escapeHtml(finding.finding_type || 'Security Issue').replace(/_/g, ' ');
-                        }
-                        
-                        // Extract LLM analysis if present
-                        const llmAnalysis = finding.evidence?.find(e => e.startsWith('Analysis:'));
-                        const llmThreats = finding.evidence?.find(e => e.startsWith('LLM detected:'));
-                        const isLLMEnhanced = finding.source === 'npm_script_analysis_enhanced';
-                        
-                        html += `
-                            <div style="border-left: 3px solid #ddd; padding-left: 15px; margin: 15px 0 15px 10px;">
-                                <div style="font-weight: 600; font-size: 1.05em; margin-bottom: 4px;">
-                                    ${title}
-                                    ${isLLMEnhanced ? '<span style="background: #1A1A1A; color: #FFFFFF; font-size: 10px; padding: 3px 8px; border-radius: 2px; margin-left: 8px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; font-family: Inter, sans-serif;">AI Enhanced</span>' : ''}
-                                </div>
-                                ${subtitle ? `<div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">${escapeHtml(subtitle)}</div>` : ''}
-                                <div style="font-size: 0.85em; color: #888; margin-bottom: 8px;">
-                                    Type: ${escapeHtml(finding.finding_type || 'N/A').replace(/_/g, ' ')} | 
-                                    Confidence: ${(finding.confidence * 100).toFixed(0)}%
-                                </div>
-                                ${llmThreats ? `
-                                    <div style="background: #FFF9E6; border: 1px solid #E5E5E5; border-left: 3px solid #1A1A1A; padding: 12px 16px; margin: 12px 0; font-family: 'Inter', sans-serif;">
-                                        <div style="font-weight: 600; color: #1A1A1A; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">AI-Detected Threats</div>
-                                        <div style="color: #1A1A1A; font-size: 13px; line-height: 1.6;">${escapeHtml(llmThreats.replace('LLM detected:', '').trim())}</div>
-                                    </div>
-                                ` : ''}
-                                ${llmAnalysis ? `
-                                    <div style="background: #F5F5F5; border: 1px solid #E5E5E5; border-left: 3px solid #666666; padding: 12px 16px; margin: 12px 0; font-family: 'Inter', sans-serif;">
-                                        <div style="font-weight: 600; color: #1A1A1A; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">AI Analysis</div>
-                                        <div style="color: #1A1A1A; font-size: 13px; line-height: 1.6;">${escapeHtml(llmAnalysis.replace('Analysis:', '').trim())}</div>
-                                    </div>
-                                ` : ''}
-                                ${finding.evidence && finding.evidence.length > 0 ? `
-                                    <details style="margin-top: 8px;" ${isLLMEnhanced ? 'open' : ''}>
-                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">Full Evidence (${finding.evidence.length} items)</summary>
-                                        <ul style="margin: 8px 0 0 20px; font-size: 0.9em;">
-                                            ${finding.evidence.map(e => {
-                                                let evidenceText = escapeHtml(e);
-                                                // Make CVE IDs clickable in evidence
-                                                evidenceText = evidenceText.replace(/(GHSA-[a-z0-9-]+|CVE-\d{4}-\d+|MAL-\d{4}-\d+|PYSEC-\d{4}-\d+)/gi, (match) => {
-                                                    return makeCVEClickable(match);
-                                                });
-                                                return `<li>${evidenceText}</li>`;
-                                            }).join('')}
-                                        </ul>
-                                    </details>
-                                ` : ''}
-                                ${finding.recommendations && finding.recommendations.length > 0 ? `
-                                    <details style="margin-top: 8px;">
-                                        <summary style="cursor: pointer; font-weight: 500; color: #555;">Recommendations</summary>
-                                        <ul style="margin: 8px 0 0 20px; font-size: 0.9em;">
-                                            ${finding.recommendations.map(r => `<li>${escapeHtml(r)}</li>`).join('')}
-                                        </ul>
-                                    </details>
-                                ` : ''}
-                            </div>
-                        `;
-                    });
-                    
-                    html += '</div></div>'; // Close finding-body and finding-card
-                    pkgIndex++;
-                });
-
+            
+            // Add all findings combined
+            if (allFindings.length > 0) {
+                html += renderFindingsSection(allFindings, 'combined');
             }
+            
+            html += `
+                    ${agentInsights.agent_details ? `
+                        <div style="margin-top: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1A1A1A;">Agent Execution Details</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                                ${Object.entries(agentInsights.agent_details).map(([agentName, details]) => `
+                                    <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; border-left: 3px solid ${details.success ? '#4ADE80' : '#DC2626'};">
+                                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; text-transform: capitalize;">
+                                            ${escapeHtml(agentName.replace(/_/g, ' '))}
+                                            <span style="float: right; padding: 2px 8px; background: ${details.success ? '#E8F5E9' : '#FFEBEE'}; color: ${details.success ? '#2E7D32' : '#C62828'}; font-size: 10px; font-weight: 600;">${details.success ? 'SUCCESS' : 'FAILED'}</span>
+                                        </div>
+                                        <div style="font-size: 12px; color: #666666; line-height: 1.6;">
+                                            <p style="margin: 4px 0;"><strong>Duration:</strong> ${details.duration_seconds.toFixed(2)}s</p>
+                                            <p style="margin: 4px 0;"><strong>Confidence:</strong> ${(details.confidence * 100).toFixed(0)}%</p>
+                                            ${details.packages_analyzed > 0 ? `<p style="margin: 4px 0;"><strong>Packages Analyzed:</strong> ${details.packages_analyzed}</p>` : ''}
+                                            ${details.findings_count > 0 ? `<p style="margin: 4px 0;"><strong>Findings:</strong> ${details.findings_count}</p>` : ''}
+                                            ${details.error ? `<p style="margin: 4px 0; color: #DC2626;"><strong>Error:</strong> ${escapeHtml(details.error)}</p>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <!-- DEPENDENCY GRAPH SECTION -->
+                ${data.dependency_graph && data.dependency_graph.metadata ? `
+                <div class="report-section">
+                    <h3>Dependency Graph</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: 600; color: #1A1A1A;">${data.dependency_graph.metadata.total_packages || 0}</div>
+                            <div style="font-size: 12px; color: #666666; text-transform: uppercase; margin-top: 4px;">Total Packages</div>
+                        </div>
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: 600; color: #DC2626;">${data.dependency_graph.metadata.circular_dependencies_count || 0}</div>
+                            <div style="font-size: 12px; color: #666666; text-transform: uppercase; margin-top: 4px;">Circular Dependencies</div>
+                        </div>
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: 600; color: #F57C00;">${data.dependency_graph.metadata.version_conflicts_count || 0}</div>
+                            <div style="font-size: 12px; color: #666666; text-transform: uppercase; margin-top: 4px;">Version Conflicts</div>
+                        </div>
+                        <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: 600; color: #1A1A1A;">${escapeHtml(data.dependency_graph.metadata.ecosystem || 'N/A')}</div>
+                            <div style="font-size: 12px; color: #666666; text-transform: uppercase; margin-top: 4px;">Ecosystem</div>
+                        </div>
+                    </div>
+                    ${data.dependency_graph.circular_dependencies && data.dependency_graph.circular_dependencies.length > 0 ? `
+                        <details style="margin-top: 16px;">
+                            <summary style="cursor: pointer; font-weight: 600; color: #1A1A1A; margin-bottom: 8px; padding: 12px; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 4px; list-style: none;">
+                                Circular Dependencies (${data.dependency_graph.circular_dependencies.length})
+                            </summary>
+                            <div style="background: #FAFAFA; border: 1px solid #E5E5E5; border-left: 3px solid #666666; padding: 16px; margin: 8px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 8px 0; font-size: 13px; color: #666666; line-height: 1.6;">
+                                    <strong style="color: #1A1A1A;">What this means:</strong> These packages depend on each other in a loop, which can cause installation issues and unexpected behavior.
+                                </p>
+                                <p style="margin: 0; font-size: 13px; color: #666666; line-height: 1.6;">
+                                    <strong style="color: #1A1A1A;">What to do:</strong> Usually safe to ignore if your app works. If you have issues, try updating packages or using a different version.
+                                </p>
+                            </div>
+                            <div style="margin: 8px 0;">
+                                ${data.dependency_graph.circular_dependencies.map((cd, idx) => `
+                                    <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 12px; margin: 8px 0; border-radius: 4px;">
+                                        <div style="font-weight: 600; color: #1A1A1A; margin-bottom: 6px; font-size: 13px;">
+                                            Cycle ${idx + 1}: ${escapeHtml(cd.cycle ? cd.cycle[0] : 'Unknown')}
+                                        </div>
+                                        <div style="font-family: 'Courier New', monospace; font-size: 12px; color: #666; padding: 8px; background: #F9FAFB; border-radius: 3px;">
+                                            ${escapeHtml(cd.cycle ? cd.cycle.join(' → ') : 'Unknown cycle')}
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                                            <strong>Severity:</strong> <span style="color: #F59E0B;">${escapeHtml(cd.severity || 'medium')}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </details>
+                    ` : ''}
+                    ${data.dependency_graph.version_conflicts && data.dependency_graph.version_conflicts.length > 0 ? `
+                        <details style="margin-top: 16px;">
+                            <summary style="cursor: pointer; font-weight: 600; color: #1A1A1A; margin-bottom: 8px; padding: 12px; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 4px; list-style: none;">
+                                Version Conflicts (${data.dependency_graph.version_conflicts.length})
+                            </summary>
+                            <div style="background: #FAFAFA; border: 1px solid #E5E5E5; border-left: 3px solid #666666; padding: 16px; margin: 8px 0; border-radius: 4px;">
+                                <p style="margin: 0 0 8px 0; font-size: 13px; color: #666666; line-height: 1.6;">
+                                    <strong style="color: #1A1A1A;">What this means:</strong> Different parts of your app require different versions of the same package. npm/yarn will install multiple versions, increasing bundle size.
+                                </p>
+                                <p style="margin: 0; font-size: 13px; color: #666666; line-height: 1.6;">
+                                    <strong style="color: #1A1A1A;">What to do:</strong> Update packages to use compatible versions, or use resolutions/overrides in package.json to force a single version.
+                                </p>
+                            </div>
+                            <div style="margin: 8px 0;">
+                                ${data.dependency_graph.version_conflicts.map((vc, idx) => {
+                                    const versions = vc.conflicting_versions || [];
+                                    const paths = vc.dependency_paths || [];
+                                    return `
+                                    <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 12px; margin: 8px 0; border-radius: 4px;">
+                                        <div style="font-weight: 600; color: #1A1A1A; margin-bottom: 8px; font-size: 14px;">
+                                            ${escapeHtml(vc.package || 'Unknown')}
+                                        </div>
+                                        <div style="margin-bottom: 8px;">
+                                            <div style="font-size: 12px; color: #666; margin-bottom: 4px;"><strong>Conflicting Versions:</strong></div>
+                                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                                ${versions.map(v => `
+                                                    <span style="background: #F5F5F5; color: #1A1A1A; padding: 4px 8px; border: 1px solid #E5E5E5; border-radius: 3px; font-size: 12px; font-family: 'Courier New', monospace;">
+                                                        ${escapeHtml(v)}
+                                                    </span>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                        ${paths.length > 0 ? `
+                                            <details style="margin-top: 8px;">
+                                                <summary style="cursor: pointer; font-size: 12px; color: #666;">
+                                                    Why? (${paths.length} dependency ${paths.length === 1 ? 'path' : 'paths'})
+                                                </summary>
+                                                <div style="margin-top: 8px; font-size: 11px; color: #666;">
+                                                    ${paths.slice(0, 5).map(path => `
+                                                        <div style="padding: 4px 0; font-family: 'Courier New', monospace; color: #666;">
+                                                            ${escapeHtml(path.join(' → '))}
+                                                        </div>
+                                                    `).join('')}
+                                                    ${paths.length > 5 ? `<div style="padding: 4px 0; color: #999;">... and ${paths.length - 5} more paths</div>` : ''}
+                                                </div>
+                                            </details>
+                                        ` : ''}
+                                        <div style="margin-top: 8px; padding: 8px; background: #F5F5F5; border-left: 2px solid #666666; border-radius: 3px;">
+                                            <div style="font-size: 11px; color: #1A1A1A; font-weight: 600; margin-bottom: 4px;">Quick Fix:</div>
+                                            <div style="font-size: 11px; color: #0C4A6E; font-family: 'Courier New', monospace;">
+                                                Add to package.json:<br>
+                                                "resolutions": { "${escapeHtml(vc.package)}": "${escapeHtml(versions[0])}" }
+                                            </div>
+                                        </div>
+                                    </div>
+                                `}).join('')}
+                            </div>
+                        </details>
+                    ` : ''}
+                </div>
+                ` : ''}
 
-                html += '</div>';
-                reportContent.innerHTML = html;
+                <!-- AI INSIGHTS SECTION -->
+                ${recommendations.immediate_actions && recommendations.immediate_actions.length > 0 ? `
+                <div class="report-section">
+                    <h3>AI-Powered Insights</h3>
+                    ${recommendations.immediate_actions.length > 0 ? `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #EF4444; display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 4px; height: 16px; background: #EF4444; border-radius: 2px;"></span>
+                                Immediate Actions
+                            </h4>
+                            <ul style="margin-left: 20px; line-height: 1.8; color: #374151;">
+                                ${recommendations.immediate_actions.map(action => `<li>${escapeHtml(action)}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${recommendations.preventive_measures && recommendations.preventive_measures.length > 0 ? `
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1F2937; display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 4px; height: 16px; background: #3B82F6; border-radius: 2px;"></span>
+                                Preventive Measures
+                            </h4>
+                            <ul style="margin-left: 20px; line-height: 1.8; color: #374151;">
+                                ${recommendations.preventive_measures.map(measure => `<li>${escapeHtml(measure)}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${recommendations.monitoring && recommendations.monitoring.length > 0 ? `
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #6B7280; display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 4px; height: 16px; background: #10B981; border-radius: 2px;"></span>
+                                Monitoring
+                            </h4>
+                            <ul style="margin-left: 20px; line-height: 1.8; color: #374151;">
+                                ${recommendations.monitoring.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+            `;
+            
+            reportContent.innerHTML = html;
             } catch (error) {
                 console.error('Error rendering report:', error);
                 reportContent.innerHTML = `
@@ -2001,8 +2085,9 @@
                                 reportName: extractReportName(metadata.target),
                                 analysisType: metadata.analysis_type || 'unknown',
                                 target: metadata.target || 'N/A',
-                                totalFindings: data.findings?.length || data.security_findings?.length || 0,
-                                totalPackages: metadata.total_packages || 0
+                                totalFindings: data.findings?.length || data.security_findings?.packages?.length || 0,
+                                totalPackages: data.dependency_graph?.metadata?.total_packages || metadata.total_packages || 0,
+                                isBackup: false
                             };
                         } catch (e) {
                             return {
@@ -2018,7 +2103,40 @@
                     })
                 );
                 
-                allReports = reportsWithMetadata;
+                // Load backup metadata
+                const backupsWithMetadata = await Promise.all(
+                    backups.map(async (backup, index) => {
+                        try {
+                            const metaResponse = await fetch(`/outputs/${backup.filename}`);
+                            const data = await metaResponse.json();
+                            const metadata = data.metadata || {};
+                            
+                            return {
+                                ...backup,
+                                index: backups.length - index,
+                                reportName: extractReportName(metadata.target),
+                                analysisType: metadata.analysis_type || 'backup',
+                                target: metadata.target || 'N/A',
+                                totalFindings: data.findings?.length || data.security_findings?.packages?.length || 0,
+                                totalPackages: data.dependency_graph?.metadata?.total_packages || metadata.total_packages || 0,
+                                isBackup: true
+                            };
+                        } catch (e) {
+                            return {
+                                ...backup,
+                                index: backups.length - index,
+                                reportName: 'Backup',
+                                analysisType: 'backup',
+                                target: 'N/A',
+                                totalFindings: 0,
+                                totalPackages: 0,
+                                isBackup: true
+                            };
+                        }
+                    })
+                );
+                
+                allReports = [...reportsWithMetadata, ...backupsWithMetadata];
                 renderHistoryTable();
                 
             } catch (error) {
@@ -2123,10 +2241,7 @@
         }
 
         function getSortIcon(column) {
-            if (currentSortColumn !== column) {
-                return '⇅';
-            }
-            return currentSortDirection === 'asc' ? '↑' : '↓';
+            return '';  // No sorting arrows
         }
 
         function sortHistoryTable(column) {
@@ -2232,13 +2347,13 @@
 
         async function exportToPDF() {
             if (!currentReportData) {
-                alert('No report data available to export');
+                showToast('No report data available to export', 'error');
                 return;
             }
             
             const exportBtn = event.target;
             const originalText = exportBtn.textContent;
-            exportBtn.textContent = 'Generating PDF...';
+            exportBtn.textContent = 'Exporting...';
             exportBtn.disabled = true;
             
             try {
@@ -2250,33 +2365,26 @@
                     body: JSON.stringify(currentReportData)
                 });
                 
-                if (response.ok) {
-                    const result = await response.json();
-                    
-                    // Show success message
-                    const successMsg = document.createElement('div');
-                    successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #1A1A1A; color: #FFFFFF; padding: 16px 24px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; font-size: 14px;';
-                    successMsg.innerHTML = `
-                        <strong>PDF Generated Successfully!</strong><br>
-                        <a href="${result.path}" download style="color: #FFFFFF; text-decoration: underline; margin-top: 8px; display: inline-block;">
-                            Download ${result.filename}
-                        </a>
-                    `;
-                    document.body.appendChild(successMsg);
-                    
-                    // Auto-remove after 5 seconds
-                    setTimeout(() => {
-                        successMsg.remove();
-                    }, 5000);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Export failed');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast(`Report exported: ${result.filename}`, 'success');
                     
                     // Trigger download
-                    window.open(result.path, '_blank');
+                    setTimeout(() => {
+                        window.open(result.path, '_blank');
+                    }, 500);
                 } else {
-                    const error = await response.json();
-                    alert('Error generating PDF: ' + error.error);
+                    throw new Error(result.message || 'Export failed');
                 }
             } catch (error) {
-                alert('Error generating PDF: ' + error.message);
+                console.error('Export error:', error);
+                showToast('Error exporting report: ' + error.message, 'error');
             } finally {
                 exportBtn.textContent = originalText;
                 exportBtn.disabled = false;
