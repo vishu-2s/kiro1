@@ -82,6 +82,9 @@
 
         .header-text {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header h1 {
@@ -91,6 +94,7 @@
             margin-bottom: 4px;
             font-family: 'Orbitron', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             text-transform: uppercase;
+            line-height: 1;
         }
 
         .header p {
@@ -350,8 +354,8 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            font-size: 13px;
-            color: #6B7280;
+            font-size: 14px;
+            color: #374151;
         }
 
         .history-date,
@@ -648,6 +652,17 @@
             font-family: inherit;
         }
 
+        .report-header-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #FFFFFF;
+            padding: 20px 0;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
         .report-section {
             margin-bottom: 24px;
             padding: 32px;
@@ -695,24 +710,30 @@
             padding: 24px;
             margin-bottom: 16px;
             border: 1px solid #E5E7EB;
-            border-left: 3px solid #9CA3AF;
+            border-left: 4px solid #9CA3AF;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
         }
 
         .finding-card.critical {
-            border-left-color: #EF4444;
+            border-left-color: #DC2626;
+            background: linear-gradient(to right, #FEE2E2 0%, #FFFFFF 8%);
+            border-left-width: 5px;
         }
 
         .finding-card.high {
             border-left-color: #F59E0B;
+            background: linear-gradient(to right, #FEF3C7 0%, #FFFFFF 8%);
+            border-left-width: 5px;
         }
 
         .finding-card.medium {
             border-left-color: #3B82F6;
+            border-left-width: 4px;
         }
 
         .finding-card.low {
             border-left-color: #10B981;
+            border-left-width: 4px;
         }
 
         .finding-header {
@@ -759,9 +780,9 @@
         }
 
         .severity-badge {
-            padding: 4px 12px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border: 1px solid;
@@ -860,9 +881,9 @@
         }
 
         .stat-label {
-            color: #6B7280;
+            color: #374151;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -966,8 +987,8 @@
         }
 
         .recent-scan-meta {
-            font-size: 12px;
-            color: #6B7280;
+            font-size: 14px;
+            color: #374151;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1163,6 +1184,18 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Ecosystem</label>
+                        <div class="mode-toggle">
+                            <button class="mode-btn active" onclick="setEcosystem('npm')" id="ecosystem-npm">
+                                npm (JavaScript)
+                            </button>
+                            <button class="mode-btn" onclick="setEcosystem('python')" id="ecosystem-python">
+                                Python (PyPI)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="target">Target</label>
                         <input 
                             type="text" 
@@ -1206,11 +1239,14 @@
         <div id="report" class="tab-content">
             <div class="report-container" id="report-content">
                 <div class="no-report">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 80px; height: 80px; margin-bottom: 24px; opacity: 0.3; stroke-width: 1.5;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <h3>No Report Available</h3>
-                    <p>Run an analysis to generate a security report</p>
+                    <h3 style="font-size: 20px; margin-bottom: 12px;">No Report Available</h3>
+                    <p style="font-size: 14px; margin-bottom: 24px;">Start your first security analysis to see detailed findings here</p>
+                    <button onclick="switchTab('dashboard')" style="padding: 12px 32px; background: #1F2937; color: #FFFFFF; border: none; cursor: pointer; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">
+                        Go to Dashboard
+                    </button>
                 </div>
             </div>
         </div>
@@ -1243,6 +1279,7 @@
 
     <script>
         let currentMode = 'github';
+        let currentEcosystem = 'npm';
         let pollingInterval = null;
         let pollCount = 0;
         const INITIAL_POLL_INTERVAL = 500;  // 500ms for first 10 polls
@@ -1359,6 +1396,13 @@
             document.getElementById('target').placeholder = placeholders[mode];
         }
 
+        function setEcosystem(ecosystem) {
+            currentEcosystem = ecosystem;
+            document.getElementById('ecosystem-npm').classList.remove('active');
+            document.getElementById('ecosystem-python').classList.remove('active');
+            event.target.classList.add('active');
+        }
+
         async function loadDashboard() {
             // Show loading state
             document.getElementById('dash-total-scans').textContent = '...';
@@ -1383,29 +1427,22 @@
                 const reportsWithData = await Promise.all(
                     reports.slice(0, 10).map(async (report) => {
                         try {
-                            // Check if metadata is already included
-                            if (report.metadata && report.findings_count !== undefined) {
-                                // Load full data only for severity calculation
+                            // Always load full data to get accurate findings count
+                            {
                                 const dataResponse = await fetch(`/outputs/${report.filename}`);
                                 const data = await dataResponse.json();
-                                const findings = data.findings || data.security_findings || [];
+                                const metadata = data.metadata || report.metadata || {};
+                                let findings = data.findings || data.security_findings || [];
                                 
-                                return {
-                                    filename: report.filename,
-                                    name: extractReportName(report.metadata.target),
-                                    date: report.modified,
-                                    findings: report.findings_count,
-                                    packages: report.metadata.total_packages || 0,
-                                    severity: getHighestSeverity(findings),
-                                    metadata: report.metadata
-                                };
-                            } else {
-                                // Fallback: load full data
-                                const dataResponse = await fetch(`/outputs/${report.filename}`);
-                                const data = await dataResponse.json();
-                                const metadata = data.metadata || {};
-                                const findings = data.findings || data.security_findings || [];
-
+                                // Ensure findings is an array
+                                if (!Array.isArray(findings)) {
+                                    if (findings.packages && Array.isArray(findings.packages)) {
+                                        findings = findings.packages;
+                                    } else {
+                                        findings = [];
+                                    }
+                                }
+                                
                                 return {
                                     filename: report.filename,
                                     name: extractReportName(metadata.target),
@@ -1441,11 +1478,12 @@
         }
 
         function getHighestSeverity(findings) {
-            if (!findings || findings.length === 0) return 'clean';
+            // Ensure findings is an array
+            if (!findings || !Array.isArray(findings) || findings.length === 0) return 'clean';
             
             const severities = ['critical', 'high', 'medium', 'low'];
             for (const sev of severities) {
-                if (findings.some(f => f.severity === sev)) {
+                if (findings.some(f => f && f.severity === sev)) {
                     return sev;
                 }
             }
@@ -1510,7 +1548,8 @@
                     },
                     body: JSON.stringify({
                         mode: currentMode,
-                        target: target
+                        target: target,
+                        ecosystem: currentEcosystem
                     })
                 });
 
@@ -1700,9 +1739,22 @@
             
             try {
                 // Handle both 'findings' and 'security_findings' keys
-                const allFindings = data.findings || data.security_findings || [];
+                let allFindings = data.findings || data.security_findings || [];
+                
+                // Ensure allFindings is an array
+                if (!Array.isArray(allFindings)) {
+                    // If it's an object with packages property
+                    if (allFindings.packages && Array.isArray(allFindings.packages)) {
+                        allFindings = allFindings.packages;
+                    } else {
+                        allFindings = [];
+                    }
+                }
+                
                 const metadata = data.metadata || {};
                 const summary = data.summary || {};
+                const agentInsights = data.agent_insights || {};
+                const recommendations = data.recommendations || {};
                 
                 // Apply filter if active
                 const findings = currentFilter 
@@ -1746,11 +1798,13 @@
             };
 
             let html = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="margin: 0;">Security Analysis Report</h2>
-                    <button onclick="exportToPDF()" class="btn btn-export" style="padding: 10px 24px; background: #1A1A1A; color: #FFFFFF; border: 1px solid #1A1A1A; cursor: pointer; font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s ease;">
-                        Export PDF
-                    </button>
+                <div class="report-header-sticky">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 24px;">Security Analysis Report</h2>
+                        <button onclick="exportToPDF()" class="btn btn-export" style="padding: 12px 32px; background: #1F2937; color: #FFFFFF; border: 1px solid #1F2937; cursor: pointer; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s ease;">
+                            Export PDF
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- METADATA SECTION -->
@@ -1794,29 +1848,78 @@
                         ` : ''}
                         <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
                             <div class="stat-value" style="font-size: 36px; font-weight: 700;">${allFindings.length}</div>
-                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Total Findings</div>
+                            <div class="stat-label" style="font-size: 12px; margin-top: 6px;">Total Findings</div>
                         </div>
                         <div class="stat-card critical" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15); transition: all 0.2s ease;">
                             <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.critical}</div>
-                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Critical</div>
+                            <div class="stat-label" style="font-size: 12px; margin-top: 6px;">Critical</div>
                         </div>
                         <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
                             <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.high}</div>
-                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">High</div>
+                            <div class="stat-label" style="font-size: 12px; margin-top: 6px;">High</div>
                         </div>
                         <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
                             <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.medium}</div>
-                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Medium</div>
+                            <div class="stat-label" style="font-size: 12px; margin-top: 6px;">Medium</div>
                         </div>
                         <div class="stat-card" style="padding: 20px 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); transition: all 0.2s ease;">
                             <div class="stat-value" style="font-size: 36px; font-weight: 700;">${combinedSeverity.low}</div>
-                            <div class="stat-label" style="font-size: 10px; margin-top: 6px;">Low</div>
+                            <div class="stat-label" style="font-size: 12px; margin-top: 6px;">Low</div>
                         </div>
                     </div>
                     
                     ${allFindings.length > 0 ? `
-                        <div style="background: #F5F5F5; border-left: 3px solid #1A1A1A; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #666666;">
-                            <strong style="color: #1A1A1A;">Detection Methods:</strong> 
+                        <!-- Severity Distribution Progress Bars -->
+                        <div style="background: #FFFFFF; border: 1px solid #E5E7EB; padding: 24px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 16px; color: #1F2937;">Severity Distribution</h4>
+                            ${combinedSeverity.critical > 0 ? `
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 12px; font-weight: 600; color: #DC2626;">Critical</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #DC2626;">${combinedSeverity.critical} (${((combinedSeverity.critical / allFindings.length) * 100).toFixed(0)}%)</span>
+                                    </div>
+                                    <div style="background: #FEE2E2; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div style="background: #DC2626; height: 100%; width: ${(combinedSeverity.critical / allFindings.length) * 100}%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${combinedSeverity.high > 0 ? `
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">High</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #F59E0B;">${combinedSeverity.high} (${((combinedSeverity.high / allFindings.length) * 100).toFixed(0)}%)</span>
+                                    </div>
+                                    <div style="background: #FEF3C7; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div style="background: #F59E0B; height: 100%; width: ${(combinedSeverity.high / allFindings.length) * 100}%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${combinedSeverity.medium > 0 ? `
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 12px; font-weight: 600; color: #3B82F6;">Medium</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #3B82F6;">${combinedSeverity.medium} (${((combinedSeverity.medium / allFindings.length) * 100).toFixed(0)}%)</span>
+                                    </div>
+                                    <div style="background: #DBEAFE; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div style="background: #3B82F6; height: 100%; width: ${(combinedSeverity.medium / allFindings.length) * 100}%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${combinedSeverity.low > 0 ? `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span style="font-size: 12px; font-weight: 600; color: #10B981;">Low</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #10B981;">${combinedSeverity.low} (${((combinedSeverity.low / allFindings.length) * 100).toFixed(0)}%)</span>
+                                    </div>
+                                    <div style="background: #D1FAE5; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div style="background: #10B981; height: 100%; width: ${(combinedSeverity.low / allFindings.length) * 100}%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div style="background: #F9FAFB; border-left: 3px solid #374151; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #374151;">
+                            <strong style="color: #1F2937;">Detection Methods:</strong> 
                             ${ruleBasedFindings.length > 0 ? `Pattern Matching (${ruleBasedFindings.length})` : ''}
                             ${ruleBasedFindings.length > 0 && agentBasedFindings.length > 0 ? ' • ' : ''}
                             ${agentBasedFindings.length > 0 ? `AI Analysis (${agentBasedFindings.length})` : ''}
@@ -2057,8 +2160,9 @@
                 const response = await fetch('/api/reports?per_page=100&page=1');
                 const data = await response.json();
                 const reports = data.reports || [];
+                const backups = data.backups || [];
                 
-                if (reports.length === 0) {
+                if (reports.length === 0 && backups.length === 0) {
                     historyList.innerHTML = `
                         <div class="no-report">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 64px; height: 64px; margin-bottom: 20px; opacity: 0.2;">
@@ -2097,7 +2201,8 @@
                                 analysisType: 'unknown',
                                 target: 'N/A',
                                 totalFindings: 0,
-                                totalPackages: 0
+                                totalPackages: 0,
+                                isBackup: false
                             };
                         }
                     })
