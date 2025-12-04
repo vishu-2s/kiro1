@@ -98,8 +98,17 @@ class MaliciousPackageCache:
             
             # Write to temporary file first, then rename (atomic operation)
             temp_path = self.cache_path.with_suffix('.tmp')
+            
+            # Remove temp file if it exists (Windows compatibility)
+            if temp_path.exists():
+                temp_path.unlink()
+            
             with open(temp_path, 'w', encoding='utf-8') as f:
                 json.dump(cache_data, f, indent=2, ensure_ascii=False)
+            
+            # On Windows, remove target file before rename
+            if os.name == 'nt' and self.cache_path.exists():
+                self.cache_path.unlink()
             
             temp_path.rename(self.cache_path)
             return True

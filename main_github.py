@@ -20,6 +20,7 @@ from analyze_supply_chain import (
     create_analyzer, 
     analyze_target, 
     analyze_target_with_screenshots,
+    analyze_project_hybrid,
     AnalysisError
 )
 from report_generator import create_security_report
@@ -128,6 +129,14 @@ Examples:
         type=float,
         default=config.CONFIDENCE_THRESHOLD,
         help=f"Minimum confidence threshold for findings (default: {config.CONFIDENCE_THRESHOLD})"
+    )
+    
+    parser.add_argument(
+        "--ecosystem",
+        type=str,
+        choices=["auto", "npm", "pypi"],
+        default="auto",
+        help="Force specific ecosystem (auto-detect if not specified)"
     )
     
     # Database and API options
@@ -361,17 +370,48 @@ def perform_analysis(args: argparse.Namespace) -> Optional[Dict[str, Any]]:
                 analysis_type, 
                 **analyzer_kwargs
             )
+            
+            logger.info(f"Analysis completed successfully")
+            
+            # Handle both dict and object results
+            if isinstance(result, dict):
+                summary = result.get('summary', {})
+                logger.info(f"Found {summary.get('total_findings', 0)} security findings")
+                logger.info(f"Critical: {summary.get('critical_findings', 0)}, "
+                           f"High: {summary.get('high_findings', 0)}, "
+                           f"Medium: {summary.get('medium_findings', 0)}, "
+                           f"Low: {summary.get('low_findings', 0)}")
+            else:
+                logger.info(f"Found {result.summary.total_findings} security findings")
+                logger.info(f"Critical: {result.summary.critical_findings}, "
+                           f"High: {result.summary.high_findings}, "
+                           f"Medium: {result.summary.medium_findings}, "
+                           f"Low: {result.summary.low_findings}")
+            
+            return result
         else:
-            result = analyze_target(target, analysis_type, **analyzer_kwargs)
-        
-        logger.info(f"Analysis completed successfully")
-        logger.info(f"Found {result.summary.total_findings} security findings")
-        logger.info(f"Critical: {result.summary.critical_findings}, "
-                   f"High: {result.summary.high_findings}, "
-                   f"Medium: {result.summary.medium_findings}, "
-                   f"Low: {result.summary.low_findings}")
-        
-        return result
+            # Use new hybrid agent-based analysis
+            logger.info("Using hybrid agent-based analysis with orchestrator")
+            output_path = analyze_project_hybrid(
+                target=target,
+                input_mode=analysis_type,
+                force_ecosystem=args.ecosystem if args.ecosystem != "auto" else None
+            )
+            
+            # Load the generated JSON to get summary info
+            with open(output_path, 'r', encoding='utf-8') as f:
+                result_json = json.load(f)
+            
+            logger.info(f"Analysis completed successfully")
+            summary = result_json.get('summary', {})
+            logger.info(f"Found {summary.get('total_findings', 0)} security findings")
+            logger.info(f"Critical: {summary.get('critical_findings', 0)}, "
+                       f"High: {summary.get('high_findings', 0)}, "
+                       f"Medium: {summary.get('medium_findings', 0)}, "
+                       f"Low: {summary.get('low_findings', 0)}")
+            
+            # Return the JSON dict (not AnalysisResult object)
+            return result_json
         
     except AnalysisError as e:
         logger.error(f"Analysis failed: {e}")
@@ -399,30 +439,37 @@ def save_results(result: Dict[str, Any], output_dir: Path,
     
     # Generate base filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    analysis_id = result.metadata.analysis_id
+    
+    # Handle both dict and AnalysisResult object
+    if isinstance(result, dict):
+        analysis_id = result.get('metadata', {}).get('analysis_id', 'unknown')
+        result_dict = result
+    else:
+        analysis_id = result.metadata.analysis_id
+        # Convert result to dictionary if needed
+        if hasattr(result, '__dict__'):
+            result_dict = result.__dict__
+            # Convert nested objects to dicts
+            def convert_to_dict(obj):
+                if hasattr(obj, '__dict__'):
+                    return {k: convert_to_dict(v) for k, v in obj.__dict__.items()}
+                elif isinstance(obj, list):
+                    return [convert_to_dict(item) for item in obj]
+                elif isinstance(obj, dict):
+                    return {k: convert_to_dict(v) for k, v in obj.items()}
+                else:
+                    return obj
+            result_dict = convert_to_dict(result_dict)
+        else:
+            result_dict = result
+    
     base_filename = f"security_analysis_{analysis_id}_{timestamp}"
     
     try:
         # Save JSON results
         if not html_only:
-            json_path = output_dir / f"{base_filename}.json"
-            
-            # Convert result to dictionary if needed
-            if hasattr(result, '__dict__'):
-                result_dict = result.__dict__
-                # Convert nested objects to dicts
-                def convert_to_dict(obj):
-                    if hasattr(obj, '__dict__'):
-                        return {k: convert_to_dict(v) for k, v in obj.__dict__.items()}
-                    elif isinstance(obj, list):
-                        return [convert_to_dict(item) for item in obj]
-                    elif isinstance(obj, dict):
-                        return {k: convert_to_dict(v) for k, v in obj.items()}
-                    else:
-                        return obj
-                result_dict = convert_to_dict(result_dict)
-            else:
-                result_dict = result
+            # Always save to demo_ui_comprehensive_report.json for web UI
+            json_path = output_dir / "demo_ui_comprehensive_report.json"
             
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(result_dict, f, indent=2, default=str)
@@ -434,20 +481,27 @@ def save_results(result: Dict[str, Any], output_dir: Path,
         if not json_only:
             html_path = output_dir / f"{base_filename}.html"
             
-            # Generate HTML report using create_security_report
-            temp_result_paths = create_security_report(
-                result, 
-                output_format="html", 
-                output_dir=str(output_dir)
-            )
-            
-            # Move the generated HTML file to our desired location
-            if 'html' in temp_result_paths:
-                import shutil
-                shutil.move(temp_result_paths['html'], html_path)
-            
-            saved_files['html'] = str(html_path)
-            logger.info(f"HTML report saved to: {html_path}")
+            # Skip HTML generation if result is a dict (from hybrid analysis)
+            # HTML generation expects AnalysisResult object
+            if isinstance(result, dict):
+                logger.info("Skipping HTML report generation (result is dict, not AnalysisResult object)")
+            else:
+                try:
+                    # Generate HTML report using create_security_report
+                    temp_result_paths = create_security_report(
+                        result, 
+                        output_format="html", 
+                        output_dir=str(output_dir)
+                    )
+                    
+                    # Move the generated HTML file to our desired location
+                    if temp_result_paths and 'html' in temp_result_paths:
+                        import shutil
+                        shutil.move(temp_result_paths['html'], html_path)
+                        saved_files['html'] = str(html_path)
+                        logger.info(f"HTML report saved to: {html_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to generate HTML report: {e}")
         
         return saved_files
         
@@ -531,14 +585,31 @@ def main() -> int:
             logger.info(f"  {format_type.upper()}: {file_path}")
         
         # Print key findings summary
-        if result.summary.critical_findings > 0:
-            logger.warning(f"CRITICAL: {result.summary.critical_findings} critical security findings detected!")
-        if result.summary.high_findings > 0:
-            logger.warning(f"HIGH: {result.summary.high_findings} high-severity findings detected!")
-        
-        logger.info(f"Total findings: {result.summary.total_findings}")
-        logger.info(f"Packages analyzed: {result.summary.total_packages}")
-        logger.info(f"Ecosystems: {', '.join(result.summary.ecosystems_analyzed)}")
+        # Handle both dict and object results
+        if isinstance(result, dict):
+            summary = result.get('summary', {})
+            metadata = result.get('metadata', {})
+            
+            if summary.get('critical_findings', 0) > 0:
+                logger.warning(f"CRITICAL: {summary.get('critical_findings')} critical security findings detected!")
+            if summary.get('high_findings', 0) > 0:
+                logger.warning(f"HIGH: {summary.get('high_findings')} high-severity findings detected!")
+            
+            logger.info(f"Total findings: {summary.get('total_findings', 0)}")
+            logger.info(f"Packages analyzed: {summary.get('total_packages', 0)}")
+            
+            # Get ecosystem from metadata or dependency graph
+            ecosystem = metadata.get('ecosystem') or result.get('dependency_graph', {}).get('metadata', {}).get('ecosystem', 'unknown')
+            logger.info(f"Ecosystem: {ecosystem}")
+        else:
+            if result.summary.critical_findings > 0:
+                logger.warning(f"CRITICAL: {result.summary.critical_findings} critical security findings detected!")
+            if result.summary.high_findings > 0:
+                logger.warning(f"HIGH: {result.summary.high_findings} high-severity findings detected!")
+            
+            logger.info(f"Total findings: {result.summary.total_findings}")
+            logger.info(f"Packages analyzed: {result.summary.total_packages}")
+            logger.info(f"Ecosystems: {', '.join(result.summary.ecosystems_analyzed)}")
         
         return 0
         

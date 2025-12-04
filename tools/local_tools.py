@@ -363,7 +363,28 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
         # Generate SBOM
         sbom_data = generate_local_sbom(str(validated_path))
         
-        # Analyze dependency tree for deep script analysis
+        # Analyze root package.json scripts (npm)
+        root_package_json = validated_path / "package.json"
+        if root_package_json.exists():
+            try:
+                with open(root_package_json, 'r', encoding='utf-8') as f:
+                    package_data = json.load(f)
+                
+                scripts = package_data.get('scripts', {})
+                package_name = package_data.get('name', 'root-package')
+                
+                if scripts:
+                    root_script_findings = _analyze_npm_scripts(scripts, package_name)
+                    if root_script_findings:
+                        logger.warning(f"Found {len(root_script_findings)} malicious scripts in root package.json")
+                        # Add to sbom_data script_findings
+                        if "script_findings" not in sbom_data:
+                            sbom_data["script_findings"] = []
+                        sbom_data["script_findings"].extend([f.to_dict() for f in root_script_findings])
+            except Exception as e:
+                logger.error(f"Error analyzing root package.json scripts: {e}")
+        
+        # Analyze dependency tree for deep script analysis (npm)
         dependency_analysis = analyze_dependency_tree(str(validated_path))
         logger.info(f"Dependency tree analysis: {dependency_analysis.get('total_dependencies', 0)} total dependencies, "
                    f"{len(dependency_analysis.get('packages_with_scripts', []))} with scripts")
@@ -373,7 +394,7 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
         if sbom_data.get("packages"):
             security_findings = check_vulnerable_packages(sbom_data, use_osv=use_osv)
         
-        # Analyze scripts in all dependencies
+        # Analyze scripts in all npm dependencies
         for pkg_info in dependency_analysis.get('packages_with_scripts', []):
             if pkg_info.get('scripts'):
                 dep_findings = _analyze_npm_scripts(
@@ -383,6 +404,36 @@ def analyze_local_directory(directory_path: str, output_dir: Optional[str] = Non
                 security_findings.extend(dep_findings)
                 if dep_findings:
                     logger.warning(f"Found {len(dep_findings)} malicious scripts in dependency {pkg_info['name']}")
+        
+        # Analyze Python dependencies if Python files are present
+        try:
+            from tools.ecosystem_analyzer import get_analyzer_registry
+            registry = get_analyzer_registry()
+            python_analyzer = registry.get_analyzer("pypi")
+            
+            if python_analyzer:
+                # Check if this is a Python project
+                python_manifests = python_analyzer.detect_manifest_files(str(validated_path))
+                
+                if python_manifests:
+                    logger.info(f"Detected Python project with {len(python_manifests)} manifest files")
+                    
+                    # Analyze Python dependencies for malicious packages
+                    python_findings = python_analyzer.analyze_dependencies_with_malicious_check(str(validated_path))
+                    security_findings.extend(python_findings)
+                    
+                    if python_findings:
+                        logger.warning(f"Found {len(python_findings)} malicious Python packages")
+                    
+                    # Analyze Python installation scripts (setup.py)
+                    install_script_findings = python_analyzer.analyze_install_scripts(str(validated_path))
+                    security_findings.extend(install_script_findings)
+                    
+                    if install_script_findings:
+                        logger.warning(f"Found {len(install_script_findings)} suspicious patterns in Python installation scripts")
+        
+        except Exception as e:
+            logger.error(f"Error during Python dependency analysis: {e}")
         
         # Add script findings from SBOM
         script_findings_data = sbom_data.get("script_findings", [])

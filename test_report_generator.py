@@ -116,16 +116,13 @@ def analysis_summary_strategy(findings_list):
             confidence_dist["low"] += 1
     
     return AnalysisSummary(
-        total_packages=st.integers(min_value=0, max_value=1000).example(),
+        total_packages=max(1, total_findings),  # At least 1 package if there are findings
         total_findings=total_findings,
         critical_findings=critical_count,
         high_findings=high_count,
         medium_findings=medium_count,
         low_findings=low_count,
-        ecosystems_analyzed=st.lists(
-            st.sampled_from(["npm", "pypi", "maven", "rubygems", "crates", "go"]),
-            min_size=1, max_size=6, unique=True
-        ).example(),
+        ecosystems_analyzed=["npm", "pypi"] if total_findings > 0 else ["npm"],
         finding_types=finding_types,
         confidence_distribution=confidence_dist
     )

@@ -19,13 +19,13 @@
           "modified": "2021-09-15T20:08:26Z",
           "published": "2018-11-26T23:58:21Z",
           "database_specific": {
-            "severity": "CRITICAL",
             "nvd_published_at": null,
-            "github_reviewed": true,
+            "severity": "CRITICAL",
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed_at": "2020-06-16T21:46:17Z"
+            "github_reviewed_at": "2020-06-16T21:46:17Z",
+            "github_reviewed": true
           },
           "references": [
             {
@@ -117,12 +117,12 @@
           "modified": "2021-09-14T17:35:41Z",
           "published": "2018-07-12T19:52:02Z",
           "database_specific": {
-            "severity": "CRITICAL",
+            "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed": true,
             "nvd_published_at": null,
+            "severity": "CRITICAL",
             "github_reviewed_at": "2020-06-16T21:41:33Z"
           },
           "references": [
@@ -230,12 +230,12 @@
           "modified": "2021-10-01T13:30:04Z",
           "published": "2020-09-01T21:21:32Z",
           "database_specific": {
-            "severity": "CRITICAL",
+            "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed": true,
             "nvd_published_at": null,
+            "severity": "CRITICAL",
             "github_reviewed_at": "2020-08-31T18:33:59Z"
           },
           "references": [
@@ -290,12 +290,12 @@
           "modified": "2021-09-15T20:08:26Z",
           "published": "2018-11-26T23:58:21Z",
           "database_specific": {
-            "severity": "CRITICAL",
+            "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed": true,
             "nvd_published_at": null,
+            "severity": "CRITICAL",
             "github_reviewed_at": "2020-06-16T21:46:17Z"
           },
           "references": [
@@ -437,13 +437,13 @@
           "modified": "2021-10-01T13:25:15Z",
           "published": "2020-09-01T20:39:33Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-08-31T18:31:17Z",
-            "severity": "CRITICAL",
             "nvd_published_at": null,
+            "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
-            ]
+            ],
+            "severity": "CRITICAL"
           },
           "references": [
             {
@@ -575,13 +575,13 @@
           "modified": "2023-11-08T03:59:03.271112Z",
           "published": "2018-08-29T23:05:46Z",
           "database_specific": {
-            "severity": "HIGH",
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2020-06-16T21:30:01Z",
             "nvd_published_at": null,
-            "github_reviewed_at": "2020-06-16T21:30:01Z"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -650,13 +650,13 @@
           "modified": "2023-11-08T03:59:02.343998Z",
           "published": "2018-08-29T23:57:14Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
             ],
+            "severity": "HIGH",
             "github_reviewed_at": "2020-06-16T21:20:55Z",
             "nvd_published_at": null,
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -725,12 +725,12 @@
           "modified": "2023-11-08T03:59:03.697068Z",
           "published": "2020-09-01T19:00:54Z",
           "database_specific": {
+            "github_reviewed_at": "2020-08-31T18:26:15Z",
+            "nvd_published_at": null,
             "github_reviewed": true,
             "cwe_ids": [
               "CWE-506"
             ],
-            "github_reviewed_at": "2020-08-31T18:26:15Z",
-            "nvd_published_at": null,
             "severity": "MODERATE"
           },
           "references": [
@@ -820,29 +820,29 @@
           "published": "2022-05-31T00:00:00Z",
           "database_specific": {
             "iocs": {
-              "domains": [
-                "serene-springs-50769.herokuapp.com"
-              ],
               "strings": [
                 "44ZptWtXxVhjLYGz8oKCMSW6nA9Gpc2RVYQDzyBnaM7VZkaCTGZGEANQTR3pNXK3mzZq1cVzKs1SA3H4Wibc6qVvG5xpcSY"
+              ],
+              "domains": [
+                "serene-springs-50769.herokuapp.com"
               ]
             },
             "malicious-packages-origins": [
               {
-                "source": "checkmarx",
-                "import_time": "2023-09-04T09:20:36.388344763Z",
                 "modified_time": "2022-05-31T20:12:58Z",
-                "sha256": "281d687d37b55f2d202f7ae0a8b421b286a71ebd2992bf7608ebe030ec6f8e53",
                 "ranges": [
                   {
-                    "type": "ECOSYSTEM",
                     "events": [
                       {
                         "introduced": "0"
                       }
-                    ]
+                    ],
+                    "type": "ECOSYSTEM"
                   }
-                ]
+                ],
+                "source": "checkmarx",
+                "import_time": "2023-09-04T09:20:36.388344763Z",
+                "sha256": "281d687d37b55f2d202f7ae0a8b421b286a71ebd2992bf7608ebe030ec6f8e53"
               }
             ]
           },
@@ -914,13 +914,13 @@
           "modified": "2022-05-25T23:09:55Z",
           "published": "2022-05-25T23:09:55Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-912"
             ],
+            "severity": "CRITICAL",
             "github_reviewed_at": "2022-05-25T23:09:55Z",
             "nvd_published_at": null,
-            "severity": "CRITICAL"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -984,11 +984,11 @@
           "modified": "2022-06-02T15:46:06Z",
           "published": "2022-06-02T15:46:06Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [],
+            "severity": "CRITICAL",
             "github_reviewed_at": "2022-06-02T15:46:06Z",
             "nvd_published_at": null,
-            "severity": "CRITICAL"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -1129,14 +1129,14 @@
           "modified": "2025-10-22T19:37:53.742023Z",
           "published": "2021-12-14T18:01:28Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-502",
               "CWE-917"
             ],
-            "github_reviewed_at": "2021-12-14T17:55:00Z",
             "nvd_published_at": "2021-12-14T19:15:00Z",
-            "severity": "CRITICAL"
+            "severity": "CRITICAL",
+            "github_reviewed": true,
+            "github_reviewed_at": "2021-12-14T17:55:00Z"
           },
           "references": [
             {
@@ -1532,14 +1532,14 @@
           "modified": "2025-05-09T13:12:38.923602Z",
           "published": "2022-01-04T16:14:20Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-20",
               "CWE-74"
             ],
-            "github_reviewed_at": "2021-12-28T21:14:19Z",
             "nvd_published_at": "2021-12-28T20:15:00Z",
-            "severity": "MODERATE"
+            "severity": "MODERATE",
+            "github_reviewed": true,
+            "github_reviewed_at": "2021-12-28T21:14:19Z"
           },
           "references": [
             {
@@ -1894,13 +1894,13 @@
           "modified": "2024-03-14T05:19:26.806656Z",
           "published": "2020-01-06T18:43:38Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed_at": "2019-12-27T22:02:28Z",
             "nvd_published_at": "2017-04-17T21:59:00Z",
-            "severity": "CRITICAL"
+            "severity": "CRITICAL",
+            "github_reviewed": true,
+            "github_reviewed_at": "2019-12-27T22:02:28Z"
           },
           "references": [
             {
@@ -2368,16 +2368,16 @@
           "modified": "2025-10-22T19:37:02.616807Z",
           "published": "2021-12-10T00:40:56Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-20",
               "CWE-400",
               "CWE-502",
               "CWE-917"
             ],
-            "github_reviewed_at": "2021-12-10T00:40:41Z",
             "nvd_published_at": "2021-12-10T10:15:00Z",
-            "severity": "CRITICAL"
+            "severity": "CRITICAL",
+            "github_reviewed": true,
+            "github_reviewed_at": "2021-12-10T00:40:41Z"
           },
           "references": [
             {
@@ -3384,14 +3384,14 @@
           "modified": "2025-05-09T13:12:54.089856Z",
           "published": "2021-12-18T18:00:07Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-20",
               "CWE-674"
             ],
-            "github_reviewed_at": "2021-12-18T17:59:37Z",
             "nvd_published_at": "2021-12-18T12:15:00Z",
-            "severity": "HIGH"
+            "severity": "HIGH",
+            "github_reviewed": true,
+            "github_reviewed_at": "2021-12-18T17:59:37Z"
           },
           "references": [
             {
@@ -3761,14 +3761,14 @@
           "modified": "2025-09-02T22:39:27.476162Z",
           "published": "2023-03-10T15:30:43Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-400",
               "CWE-502"
             ],
-            "github_reviewed_at": "2023-03-10T23:48:32Z",
             "nvd_published_at": "2023-03-10T14:15:00Z",
-            "severity": "HIGH"
+            "severity": "HIGH",
+            "github_reviewed": true,
+            "github_reviewed_at": "2023-03-10T23:48:32Z"
           },
           "references": [
             {
@@ -3906,13 +3906,13 @@
           "modified": "2024-03-13T05:32:08.046905Z",
           "published": "2020-06-05T14:15:51Z",
           "database_specific": {
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-295"
             ],
-            "github_reviewed_at": "2020-06-04T19:29:20Z",
             "nvd_published_at": "2020-04-27T16:15:00Z",
-            "severity": "LOW"
+            "severity": "LOW",
+            "github_reviewed": true,
+            "github_reviewed_at": "2020-06-04T19:29:20Z"
           },
           "references": [
             {
@@ -4374,23 +4374,24 @@
           "summary": "XStream can cause a Denial of Service.",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to allocate 100% CPU time on the target system depending on CPU type or parallel execution of such a payload resulting in a denial of service only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21341](https://x-stream.github.io/CVE-2021-21341.html).\n\n### Credits\nThe vulnerability was discovered and reported by threedr3am.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21341",
             "CVE-2021-21341"
           ],
-          "modified": "2024-02-17T05:34:47.147007Z",
+          "modified": "2025-12-03T15:27:23.659778Z",
           "published": "2021-03-22T23:27:51Z",
           "related": [
             "CVE-2021-21341"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:23:33Z",
             "cwe_ids": [
               "CWE-400",
               "CWE-502",
               "CWE-835"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-03-22T23:23:33Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -4561,13 +4562,13 @@
             "CVE-2021-39153"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:32Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:32Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -4724,14 +4725,14 @@
             "CVE-2021-39149"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:21Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:21Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -4880,22 +4881,23 @@
           "summary": "XStream is vulnerable to an Arbitrary Code Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to execute arbitrary code only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21350](https://x-stream.github.io/CVE-2021-21350.html).\n\n### Credits\nThe vulnerability was discovered and reported by threedr3am.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21350",
             "CVE-2021-21350"
           ],
-          "modified": "2024-02-17T05:26:31.841454Z",
+          "modified": "2025-12-03T15:27:35.230080Z",
           "published": "2021-03-22T23:29:28Z",
           "related": [
             "CVE-2021-21350"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:26:55Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:26:55Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5066,13 +5068,13 @@
             "CVE-2020-26258"
           ],
           "database_specific": {
-            "github_reviewed_at": "2020-12-21T16:21:34Z",
             "cwe_ids": [
               "CWE-918"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2020-12-21T16:21:34Z",
             "nvd_published_at": "2020-12-16T01:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5226,22 +5228,23 @@
           "summary": "XStream is vulnerable to an Arbitrary Code Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to load and execute arbitrary code from a remote host only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21346](https://x-stream.github.io/CVE-2021-21346.html).\n\n### Credits\nwh1t3p1g G5-RD6@IIE found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21346",
             "CVE-2021-21346"
           ],
-          "modified": "2024-02-17T05:36:38.383458Z",
+          "modified": "2025-12-03T15:27:45.631855Z",
           "published": "2021-03-22T23:28:49Z",
           "related": [
             "CVE-2021-21346"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:24:44Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:24:44Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5404,22 +5407,23 @@
           "summary": "XStream is vulnerable to an attack using Regular Expression for a Denial of Service (ReDos)",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to occupy a thread that consumes maximum CPU time and will never return. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21348](https://x-stream.github.io/CVE-2021-21348.html).\n\n### Credits\nThe vulnerability was discovered and reported by threedr3am.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21348",
             "CVE-2021-21348"
           ],
-          "modified": "2024-02-17T05:33:28.136669Z",
+          "modified": "2025-12-03T15:27:24.862096Z",
           "published": "2021-03-22T23:29:09Z",
           "related": [
             "CVE-2021-21348"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:25:49Z",
             "cwe_ids": [
               "CWE-400",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:25:49Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5582,22 +5586,23 @@
           "summary": "XStream is vulnerable to an Arbitrary Code Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to load and execute arbitrary code from a remote host only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21344](https://x-stream.github.io/CVE-2021-21344.html).\n\n### Credits\n钟潦贵 (Liaogui Zhong) found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21344",
             "CVE-2021-21344"
           ],
-          "modified": "2024-02-17T05:35:22.429423Z",
+          "modified": "2025-12-03T15:27:54.094978Z",
           "published": "2021-03-22T23:28:23Z",
           "related": [
             "CVE-2021-21344"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:23:49Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:23:49Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5768,13 +5773,13 @@
             "CVE-2021-39139"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:21:57Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:21:57Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -5931,14 +5936,14 @@
             "CVE-2021-39154"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:35Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:35Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6095,14 +6100,14 @@
             "CVE-2021-39140"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:01Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-835"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-08-23T18:22:01Z",
             "nvd_published_at": "2021-08-23T19:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6251,22 +6256,23 @@
           "summary": "XStream is vulnerable to an Arbitrary File Deletion on the local host when unmarshalling as long as the executing process has sufficient rights",
           "details": "### Impact\nThe processed stream at unmarshalling time contains type information to recreate the formerly written objects.  XStream creates therefore new instances based on these type information.  An attacker can manipulate the processed input stream and replace or inject objects, that result in the deletion of a file on the local host. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21343](https://x-stream.github.io/CVE-2021-21343.html).\n\n### Credits\n钟潦贵 (Liaogui Zhong) found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21343",
             "CVE-2021-21343"
           ],
-          "modified": "2024-02-17T05:36:08.298718Z",
+          "modified": "2025-12-03T15:27:25.105360Z",
           "published": "2021-03-22T23:28:13Z",
           "related": [
             "CVE-2021-21343"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:23:36Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-73"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:23:36Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6437,15 +6443,15 @@
             "CVE-2021-29505"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-05-18T16:14:15Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-74",
               "CWE-94"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-05-18T16:14:15Z",
             "nvd_published_at": "2021-05-28T21:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6630,13 +6636,13 @@
           "modified": "2025-05-23T19:46:57.847104Z",
           "published": "2020-06-30T22:48:24Z",
           "database_specific": {
-            "github_reviewed_at": "2020-06-30T22:47:51Z",
             "cwe_ids": [
               "CWE-20"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2020-06-30T22:47:51Z",
             "nvd_published_at": "2017-04-29T19:59:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6782,13 +6788,13 @@
             "CVE-2021-39145"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:10Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:10Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -6945,14 +6951,14 @@
             "CVE-2021-39150"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:24Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-918"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:24Z",
             "nvd_published_at": "2021-08-23T19:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7108,14 +7114,14 @@
           "modified": "2024-03-05T00:01:16.285253Z",
           "published": "2019-05-29T18:05:03Z",
           "database_specific": {
-            "github_reviewed_at": "2019-05-15T23:13:58Z",
             "cwe_ids": [
               "CWE-77",
               "CWE-78"
             ],
-            "github_reviewed": true,
+            "severity": "CRITICAL",
+            "github_reviewed_at": "2019-05-15T23:13:58Z",
             "nvd_published_at": "2019-05-15T17:29:00Z",
-            "severity": "CRITICAL"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7265,22 +7271,23 @@
           "summary": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to request data from internal resources that are not publicly available only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21349](https://x-stream.github.io/CVE-2021-21349.html).\n\n### Credits\nThe vulnerability was discovered and reported by threedr3am.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21349",
             "CVE-2021-21349"
           ],
-          "modified": "2024-02-17T05:25:17.611079Z",
+          "modified": "2025-12-03T15:27:25.383677Z",
           "published": "2021-03-22T23:29:19Z",
           "related": [
             "CVE-2021-21349"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:26:25Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-918"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:26:25Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7448,15 +7455,15 @@
           "modified": "2023-11-08T04:10:22.920578Z",
           "published": "2022-12-30T16:58:39Z",
           "database_specific": {
-            "github_reviewed_at": "2022-12-30T16:58:39Z",
             "cwe_ids": [
               "CWE-121",
               "CWE-502",
               "CWE-787"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-12-30T16:58:39Z",
             "nvd_published_at": null,
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7591,13 +7598,13 @@
             "CVE-2021-39141"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:04Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:04Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7754,13 +7761,13 @@
             "CVE-2021-39147"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:16Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:16Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -7914,14 +7921,14 @@
           "modified": "2025-04-01T16:39:47.971939Z",
           "published": "2019-07-26T16:09:47Z",
           "database_specific": {
-            "github_reviewed_at": "2019-07-25T10:11:50Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-94"
             ],
-            "github_reviewed": true,
+            "severity": "CRITICAL",
+            "github_reviewed_at": "2019-07-25T10:11:50Z",
             "nvd_published_at": "2019-07-23T13:15:00Z",
-            "severity": "CRITICAL"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8066,14 +8073,14 @@
             "CGA-cc2c-9vqh-97j8"
           ],
           "database_specific": {
-            "github_reviewed_at": "2024-11-07T21:51:17Z",
             "cwe_ids": [
               "CWE-121",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2024-11-07T21:51:17Z",
             "nvd_published_at": "2024-11-08T00:15:14Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8213,14 +8220,14 @@
             "CVE-2021-39151"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:27Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:27Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8369,22 +8376,23 @@
           "summary": "XStream is vulnerable to an Arbitrary Code Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to load and execute arbitrary code from a remote host only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21351](https://x-stream.github.io/CVE-2021-21351.html).\n\n### Credits\nwh1t3p1g G5-RD6@IIE found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21351",
             "CVE-2021-21351"
           ],
-          "modified": "2024-02-17T05:27:25.304672Z",
+          "modified": "2025-12-03T15:27:34.034599Z",
           "published": "2021-03-22T23:29:37Z",
           "related": [
             "CVE-2021-21351"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:27:18Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:27:18Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8547,22 +8555,23 @@
           "summary": "A Server-Side Forgery Request can be activated unmarshalling with XStream to access data streams from an arbitrary URL referencing a resource in an intranet or the local host",
           "details": "### Impact\nThe processed stream at unmarshalling time contains type information to recreate the formerly written objects. XStream creates therefore new instances based on these type information.  An attacker can manipulate the processed input stream and replace or inject objects, that result in a server-side forgery request. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21342](https://x-stream.github.io/CVE-2021-21342.html).\n\n### Credits\n钟潦贵 (Liaogui Zhong) found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21342",
             "CVE-2021-21342"
           ],
-          "modified": "2024-02-16T08:12:01.534918Z",
+          "modified": "2025-12-03T15:27:35.467189Z",
           "published": "2021-03-22T23:28:01Z",
           "related": [
             "CVE-2021-21342"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:23:33Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-918"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:23:33Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8725,22 +8734,23 @@
           "summary": "XStream is vulnerable to a Remote Command Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker has sufficient rights to execute commands of the host only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21345](https://x-stream.github.io/CVE-2021-21345.html).\n\n### Credits\n钟潦贵 (Liaogui Zhong) found and reported the issue to XStream and provided the required information to reproduce it.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21345",
             "CVE-2021-21345"
           ],
-          "modified": "2024-03-11T05:21:43.875273Z",
+          "modified": "2025-12-03T15:27:40.553920Z",
           "published": "2021-03-22T23:28:38Z",
           "related": [
             "CVE-2021-21345"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:24:01Z",
             "cwe_ids": [
               "CWE-78",
               "CWE-94"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:24:01Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -8912,16 +8922,16 @@
           "modified": "2024-02-16T08:18:32.925932Z",
           "published": "2022-12-29T01:48:08Z",
           "database_specific": {
-            "github_reviewed_at": "2022-12-29T01:48:08Z",
             "cwe_ids": [
               "CWE-120",
               "CWE-121",
               "CWE-502",
               "CWE-674"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-12-29T01:48:08Z",
             "nvd_published_at": "2022-12-28T00:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9044,15 +9054,15 @@
             "CVE-2021-39144"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:07Z",
             "cwe_ids": [
               "CWE-306",
               "CWE-502",
               "CWE-94"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:07Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9229,13 +9239,13 @@
             "CVE-2020-26259"
           ],
           "database_specific": {
-            "github_reviewed_at": "2020-12-21T16:20:55Z",
             "cwe_ids": [
               "CWE-78"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2020-12-21T16:20:55Z",
             "nvd_published_at": "2020-12-16T01:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9382,13 +9392,13 @@
             "CVE-2020-26217"
           ],
           "database_specific": {
-            "github_reviewed_at": "2020-11-16T20:06:06Z",
             "cwe_ids": [
               "CWE-78"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2020-11-16T20:06:06Z",
             "nvd_published_at": "2020-11-16T21:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9557,13 +9567,13 @@
             "CVE-2021-39146"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:13Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:13Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9712,22 +9722,23 @@
           "summary": "XStream is vulnerable to an Arbitrary Code Execution attack",
           "details": "### Impact\nThe vulnerability may allow a remote attacker to load and execute arbitrary code from a remote host only by manipulating the processed input stream. No user is affected, who followed the recommendation to setup XStream's security framework with a whitelist limited to the minimal required types.\n\n### Patches\nIf you rely on XStream's default blacklist of the [Security Framework](https://x-stream.github.io/security.html#framework), you will have to use at least version 1.4.16.\n\n### Workarounds\nSee [workarounds](https://x-stream.github.io/security.html#workaround) for the different versions covering all CVEs.\n\n### References\nSee full information about the nature of the vulnerability and the steps to reproduce it in XStream's documentation for [CVE-2021-21347](https://x-stream.github.io/CVE-2021-21347.html).\n\n### Credits\nThe vulnerability was discovered and reported by threedr3am.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [XStream](https://github.com/x-stream/xstream/issues)\n* Contact us at [XStream Google Group](https://groups.google.com/group/xstream-user)",
           "aliases": [
+            "BIT-activemq-2021-21347",
             "CVE-2021-21347"
           ],
-          "modified": "2024-02-17T05:36:11.034940Z",
+          "modified": "2025-12-03T15:27:49.398048Z",
           "published": "2021-03-22T23:29:00Z",
           "related": [
             "CVE-2021-21347"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-03-22T23:25:22Z",
             "cwe_ids": [
               "CWE-434",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-03-22T23:25:22Z",
             "nvd_published_at": "2021-03-23T00:15:00Z",
-            "severity": "MODERATE"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -9898,13 +9909,13 @@
             "CVE-2021-39148"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:19Z",
             "cwe_ids": [
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:19Z",
             "nvd_published_at": "2021-08-23T18:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -10058,13 +10069,13 @@
           "modified": "2025-05-23T19:46:42.534904Z",
           "published": "2020-06-30T22:48:14Z",
           "database_specific": {
-            "github_reviewed_at": "2020-06-30T22:47:58Z",
             "cwe_ids": [
               "CWE-200"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2020-06-30T22:47:58Z",
             "nvd_published_at": "2016-05-17T14:08:03Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -10210,14 +10221,14 @@
             "CVE-2021-43859"
           ],
           "database_specific": {
-            "github_reviewed_at": "2022-01-31T20:12:15Z",
             "cwe_ids": [
               "CWE-400",
               "CWE-502"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-01-31T20:12:15Z",
             "nvd_published_at": "2022-02-01T12:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -10379,14 +10390,14 @@
             "CVE-2021-39152"
           ],
           "database_specific": {
-            "github_reviewed_at": "2021-08-23T18:22:29Z",
             "cwe_ids": [
               "CWE-502",
               "CWE-918"
             ],
-            "github_reviewed": true,
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-08-23T18:22:29Z",
             "nvd_published_at": "2021-08-23T19:15:00Z",
-            "severity": "HIGH"
+            "github_reviewed": true
           },
           "references": [
             {
@@ -10555,9 +10566,9 @@
               "CWE-94"
             ],
             "severity": "CRITICAL",
-            "nvd_published_at": "2019-08-19T23:15:00Z",
             "github_reviewed_at": "2019-08-20T14:27:19Z",
-            "github_reviewed": true
+            "github_reviewed": true,
+            "nvd_published_at": "2019-08-19T23:15:00Z"
           },
           "references": [
             {
@@ -10626,8 +10637,8 @@
                 "1.7.0.rc1"
               ],
               "database_specific": {
-                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2019/08/GHSA-333g-rpr4-7hxq/GHSA-333g-rpr4-7hxq.json",
-                "last_known_affected_version_range": "<= 1.6.13"
+                "last_known_affected_version_range": "<= 1.6.13",
+                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2019/08/GHSA-333g-rpr4-7hxq/GHSA-333g-rpr4-7hxq.json"
               }
             },
             {
@@ -10860,9 +10871,9 @@
               "CWE-384"
             ],
             "severity": "CRITICAL",
-            "nvd_published_at": null,
             "github_reviewed_at": "2020-06-16T20:54:58Z",
-            "github_reviewed": true
+            "github_reviewed": true,
+            "nvd_published_at": null
           },
           "references": [
             {
@@ -10972,9 +10983,9 @@
               "CWE-200"
             ],
             "severity": "LOW",
-            "nvd_published_at": null,
             "github_reviewed_at": "2020-06-16T21:47:35Z",
-            "github_reviewed": true
+            "github_reviewed": true,
+            "nvd_published_at": null
           },
           "references": [
             {
@@ -11098,13 +11109,13 @@
           "modified": "2023-11-08T04:01:08.215454Z",
           "published": "2019-07-08T20:32:35Z",
           "database_specific": {
+            "github_reviewed_at": "2019-07-08T20:32:08Z",
+            "github_reviewed": true,
+            "nvd_published_at": "2019-07-08T14:15:10Z",
+            "severity": "CRITICAL",
             "cwe_ids": [
               "CWE-94"
-            ],
-            "severity": "CRITICAL",
-            "nvd_published_at": "2019-07-08T14:15:10Z",
-            "github_reviewed_at": "2019-07-08T20:32:08Z",
-            "github_reviewed": true
+            ]
           },
           "references": [
             {
@@ -11205,13 +11216,13 @@
           "modified": "2024-08-05T16:50:33.924840Z",
           "published": "2019-01-17T13:57:34Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T20:55:33Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2019-01-09T05:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -11634,13 +11645,13 @@
           "modified": "2024-08-05T16:50:30.205625Z",
           "published": "2022-05-13T01:07:54Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2022-09-15T19:41:21Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2018-07-13T14:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -12219,13 +12230,13 @@
           "modified": "2024-08-05T16:49:19.682083Z",
           "published": "2019-01-17T13:57:27Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T20:58:39Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2019-01-09T05:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -12777,13 +12788,13 @@
           "modified": "2024-08-05T16:50:49.755012Z",
           "published": "2018-09-13T15:50:32Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T21:23:00Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2018-07-13T14:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -13372,13 +13383,13 @@
           "modified": "2024-08-01T21:35:26.201564Z",
           "published": "2019-02-22T20:54:47Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T21:29:39Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2019-02-20T16:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -14133,13 +14144,13 @@
           "modified": "2024-08-05T17:24:11.911420Z",
           "published": "2019-01-17T13:57:56Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T21:49:11Z",
-            "severity": "MODERATE",
             "nvd_published_at": "2019-01-09T05:29:00Z",
+            "severity": "MODERATE",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -14544,13 +14555,13 @@
           "modified": "2023-11-08T04:00:58.212878Z",
           "published": "2019-04-04T16:28:47Z",
           "database_specific": {
-            "github_reviewed": true,
             "github_reviewed_at": "2020-06-16T21:58:14Z",
-            "severity": "CRITICAL",
             "nvd_published_at": null,
+            "severity": "CRITICAL",
             "cwe_ids": [
               "CWE-94"
-            ]
+            ],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -14638,10 +14649,10 @@
           "published": "2022-08-11T15:43:35Z",
           "database_specific": {
             "github_reviewed_at": "2022-08-11T15:43:35Z",
-            "cwe_ids": [],
-            "github_reviewed": true,
             "nvd_published_at": null,
-            "severity": "HIGH"
+            "severity": "HIGH",
+            "cwe_ids": [],
+            "github_reviewed": true
           },
           "references": [
             {
@@ -14708,21 +14719,21 @@
           "database_specific": {
             "malicious-packages-origins": [
               {
-                "id": "GHSA-7pwq-f4pq-78gm",
                 "import_time": "2023-07-30T21:57:59.771790567Z",
+                "modified_time": "2023-01-07T05:08:16Z",
+                "source": "ghsa-malware",
                 "ranges": [
                   {
+                    "type": "SEMVER",
                     "events": [
                       {
                         "introduced": "0"
                       }
-                    ],
-                    "type": "SEMVER"
+                    ]
                   }
                 ],
-                "source": "ghsa-malware",
-                "modified_time": "2023-01-07T05:08:16Z",
-                "sha256": "2e33f42f05c60c6d9f9297bae15a43d6c445e2ad0fd67fa4ef144e5cc79d09c7"
+                "sha256": "2e33f42f05c60c6d9f9297bae15a43d6c445e2ad0fd67fa4ef144e5cc79d09c7",
+                "id": "GHSA-7pwq-f4pq-78gm"
               }
             ]
           },
@@ -14828,20 +14839,20 @@
                 }
               ],
               "ecosystem_specific": {
-                "affected_functions": null,
                 "affects": {
+                  "arch": [],
                   "os": [],
-                  "functions": [],
-                  "arch": []
-                }
+                  "functions": []
+                },
+                "affected_functions": null
               },
               "database_specific": {
                 "cvss": null,
+                "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2022-0042.json",
                 "categories": [
                   "code-execution"
                 ],
-                "informational": null,
-                "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2022-0042.json"
+                "informational": null
               }
             }
           ],
@@ -14884,10 +14895,10 @@
           "published": "2022-04-06T00:01:30Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2022-04-07T18:13:46Z",
-            "severity": "HIGH",
+            "cwe_ids": [],
             "nvd_published_at": "2022-04-05T16:15:00Z",
-            "cwe_ids": []
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-04-07T18:13:46Z"
           },
           "references": [
             {
@@ -14993,12 +15004,12 @@
           ],
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2025-03-31T16:55:22Z",
-            "severity": "CRITICAL",
-            "nvd_published_at": "2025-03-31T17:15:42Z",
             "cwe_ids": [
               "CWE-79"
-            ]
+            ],
+            "nvd_published_at": "2025-03-31T17:15:42Z",
+            "severity": "CRITICAL",
+            "github_reviewed_at": "2025-03-31T16:55:22Z"
           },
           "references": [
             {
@@ -15101,12 +15112,12 @@
           "published": "2022-04-06T00:01:30Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2022-04-07T22:04:06Z",
-            "severity": "HIGH",
-            "nvd_published_at": "2022-04-05T16:15:00Z",
             "cwe_ids": [
               "CWE-59"
-            ]
+            ],
+            "nvd_published_at": "2022-04-05T16:15:00Z",
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-04-07T22:04:06Z"
           },
           "references": [
             {
@@ -15163,8 +15174,8 @@
                 }
               ],
               "database_specific": {
-                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/04/GHSA-2v6v-q994-xvxx/GHSA-2v6v-q994-xvxx.json",
-                "last_known_affected_version_range": "< 2.0.2"
+                "last_known_affected_version_range": "< 2.0.2",
+                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/04/GHSA-2v6v-q994-xvxx/GHSA-2v6v-q994-xvxx.json"
               }
             }
           ],
@@ -15204,12 +15215,12 @@
           ],
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2022-07-06T20:01:19Z",
-            "severity": "CRITICAL",
-            "nvd_published_at": "2022-07-05T15:15:00Z",
             "cwe_ids": [
               "CWE-22"
-            ]
+            ],
+            "nvd_published_at": "2022-07-05T15:15:00Z",
+            "severity": "CRITICAL",
+            "github_reviewed_at": "2022-07-06T20:01:19Z"
           },
           "references": [
             {
@@ -15321,13 +15332,13 @@
           "published": "2024-12-12T19:22:39Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2024-12-12T19:22:39Z",
-            "severity": "MODERATE",
-            "nvd_published_at": "2024-12-12T20:15:21Z",
             "cwe_ids": [
               "CWE-327",
               "CWE-328"
-            ]
+            ],
+            "nvd_published_at": "2024-12-12T20:15:21Z",
+            "severity": "MODERATE",
+            "github_reviewed_at": "2024-12-12T19:22:39Z"
           },
           "references": [
             {
@@ -15430,13 +15441,13 @@
           "published": "2021-08-02T17:15:05Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2021-07-22T21:51:41Z",
-            "severity": "MODERATE",
-            "nvd_published_at": "2019-09-16T15:15:00Z",
             "cwe_ids": [
               "CWE-362",
               "CWE-732"
-            ]
+            ],
+            "nvd_published_at": "2019-09-16T15:15:00Z",
+            "severity": "MODERATE",
+            "github_reviewed_at": "2021-07-22T21:51:41Z"
           },
           "references": [
             {
@@ -15559,12 +15570,12 @@
           "published": "2022-04-06T00:01:30Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2022-04-07T18:31:32Z",
-            "severity": "HIGH",
-            "nvd_published_at": "2022-04-05T16:15:00Z",
             "cwe_ids": [
               "CWE-59"
-            ]
+            ],
+            "nvd_published_at": "2022-04-05T16:15:00Z",
+            "severity": "HIGH",
+            "github_reviewed_at": "2022-04-07T18:31:32Z"
           },
           "references": [
             {
@@ -15621,8 +15632,8 @@
                 }
               ],
               "database_specific": {
-                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/04/GHSA-ffjp-66mx-3qpj/GHSA-ffjp-66mx-3qpj.json",
-                "last_known_affected_version_range": "< 2.0.2"
+                "last_known_affected_version_range": "< 2.0.2",
+                "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/04/GHSA-ffjp-66mx-3qpj/GHSA-ffjp-66mx-3qpj.json"
               }
             }
           ],
@@ -15661,12 +15672,12 @@
           "published": "2022-05-24T22:00:36Z",
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2024-02-01T21:16:11Z",
-            "severity": "MODERATE",
-            "nvd_published_at": "2019-09-16T15:15:00Z",
             "cwe_ids": [
               "CWE-276"
-            ]
+            ],
+            "nvd_published_at": "2019-09-16T15:15:00Z",
+            "severity": "MODERATE",
+            "github_reviewed_at": "2024-02-01T21:16:11Z"
           },
           "references": [
             {
@@ -15774,12 +15785,12 @@
           ],
           "database_specific": {
             "github_reviewed": true,
-            "github_reviewed_at": "2022-05-25T20:35:48Z",
-            "severity": "CRITICAL",
-            "nvd_published_at": "2022-05-21T19:15:00Z",
             "cwe_ids": [
               "CWE-284"
-            ]
+            ],
+            "nvd_published_at": "2022-05-21T19:15:00Z",
+            "severity": "CRITICAL",
+            "github_reviewed_at": "2022-05-25T20:35:48Z"
           },
           "references": [
             {
@@ -15904,8 +15915,8 @@
           "modified": "2024-06-03T20:51:31Z",
           "published": "2022-07-01T20:06:59Z",
           "database_specific": {
-            "url": "https://pkg.go.dev/vuln/GO-2022-0463",
-            "review_status": "REVIEWED"
+            "review_status": "REVIEWED",
+            "url": "https://pkg.go.dev/vuln/GO-2022-0463"
           },
           "references": [
             {
@@ -16293,8 +16304,8 @@
           "modified": "2024-05-20T16:03:47Z",
           "published": "2022-08-23T13:24:17Z",
           "database_specific": {
-            "url": "https://pkg.go.dev/vuln/GO-2022-0569",
-            "review_status": "REVIEWED"
+            "review_status": "REVIEWED",
+            "url": "https://pkg.go.dev/vuln/GO-2022-0569"
           },
           "references": [
             {
@@ -16671,8 +16682,8 @@
           "modified": "2024-05-20T16:03:47Z",
           "published": "2022-08-22T17:56:17Z",
           "database_specific": {
-            "url": "https://pkg.go.dev/vuln/GO-2022-0572",
-            "review_status": "REVIEWED"
+            "review_status": "REVIEWED",
+            "url": "https://pkg.go.dev/vuln/GO-2022-0572"
           },
           "references": [
             {
@@ -17001,8 +17012,8 @@
           "modified": "2024-12-18T17:12:33.361571Z",
           "published": "2024-12-18T16:35:36Z",
           "database_specific": {
-            "url": "https://pkg.go.dev/vuln/GO-2024-3331",
-            "review_status": "REVIEWED"
+            "review_status": "REVIEWED",
+            "url": "https://pkg.go.dev/vuln/GO-2024-3331"
           },
           "references": [
             {
@@ -17101,8 +17112,8 @@
           "modified": "2025-04-01T22:42:01.191001Z",
           "published": "2025-04-01T21:40:00Z",
           "database_specific": {
-            "url": "https://pkg.go.dev/vuln/GO-2025-3585",
-            "review_status": "REVIEWED"
+            "review_status": "REVIEWED",
+            "url": "https://pkg.go.dev/vuln/GO-2025-3585"
           },
           "references": [
             {
@@ -17193,13 +17204,13 @@
           "modified": "2023-11-08T04:04:03.732608Z",
           "published": "2021-05-18T20:31:18Z",
           "database_specific": {
-            "severity": "HIGH",
-            "nvd_published_at": "2020-06-23T19:38:00Z",
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-22"
             ],
-            "github_reviewed_at": "2021-05-12T20:32:28Z"
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-05-12T20:32:28Z",
+            "nvd_published_at": "2020-06-23T19:38:00Z",
+            "github_reviewed": true
           },
           "references": [
             {
@@ -17282,13 +17293,13 @@
           "modified": "2023-11-08T04:04:03.548111Z",
           "published": "2021-05-18T20:31:06Z",
           "database_specific": {
-            "severity": "HIGH",
-            "nvd_published_at": "2020-06-23T19:38:00Z",
-            "github_reviewed": true,
             "cwe_ids": [
               "CWE-22"
             ],
-            "github_reviewed_at": "2021-05-12T20:27:31Z"
+            "severity": "HIGH",
+            "github_reviewed_at": "2021-05-12T20:27:31Z",
+            "nvd_published_at": "2020-06-23T19:38:00Z",
+            "github_reviewed": true
           },
           "references": [
             {
@@ -17367,8 +17378,8 @@
           "modified": "2024-05-20T16:03:47Z",
           "published": "2021-04-14T20:04:52Z",
           "database_specific": {
-            "review_status": "REVIEWED",
-            "url": "https://pkg.go.dev/vuln/GO-2020-0041"
+            "url": "https://pkg.go.dev/vuln/GO-2020-0041",
+            "review_status": "REVIEWED"
           },
           "references": [
             {
@@ -17463,8 +17474,8 @@
           "modified": "2024-05-20T16:03:47Z",
           "published": "2022-01-14T17:30:28Z",
           "database_specific": {
-            "review_status": "REVIEWED",
-            "url": "https://pkg.go.dev/vuln/GO-2021-0228"
+            "url": "https://pkg.go.dev/vuln/GO-2021-0228",
+            "review_status": "REVIEWED"
           },
           "references": [
             {
@@ -17545,6 +17556,6 @@
       }
     ]
   },
-  "last_updated": "2025-12-01T22:15:07.114707",
+  "last_updated": "2025-12-03T23:38:25.528767",
   "cache_version": "1.0.0"
 }

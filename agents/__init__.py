@@ -884,3 +884,38 @@ __all__ = [
     "create_orchestrator_agent",
     "create_agent_group"
 ]
+
+
+# New hybrid architecture components
+from agents.base_agent import SecurityAgent, MockAgent
+from agents.orchestrator import AgentOrchestrator
+from agents.types import (
+    AgentResult,
+    AgentStatus,
+    Finding,
+    SharedContext,
+    AgentConfig
+)
+
+__all__ = [
+    # Existing agents
+    "BaseAgent",
+    "SupplyChainAgent",
+    "VlmSecurityAgent",
+    "OrchestratorAgent",
+    "create_supply_chain_agent",
+    "create_vlm_security_agent",
+    "create_orchestrator_agent",
+    "create_agent_group",
+    "AgentMessage",
+    "GroupChatManager",
+    # New hybrid architecture components
+    "SecurityAgent",
+    "MockAgent",
+    "AgentOrchestrator",
+    "AgentResult",
+    "AgentStatus",
+    "Finding",
+    "SharedContext",
+    "AgentConfig"
+]

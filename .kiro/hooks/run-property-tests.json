@@ -1,0 +1,14 @@
+{
+  "name": "Run Property-Based Tests",
+  "description": "Run Hypothesis property-based tests with detailed output",
+  "trigger": {
+    "type": "manual",
+    "buttonLabel": "🧪 Run Property Tests"
+  },
+  "action": {
+    "type": "executeCommand",
+    "command": "pytest -k property -v --hypothesis-show-statistics",
+    "cwd": "${workspaceFolder}"
+  },
+  "enabled": true
+}

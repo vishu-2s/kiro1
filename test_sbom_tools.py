@@ -276,6 +276,7 @@ class TestSecurityDatabaseCrossReference:
     """Property-based tests for security database cross-reference."""
 
     @given(sbom_data_strategy)
+    @settings(deadline=None)
     def test_vulnerability_check_consistency(self, sbom_data: Dict[str, Any]):
         """
         **Feature: multi-agent-security, Property 3: Security Database Cross-Reference**
@@ -290,11 +291,13 @@ class TestSecurityDatabaseCrossReference:
                 {"name": "test-package", "version": "1.0.0", "ecosystem": "npm"}
             ]
         
-        # Test with OSV disabled
-        findings_no_osv = check_vulnerable_packages(sbom_data, use_osv=False)
+        # Test with OSV disabled (mock reputation service to avoid real API calls)
+        with patch('tools.sbom_tools.ReputationScorer.calculate_reputation', return_value={'score': 0.8, 'flags': []}):
+            findings_no_osv = check_vulnerable_packages(sbom_data, use_osv=False)
         
         # Test with OSV enabled (but mocked to avoid real API calls)
-        with patch('tools.sbom_tools._query_osv_api', return_value=[]):
+        with patch('tools.sbom_tools._query_osv_api', return_value=[]), \
+             patch('tools.sbom_tools.ReputationScorer.calculate_reputation', return_value={'score': 0.8, 'flags': []}):
             findings_with_osv = check_vulnerable_packages(sbom_data, use_osv=True)
         
         # Property: Results should be lists

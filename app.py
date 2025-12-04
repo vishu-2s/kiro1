@@ -40,16 +40,17 @@ def log_message(message, level='info'):
     analysis_state['logs'].append(log_entry)
     print(f"[{timestamp}] [{level.upper()}] {message}")
 
-def run_analysis(mode, target, skip_update, skip_osv):
+def run_analysis(mode, target, skip_update, skip_osv, ecosystem='auto'):
     """Run the security analysis in a background thread"""
     try:
+        # Clear logs only when starting a NEW analysis
+        analysis_state['logs'] = []
         analysis_state['running'] = True
         analysis_state['status'] = 'running'
-        analysis_state['logs'] = []
         analysis_state['start_time'] = datetime.now().isoformat()
         analysis_state['result_file'] = None
         
-        log_message(f"Starting {mode} analysis for: {target}")
+        log_message(f"Starting {mode} analysis for: {target} (ecosystem: {ecosystem})")
         
         # Build command
         cmd = [sys.executable, 'main_github.py']
@@ -62,6 +63,10 @@ def run_analysis(mode, target, skip_update, skip_osv):
             cmd.extend(['--sbom', target])
         
         cmd.extend(['--confidence-threshold', str(CONFIDENCE_THRESHOLD)])
+        
+        # Add ecosystem parameter
+        if ecosystem and ecosystem != 'auto':
+            cmd.extend(['--ecosystem', ecosystem])
         
         if skip_update:
             cmd.append('--skip-db-update')
@@ -93,19 +98,15 @@ def run_analysis(mode, target, skip_update, skip_osv):
             log_message("Analysis completed successfully", 'success')
             analysis_state['status'] = 'completed'
             
-            # Find the result file (look for any .json file, not just _findings.json)
-            output_dir = app.config['OUTPUT_FOLDER']
-            if os.path.exists(output_dir):
-                files = sorted(
-                    [f for f in os.listdir(output_dir) if f.endswith('.json')],
-                    key=lambda x: os.path.getmtime(os.path.join(output_dir, x)),
-                    reverse=True
-                )
-                if files:
-                    analysis_state['result_file'] = files[0]
-                    log_message(f"Results saved to: {files[0]}", 'success')
-                else:
-                    log_message("Warning: No JSON output file found", 'warning')
+            # Always use the fixed report filename
+            report_file = 'demo_ui_comprehensive_report.json'
+            report_path = os.path.join(app.config['OUTPUT_FOLDER'], report_file)
+            
+            if os.path.exists(report_path):
+                analysis_state['result_file'] = report_file
+                log_message(f"Results saved to: {report_file}", 'success')
+            else:
+                log_message("Warning: Report file not found", 'warning')
         else:
             log_message(f"Analysis failed with exit code {process.returncode}", 'error')
             analysis_state['status'] = 'failed'
@@ -142,10 +143,11 @@ def analyze():
     
     mode = data.get('mode', 'github')
     target = data.get('target', '')
+    ecosystem = data.get('ecosystem', 'auto')
     skip_update = data.get('skip_update', False)
     skip_osv = data.get('skip_osv', False)
     
-    print(f"Mode: {mode}, Target: {target}, Confidence: {CONFIDENCE_THRESHOLD}")  # Debug
+    print(f"Mode: {mode}, Target: {target}, Ecosystem: {ecosystem}, Confidence: {CONFIDENCE_THRESHOLD}")  # Debug
     
     if not target:
         print("No target provided")
@@ -155,7 +157,7 @@ def analyze():
     print("Starting background thread...")  # Debug
     thread = threading.Thread(
         target=run_analysis,
-        args=(mode, target, skip_update, skip_osv)
+        args=(mode, target, skip_update, skip_osv, ecosystem)
     )
     thread.daemon = True
     thread.start()
@@ -177,46 +179,105 @@ def get_status():
 
 @app.route('/api/report')
 def get_report():
-    """Get the analysis report"""
-    if not analysis_state['result_file']:
-        return jsonify({'error': 'No report available'}), 404
+    """Get the analysis report - always uses demo_ui_comprehensive_report.json"""
+    # Always use the fixed report filename
+    report_path = os.path.join(app.config['OUTPUT_FOLDER'], 'demo_ui_comprehensive_report.json')
     
-    result_path = os.path.join(app.config['OUTPUT_FOLDER'], analysis_state['result_file'])
-    
-    if not os.path.exists(result_path):
-        return jsonify({'error': 'Report file not found'}), 404
+    if not os.path.exists(report_path):
+        return jsonify({'error': 'No report available. Please run an analysis first.'}), 404
     
     try:
-        with open(result_path, 'r') as f:
+        with open(report_path, 'r', encoding='utf-8') as f:
             report_data = json.load(f)
-        return jsonify(report_data)
+        
+        # Create response with cache-busting headers
+        response = jsonify(report_data)
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     except Exception as e:
         return jsonify({'error': f'Failed to load report: {str(e)}'}), 500
 
 @app.route('/api/reports')
 def list_reports():
-    """List all available reports"""
+    """List all available reports including backups"""
     output_dir = app.config['OUTPUT_FOLDER']
     if not os.path.exists(output_dir):
-        return jsonify([])
+        return jsonify({'reports': [], 'backups': []})
     
     reports = []
+    backups = []
+    
     for filename in os.listdir(output_dir):
         if filename.endswith('.json'):
             filepath = os.path.join(output_dir, filename)
-            reports.append({
+            file_info = {
                 'filename': filename,
                 'size': os.path.getsize(filepath),
                 'modified': datetime.fromtimestamp(os.path.getmtime(filepath)).isoformat()
-            })
+            }
+            
+            # Separate backups from regular reports
+            if 'backup' in filename.lower():
+                backups.append(file_info)
+            else:
+                reports.append(file_info)
     
+    # Sort by modified date (newest first)
     reports.sort(key=lambda x: x['modified'], reverse=True)
-    return jsonify(reports)
+    backups.sort(key=lambda x: x['modified'], reverse=True)
+    
+    return jsonify({
+        'reports': reports,
+        'backups': backups
+    })
 
 @app.route('/outputs/<path:filename>')
 def download_file(filename):
     """Download a report file"""
     return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
+
+@app.route('/api/restore-backup', methods=['POST'])
+def restore_backup():
+    """Restore a backup file as the current report"""
+    data = request.json
+    backup_filename = data.get('backup_filename', '')
+    
+    if not backup_filename:
+        return jsonify({'error': 'Backup filename is required'}), 400
+    
+    output_dir = app.config['OUTPUT_FOLDER']
+    backup_path = os.path.join(output_dir, backup_filename)
+    current_path = os.path.join(output_dir, 'demo_ui_comprehensive_report.json')
+    
+    # Verify backup file exists
+    if not os.path.exists(backup_path):
+        return jsonify({'error': 'Backup file not found'}), 404
+    
+    try:
+        # Create backup of current report before restoring
+        if os.path.exists(current_path):
+            backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            new_backup_path = os.path.join(output_dir, f"demo_ui_comprehensive_report_backup_{backup_timestamp}.json")
+            import shutil
+            shutil.copy2(current_path, new_backup_path)
+            log_message(f"Created backup of current report: {new_backup_path}")
+        
+        # Restore the backup
+        import shutil
+        shutil.copy2(backup_path, current_path)
+        log_message(f"Restored backup: {backup_filename}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Backup restored successfully',
+            'restored_from': backup_filename
+        })
+        
+    except Exception as e:
+        log_message(f"Error restoring backup: {str(e)}", 'error')
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Ensure output directory exists
@@ -230,4 +291,5 @@ if __name__ == '__main__':
     print("\nPress Ctrl+C to stop the server")
     print("=" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    # Disable auto-reload to prevent interrupting analysis
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True, use_reloader=False)

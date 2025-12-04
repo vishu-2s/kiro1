@@ -1,0 +1,13 @@
+{
+  "name": "Security Scan on Commit",
+  "description": "Run security analysis before committing changes to package files",
+  "trigger": {
+    "type": "preCommit",
+    "filePattern": "**/package.json|**/requirements.txt|**/setup.py"
+  },
+  "action": {
+    "type": "sendMessage",
+    "message": "Run a quick security scan on the modified package files: ${modifiedFiles}. Check for known malicious packages and suspicious patterns. Report any critical findings."
+  },
+  "enabled": false
+}

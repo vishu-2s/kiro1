@@ -1,0 +1,14 @@
+{
+  "name": "Update Malicious Package Database",
+  "description": "Update the malicious package database weekly",
+  "trigger": {
+    "type": "manual",
+    "buttonLabel": "🔄 Update Malicious DB"
+  },
+  "action": {
+    "type": "executeCommand",
+    "command": "python update_constants.py --force",
+    "cwd": "${workspaceFolder}"
+  },
+  "enabled": true
+}

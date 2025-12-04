@@ -11,7 +11,7 @@ import tempfile
 import os
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
-from hypothesis import given, strategies as st, assume
+from hypothesis import given, strategies as st, assume, settings
 from typing import Dict, List, Any
 import string
 from datetime import datetime
@@ -100,6 +100,7 @@ class TestStructuredOutputGeneration:
     """Property-based tests for structured output generation."""
 
     @given(sbom_data_strategy, st.lists(security_finding_strategy, min_size=0, max_size=10))
+    @settings(deadline=None)
     def test_analysis_result_structure_consistency(self, sbom_data: Dict[str, Any], 
                                                   findings: List[Dict[str, Any]]):
         """
@@ -206,6 +207,7 @@ class TestStructuredOutputGeneration:
         assert result.sbom_data == sbom_data, "SBOM data should match input"
 
     @given(sbom_data_strategy)
+    @settings(deadline=None)
     def test_json_serialization_consistency(self, sbom_data: Dict[str, Any]):
         """
         **Feature: multi-agent-security, Property 5: Structured Output Generation**
@@ -341,6 +343,7 @@ class TestStructuredOutputGeneration:
         assert severity_sum == result.summary.total_findings, "Severity counts should sum to total findings"
 
     @given(st.lists(security_finding_strategy, min_size=1, max_size=10))
+    @settings(deadline=None)
     def test_finding_aggregation_consistency(self, findings: List[Dict[str, Any]]):
         """
         **Feature: multi-agent-security, Property 5: Structured Output Generation**

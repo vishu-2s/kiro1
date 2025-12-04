@@ -151,6 +151,7 @@ def analyze_image_with_gpt4_vision(image_path: str,
                                   analysis_prompt: Optional[str] = None) -> Dict[str, Any]:
     """
     Analyze image using GPT-4 Vision for security indicators.
+    Uses intelligent caching to avoid redundant API calls.
     
     Args:
         image_path: Path to image file
@@ -163,6 +164,8 @@ def analyze_image_with_gpt4_vision(image_path: str,
         ValueError: If image processing fails
         requests.RequestException: If API call fails
     """
+    from tools.cache_manager import get_cache_manager
+    
     if not config.OPENAI_API_KEY:
         raise ValueError("OpenAI API key not configured")
     
@@ -208,36 +211,57 @@ def analyze_image_with_gpt4_vision(image_path: str,
         }
         """
     
-    # Prepare API request
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {config.OPENAI_API_KEY}"
-    }
-    
-    payload = {
-        "model": config.OPENAI_VISION_MODEL,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": analysis_prompt
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{base64_image}"
-                        }
-                    }
-                ]
-            }
-        ],
-        "max_tokens": config.AGENT_MAX_TOKENS,
-        "temperature": config.AGENT_TEMPERATURE
-    }
-    
     try:
+        # Initialize cache manager
+        cache_manager = get_cache_manager()
+        
+        # Generate cache key from image content and prompt
+        # Use image hash + prompt hash for cache key
+        cache_content = f"{base64_image[:100]}:{analysis_prompt}"  # Use first 100 chars of base64 for efficiency
+        cache_key = cache_manager.generate_cache_key(cache_content, prefix="llm_vision")
+        
+        # Check cache first (Property 6: Cache-First Lookup)
+        cached_result = cache_manager.get_llm_analysis(cache_key)
+        if cached_result is not None:
+            logger.info(f"Cache hit for vision analysis of '{image_path}'")
+            # Add current metadata
+            cached_result["analysis_timestamp"] = datetime.now().isoformat()
+            cached_result["image_path"] = image_path
+            cached_result["cached"] = True
+            return cached_result
+        
+        logger.info(f"Cache miss for vision analysis of '{image_path}', calling Vision API")
+        
+        # Cache miss - perform vision analysis
+        # Prepare API request
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {config.OPENAI_API_KEY}"
+        }
+        
+        payload = {
+            "model": config.OPENAI_VISION_MODEL,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": analysis_prompt
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "max_tokens": config.AGENT_MAX_TOKENS,
+            "temperature": config.AGENT_TEMPERATURE
+        }
+        
         # Use the new OpenAI API client
         openai_client = OpenAIAPIClient()
         
@@ -285,11 +309,17 @@ def analyze_image_with_gpt4_vision(image_path: str,
         analysis_result["analysis_timestamp"] = datetime.now().isoformat()
         analysis_result["image_path"] = image_path
         analysis_result["model_used"] = config.OPENAI_VISION_MODEL
+        analysis_result["cached"] = False
+        
+        # Store result in cache for future use
+        cache_manager.store_llm_analysis(cache_key, analysis_result)
+        logger.info(f"Vision analysis for '{image_path}' completed and cached")
         
         return analysis_result
     
     except Exception as e:
         logger.error(f"Error analyzing image with GPT-4 Vision: {e}")
+        # Graceful fallback - continue without caching
         raise ValueError(f"Failed to analyze image: {e}")
 
 def detect_security_indicators(image_path: str) -> List[VisualSecurityFinding]:
