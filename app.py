@@ -26,7 +26,13 @@ analysis_state = {
     'status': 'idle',
     'result_file': None,
     'start_time': None,
-    'end_time': None
+    'end_time': None,
+    'progress': {
+        'total_packages': 0,
+        'scanned_packages': 0,
+        'current_package': None,
+        'percentage': 0
+    }
 }
 
 def log_message(message, level='info'):
@@ -49,6 +55,13 @@ def run_analysis(mode, target, skip_update, skip_osv, ecosystem='auto'):
         analysis_state['status'] = 'running'
         analysis_state['start_time'] = datetime.now().isoformat()
         analysis_state['result_file'] = None
+        analysis_state['progress'] = {
+            'total_packages': 0,  # Will be updated when packages are discovered
+            'scanned_packages': 0,
+            'current_package': 'Initializing analysis...',
+            'percentage': 0,
+            'stage': 'starting'
+        }
         
         log_message(f"Starting {mode} analysis for: {target} (ecosystem: {ecosystem})")
         
@@ -86,15 +99,161 @@ def run_analysis(mode, target, skip_update, skip_osv, ecosystem='auto'):
             universal_newlines=True
         )
         
-        # Stream output
+        # Stream output and track progress
         for line in process.stdout:
             line = line.strip()
             if line:
                 log_message(line)
+                
+                # Parse progress from log messages - Stage-based tracking
+                import re
+                
+                # Stage 1: Initialization (0-5%)
+                if 'Initializing' in line or 'Loading' in line or 'Starting' in line:
+                    if analysis_state['progress']['percentage'] < 5:
+                        analysis_state['progress']['percentage'] = 3
+                        analysis_state['progress']['current_package'] = 'Initializing analysis...'
+                        analysis_state['progress']['stage'] = 'init'
+                
+                # Stage 1.5: Repository Cloning (5-10%)
+                elif 'Cloning' in line or 'cloned to' in line:
+                    analysis_state['progress']['percentage'] = 8
+                    analysis_state['progress']['current_package'] = 'Cloning repository...'
+                    analysis_state['progress']['stage'] = 'clone'
+                
+                # Stage 2: Dependency Graph Building (10-20%)
+                elif 'Building dependency graph' in line or 'dependency graph' in line.lower():
+                    analysis_state['progress']['percentage'] = 12
+                    analysis_state['progress']['current_package'] = 'Building dependency graph...'
+                    analysis_state['progress']['stage'] = 'dep_graph'
+                
+                elif 'Built dependency graph' in line or 'Dependency graph built' in line:
+                    try:
+                        match = re.search(r'(\d+)\s+packages', line)
+                        if match:
+                            total = int(match.group(1))
+                            analysis_state['progress']['total_packages'] = total
+                            analysis_state['progress']['percentage'] = 20
+                            analysis_state['progress']['current_package'] = f'Dependency graph complete: {total} packages'
+                            analysis_state['progress']['stage'] = 'dep_graph_complete'
+                    except Exception:
+                        pass
+                
+                # Stage 3: Circular Dependencies & Conflicts (20-25%)
+                elif 'circular dependencies' in line.lower() or 'version conflicts' in line.lower():
+                    analysis_state['progress']['percentage'] = 22
+                    analysis_state['progress']['current_package'] = 'Analyzing dependencies...'
+                    analysis_state['progress']['stage'] = 'dep_analysis'
+                
+                # Stage 4: Package Discovery (25-30%)
+                elif 'Found' in line and 'packages' in line:
+                    try:
+                        match = re.search(r'Found\s+(\d+)\s+packages', line)
+                        if match:
+                            total = int(match.group(1))
+                            analysis_state['progress']['total_packages'] = total
+                            analysis_state['progress']['percentage'] = 25
+                            analysis_state['progress']['current_package'] = f'Discovered {total} packages'
+                            analysis_state['progress']['stage'] = 'discovery'
+                    except Exception:
+                        pass
+                
+                # Stage 5: Rule-based Detection (30-35%)
+                elif 'Running rule-based detection' in line:
+                    analysis_state['progress']['percentage'] = 32
+                    analysis_state['progress']['current_package'] = 'Running rule-based detection...'
+                    analysis_state['progress']['stage'] = 'rule_detection'
+                
+                # Stage 6: OSV Queries (35-65%)
+                elif 'Starting parallel OSV queries' in line:
+                    try:
+                        match = re.search(r'for\s+(\d+)\s+packages', line)
+                        if match:
+                            total = int(match.group(1))
+                            analysis_state['progress']['total_packages'] = total
+                            analysis_state['progress']['percentage'] = 38
+                            analysis_state['progress']['current_package'] = f'Querying vulnerabilities for {total} packages...'
+                            analysis_state['progress']['stage'] = 'osv_query'
+                    except Exception:
+                        pass
+                
+                elif 'Completed parallel OSV queries' in line:
+                    try:
+                        match = re.search(r'(\d+)/(\d+)\s+successful', line)
+                        if match:
+                            current = int(match.group(1))
+                            total = int(match.group(2))
+                            analysis_state['progress']['scanned_packages'] = current
+                            analysis_state['progress']['total_packages'] = total
+                            analysis_state['progress']['percentage'] = 65
+                            analysis_state['progress']['current_package'] = f'Completed vulnerability scan: {current}/{total} packages'
+                            analysis_state['progress']['stage'] = 'osv_complete'
+                    except Exception:
+                        pass
+                
+                # Stage 7: Multi-agent Analysis (65-75%)
+                elif 'Running multi-agent analysis' in line or 'Starting orchestration' in line:
+                    analysis_state['progress']['percentage'] = 68
+                    analysis_state['progress']['current_package'] = 'Running multi-agent analysis...'
+                    analysis_state['progress']['stage'] = 'multi_agent'
+                
+                elif 'Vulnerability Analysis' in line or 'VulnerabilityAnalysisAgent' in line:
+                    analysis_state['progress']['percentage'] = 70
+                    analysis_state['progress']['current_package'] = 'Analyzing vulnerabilities...'
+                    analysis_state['progress']['stage'] = 'vuln_analysis'
+                
+                elif 'Reputation Analysis' in line or 'ReputationAnalysisAgent' in line:
+                    analysis_state['progress']['percentage'] = 75
+                    analysis_state['progress']['current_package'] = 'Analyzing package reputation...'
+                    analysis_state['progress']['stage'] = 'reputation'
+                
+                elif 'Code Analysis' in line or 'CodeAnalysisAgent' in line:
+                    analysis_state['progress']['percentage'] = 80
+                    analysis_state['progress']['current_package'] = 'Analyzing code patterns...'
+                    analysis_state['progress']['stage'] = 'code_analysis'
+                
+                # Stage 8: Synthesis (80-90%)
+                elif 'Synthesis' in line or 'SynthesisAgent' in line:
+                    analysis_state['progress']['percentage'] = 85
+                    analysis_state['progress']['current_package'] = 'Synthesizing results...'
+                    analysis_state['progress']['stage'] = 'synthesis'
+                
+                elif 'LLM recommendations' in line:
+                    analysis_state['progress']['percentage'] = 88
+                    analysis_state['progress']['current_package'] = 'Generating AI recommendations...'
+                    analysis_state['progress']['stage'] = 'llm_recommendations'
+                
+                # Stage 9: Report Generation (90-95%)
+                elif 'Generating report' in line or 'Creating report' in line or 'ANALYSIS COMPLETE' in line:
+                    analysis_state['progress']['percentage'] = 92
+                    analysis_state['progress']['current_package'] = 'Generating security report...'
+                    analysis_state['progress']['stage'] = 'report'
+                
+                # Stage 10: Completion (95-100%)
+                elif 'security findings' in line.lower() and 'Found' in line:
+                    try:
+                        match = re.search(r'Found\s+(\d+)\s+security findings', line)
+                        if match:
+                            findings = int(match.group(1))
+                            analysis_state['progress']['percentage'] = 96
+                            analysis_state['progress']['current_package'] = f'Analysis complete: {findings} findings detected'
+                            analysis_state['progress']['stage'] = 'finalizing'
+                    except Exception:
+                        pass
+                
+                elif 'Analysis completed successfully' in line:
+                    analysis_state['progress']['percentage'] = 98
+                    analysis_state['progress']['current_package'] = 'Finalizing report...'
+                    analysis_state['progress']['stage'] = 'finalizing'
         
         process.wait()
         
         if process.returncode == 0:
+            # Set progress to 100% before marking as completed
+            analysis_state['progress']['percentage'] = 100
+            analysis_state['progress']['current_package'] = 'Analysis complete!'
+            analysis_state['progress']['stage'] = 'complete'
+            
             log_message("Analysis completed successfully", 'success')
             analysis_state['status'] = 'completed'
             
@@ -165,6 +324,20 @@ def analyze():
     
     return jsonify({'status': 'started'})
 
+@app.route('/api/cancel', methods=['POST'])
+def cancel_analysis():
+    """Cancel the running analysis (placeholder - not fully implemented)"""
+    if not analysis_state['running']:
+        return jsonify({'error': 'No analysis running'}), 400
+    
+    # Note: Actual cancellation of subprocess is complex
+    # For now, just mark as failed
+    analysis_state['status'] = 'failed'
+    analysis_state['running'] = False
+    log_message('Analysis cancelled by user', 'warning')
+    
+    return jsonify({'status': 'cancelled'})
+
 @app.route('/api/status')
 def get_status():
     """Get current analysis status and logs"""
@@ -174,7 +347,8 @@ def get_status():
         'logs': analysis_state['logs'],
         'result_file': analysis_state['result_file'],
         'start_time': analysis_state['start_time'],
-        'end_time': analysis_state['end_time']
+        'end_time': analysis_state['end_time'],
+        'progress': analysis_state['progress']
     })
 
 @app.route('/api/report')
@@ -256,18 +430,25 @@ def restore_backup():
         return jsonify({'error': 'Backup file not found'}), 404
     
     try:
+        import shutil
+        
         # Create backup of current report before restoring
         if os.path.exists(current_path):
             backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             new_backup_path = os.path.join(output_dir, f"demo_ui_comprehensive_report_backup_{backup_timestamp}.json")
-            import shutil
             shutil.copy2(current_path, new_backup_path)
             log_message(f"Created backup of current report: {new_backup_path}")
         
-        # Restore the backup
-        import shutil
+        # Restore the backup to current report
         shutil.copy2(backup_path, current_path)
         log_message(f"Restored backup: {backup_filename}")
+        
+        # Delete the backup file that was restored (it's now the current report)
+        try:
+            os.remove(backup_path)
+            log_message(f"Removed restored backup file: {backup_filename}")
+        except Exception as e:
+            log_message(f"Warning: Could not remove backup file: {e}", 'warning')
         
         return jsonify({
             'success': True,
