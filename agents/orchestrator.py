@@ -313,15 +313,9 @@ class AgentOrchestrator:
         degradation_metadata = self.error_handler.get_degradation_metadata(context)
         final_json["metadata"].update(degradation_metadata)
         
-        # Restructure output into 3 clear sections
-        self._log("Restructuring output into organized sections...")
-        restructurer = OutputRestructurer()
-        final_json = restructurer.restructure_output(
-            final_json,
-            input_mode=context.input_mode,
-            ecosystem=context.ecosystem
-        )
-        self._log("Output restructured successfully")
+        # Keep original JSON format - don't restructure
+        # The synthesis agent already produces the correct format
+        self._log("Using original synthesis output format")
         
         # Write to output file
         output_path = self._write_output(final_json)

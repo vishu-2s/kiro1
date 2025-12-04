@@ -73,81 +73,71 @@ Always provide actionable, prioritized recommendations with clear reasoning."""
         )
         
         # Initialize OpenAI client with reduced timeout and no retries
-        self.openai_client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            timeout=10.0,  # 10 second timeout
-            max_retries=0  # Disable automatic retries
-        )
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            self._log("WARNING: OPENAI_API_KEY not found in environment. LLM synthesis will fail.", "WARNING")
+            self.openai_client = None
+        else:
+            self.openai_client = OpenAI(
+                api_key=api_key,
+                timeout=10.0,  # 10 second timeout
+                max_retries=0  # Disable automatic retries
+            )
+            self._log(f"OpenAI client initialized with key: {api_key[:10]}...", "INFO")
     
     def analyze(self, context: SharedContext, timeout: Optional[int] = None) -> Dict[str, Any]:
         """
-        Synthesize final JSON report from all agent results (OPTIMIZED - no timeouts).
+        Synthesize final JSON report from all agent results with LLM-powered recommendations.
         
         **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5**
         
-        Optimization strategy:
-        1. Skip LLM synthesis for large datasets (>50 packages)
-        2. Use streaming for faster response
-        3. Aggressive timeout (5s max)
-        4. Immediate fallback on any delay
+        Strategy:
+        1. Generate base report from all agent findings
+        2. Use LLM to analyze complete findings and generate intelligent recommendations
+        3. Combine base report with LLM insights
         
         Args:
             context: Shared context with all agent results
             timeout: Optional timeout override
         
         Returns:
-            Complete package-centric JSON report
+            Complete package-centric JSON report with LLM recommendations
         """
         start_time = time.time()
         
-        # Check if we should skip LLM synthesis (too many packages)
-        package_count = len(context.packages) if hasattr(context, 'packages') else 0
+        self._log("Starting synthesis with LLM-powered recommendations", "INFO")
         
-        if package_count > 50:
-            self._log(f"Skipping LLM synthesis for {package_count} packages (too large), using fast fallback", "INFO")
-            fallback_report = self._generate_fallback_report(context)
-            duration = time.time() - start_time
-            return {
-                "success": True,
-                "report": fallback_report,
-                "duration_seconds": duration,
-                "synthesis_method": "fast_fallback"
-            }
+        # Step 1: Generate base report from all agent findings
+        base_report = self._generate_fallback_report(context)
         
+        # Step 2: Try to enhance with LLM recommendations
         try:
-            # Try LLM synthesis with aggressive timeout
-            final_json = self.synthesize_json_fast(
+            self._log("Generating LLM recommendations from complete analysis...", "INFO")
+            
+            llm_recommendations = self._generate_llm_recommendations(
                 context=context,
-                timeout=timeout or 5  # Aggressive 5 second timeout
+                base_report=base_report,
+                timeout=timeout or 15
             )
             
-            # Validate JSON schema
-            if not self._validate_json_schema(final_json):
-                raise ValueError("Generated JSON does not match required schema")
-            
-            duration = time.time() - start_time
-            
-            return {
-                "success": True,
-                "report": final_json,
-                "duration_seconds": duration,
-                "synthesis_method": "llm"
-            }
+            # Replace recommendations with LLM-generated content
+            if llm_recommendations:
+                base_report["recommendations"] = llm_recommendations
+                self._log("LLM recommendations generated successfully", "INFO")
+                synthesis_method = "llm_enhanced"
+            else:
+                self._log("LLM returned empty recommendations, using rule-based", "WARNING")
+                synthesis_method = "rule_based"
             
         except Exception as e:
-            self._log(f"LLM synthesis failed or timed out: {str(e)}, using fallback", "WARNING")
-            
-            # Generate fallback report (fast, no LLM)
-            duration = time.time() - start_time
-            fallback_report = self._generate_fallback_report(context)
-            
-            return {
-                "success": True,  # Fallback is still success
-                "report": fallback_report,
-                "error": str(e),
-                "duration_seconds": duration,
-                "synthesis_method": "fallback"
-            }
+            self._log(f"LLM recommendation generation failed: {str(e)}, using rule-based recommendations", "WARNING")
+            synthesis_method = "rule_based"
+        
+        duration = time.time() - start_time
+        base_report["metadata"]["synthesis_method"] = synthesis_method
+        base_report["metadata"]["synthesis_duration"] = duration
+        
+        return base_report
     
     def synthesize_json_fast(
         self,
@@ -164,6 +154,10 @@ Always provide actionable, prioritized recommendations with clear reasoning."""
         Returns:
             Synthesized JSON report
         """
+        # Check if OpenAI client is available
+        if not self.openai_client:
+            raise ValueError("OpenAI client not initialized. Check OPENAI_API_KEY in .env file.")
+        
         # Create minimal prompt (reduce tokens)
         prompt = self._create_minimal_synthesis_prompt(context)
         
@@ -263,6 +257,10 @@ Keep response under 500 tokens. Output valid JSON only."""
         """
         # Prepare synthesis prompt
         prompt = self._create_synthesis_prompt(context)
+        
+        # Check if OpenAI client is available
+        if not self.openai_client:
+            raise ValueError("OpenAI client not initialized. Check OPENAI_API_KEY in .env file.")
         
         # Use OpenAI JSON mode for guaranteed valid JSON
         if use_json_mode:
@@ -540,8 +538,8 @@ IMPORTANT:
         # Aggregate findings manually
         packages_data = self.aggregate_findings(context)
         
-        # Generate SPECIFIC recommendations based on actual findings
-        recommendations = self._generate_specific_recommendations(context, packages_data)
+        # Generate simple text recommendations based on findings
+        recommendations = self._generate_simple_text_recommendations(context, packages_data)
         
         # Assess risk
         risk_assessment = self.assess_project_risk(packages_data)
@@ -811,6 +809,188 @@ IMPORTANT:
     def _generate_basic_recommendations(self, packages: Dict[str, Any]) -> List[str]:
         """Generate basic recommendations from package data."""
         return self.generate_common_recommendations(packages)
+    
+    def _generate_llm_recommendations(
+        self,
+        context: SharedContext,
+        base_report: Dict[str, Any],
+        timeout: int
+    ) -> Optional[str]:
+        """
+        Generate intelligent recommendations using LLM analysis of complete findings.
+        
+        This method sends ALL agent findings to the LLM for comprehensive analysis
+        and returns a detailed recommendation text.
+        
+        Args:
+            context: Shared context with all agent results
+            base_report: Base report with aggregated findings
+            timeout: Timeout in seconds
+        
+        Returns:
+            String with LLM-generated recommendations
+        """
+        # Check if OpenAI client is available
+        if not self.openai_client:
+            self._log("OpenAI client not available, skipping LLM recommendations", "WARNING")
+            return None
+        
+        # Create comprehensive prompt with ALL findings
+        prompt = self._create_llm_recommendation_prompt(context, base_report)
+        
+        try:
+            self._log(f"Sending {len(prompt)} chars to LLM for analysis...", "INFO")
+            
+            response = self.openai_client.chat.completions.create(
+                model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+                messages=[
+                    {
+                        "role": "system", 
+                        "content": """You are a senior security engineer writing recommendations for a development team.
+
+Write clear, professional recommendations that:
+- Prioritize by risk and impact (not by listing every package)
+- Group similar issues together intelligently
+- Provide specific actions for critical issues
+- Include preventive measures and best practices
+- Are engaging and easy to read
+
+Write in flowing paragraphs, not bullet points. Be concise but thorough."""
+                    },
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,
+                max_tokens=800,
+                timeout=timeout
+            )
+            
+            recommendations_text = response.choices[0].message.content.strip()
+            self._log("LLM recommendations generated successfully", "INFO")
+            return recommendations_text
+            
+        except Exception as e:
+            self._log(f"LLM recommendation generation failed: {str(e)}", "ERROR")
+            return None
+    
+    def _create_llm_recommendation_prompt(
+        self,
+        context: SharedContext,
+        base_report: Dict[str, Any]
+    ) -> str:
+        """
+        Create intelligent prompt for LLM to generate smart, engaging recommendations.
+        
+        Args:
+            context: Shared context
+            base_report: Base report with findings
+        
+        Returns:
+            Prompt string for LLM
+        """
+        # Extract key statistics
+        summary = base_report.get("summary", {})
+        security_findings = base_report.get("security_findings", {})
+        
+        # Get top critical/high severity packages (not all packages)
+        critical_packages = []
+        high_packages = []
+        
+        for finding in context.initial_findings:
+            if finding.severity.lower() == "critical":
+                critical_packages.append(f"{finding.package_name}@{finding.package_version}: {finding.description}")
+            elif finding.severity.lower() == "high":
+                high_packages.append(f"{finding.package_name}@{finding.package_version}: {finding.description}")
+        
+        # Limit to top 5 of each
+        critical_packages = critical_packages[:5]
+        high_packages = high_packages[:5]
+        
+        prompt = f"""You are a security expert reviewing a dependency analysis report. Generate intelligent, engaging recommendations.
+
+PROJECT OVERVIEW:
+- Total Packages Analyzed: {summary.get('total_packages', 0)}
+- Security Issues Found: {summary.get('total_findings', 0)}
+- Severity Breakdown: {summary.get('critical_findings', 0)} Critical, {summary.get('high_findings', 0)} High, {summary.get('medium_findings', 0)} Medium, {summary.get('low_findings', 0)} Low
+
+TOP CRITICAL ISSUES:
+{chr(10).join(f"• {pkg}" for pkg in critical_packages) if critical_packages else "None"}
+
+TOP HIGH-SEVERITY ISSUES:
+{chr(10).join(f"• {pkg}" for pkg in high_packages[:3]) if high_packages else "None"}
+
+AGENT ANALYSIS SUMMARY:
+"""
+        
+        # Add concise agent summaries
+        for agent_name, result in context.agent_results.items():
+            if result.success:
+                data = result.data
+                if "total_vulnerabilities_found" in data and data["total_vulnerabilities_found"] > 0:
+                    prompt += f"• Vulnerability Analysis: Found {data['total_vulnerabilities_found']} vulnerabilities across {data.get('total_packages_analyzed', 0)} packages\n"
+                if "supply_chain_attacks_detected" in data and data["supply_chain_attacks_detected"] > 0:
+                    prompt += f"• Supply Chain: Detected {data['supply_chain_attacks_detected']} potential supply chain attacks\n"
+        
+        prompt += """
+
+TASK: Generate clear, actionable security recommendations in plain text format.
+
+GUIDELINES:
+1. Be INTELLIGENT - Don't list every package. Group similar issues and prioritize by impact.
+2. Be SPECIFIC - Mention the most critical packages by name, but summarize patterns.
+3. Be ENGAGING - Write in clear, professional language that developers will actually read.
+4. Be PRACTICAL - Focus on what they should do NOW vs. later.
+
+FORMAT: Write 2-4 paragraphs covering:
+- Critical/Immediate Actions (if any critical issues exist)
+- Important Security Improvements (address high/medium issues)
+- Best Practices & Prevention (long-term security posture)
+
+Keep it concise but comprehensive. NO bullet points, NO JSON structure - just clear, flowing text."""
+        
+        return prompt
+    
+    def _generate_simple_text_recommendations(
+        self,
+        context: SharedContext,
+        packages_data: Dict[str, Any]
+    ) -> str:
+        """
+        Generate simple text recommendations when LLM is not available.
+        
+        Args:
+            context: Shared context
+            packages_data: Aggregated package data
+        
+        Returns:
+            Simple recommendation text
+        """
+        recommendations = []
+        
+        # Count findings
+        critical_count = 0
+        high_count = 0
+        
+        for finding in context.initial_findings:
+            if finding.severity.lower() == "critical":
+                critical_count += 1
+            elif finding.severity.lower() == "high":
+                high_count += 1
+        
+        if critical_count > 0:
+            recommendations.append(f"URGENT: Address {critical_count} critical security findings immediately.")
+        
+        if high_count > 0:
+            recommendations.append(f"Update {high_count} packages with high-severity vulnerabilities.")
+        
+        if not recommendations:
+            recommendations.append("No critical issues detected. Continue monitoring for new vulnerabilities.")
+        
+        recommendations.extend([
+            "Implement dependency scanning in CI/CD pipeline.",
+            "Regularly update dependencies and monitor security advisories."
+        ])
+        
+        return "\n".join(f"• {rec}" for rec in recommendations)
     
     def _generate_specific_recommendations(
         self, 

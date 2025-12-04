@@ -64,8 +64,8 @@ Focus on security implications and potential malicious behavior."""
             ]
         )
         
-        # Initialize OpenAI client
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+        # OpenAI client will be initialized by base class via llm_config
+        # No need to set api_key here - it's handled in base_agent.py
         
         # Initialize cache manager
         self.cache_manager = get_cache_manager(

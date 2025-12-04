@@ -1261,6 +1261,19 @@
             local: 'Enter local directory path (e.g., C:\\Projects\\myapp or /home/user/myapp)'
         };
 
+        // Helper function to highlight input field on error
+        function highlightInputError(inputElement) {
+            inputElement.style.borderColor = '#DC2626';
+            inputElement.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.1)';
+            inputElement.focus();
+            
+            // Remove highlight after 3 seconds
+            setTimeout(() => {
+                inputElement.style.borderColor = '';
+                inputElement.style.boxShadow = '';
+            }, 3000);
+        }
+
         // Toast notification system
         function showToast(message, type = 'info', duration = 5000) {
             let container = document.querySelector('.toast-container');
@@ -1507,13 +1520,54 @@
         }
 
         async function startAnalysis() {
-            const target = document.getElementById('target').value.trim();
+            const targetInput = document.getElementById('target');
+            const target = targetInput.value.trim();
 
+            // Remove any previous error styling
+            targetInput.style.borderColor = '';
+            targetInput.style.boxShadow = '';
+
+            // Validate target is not empty
             if (!target) {
-                showToast('Please enter a target', 'warning');
+                showToast('Please enter a target (GitHub URL or local path)', 'error');
+                highlightInputError(targetInput);
                 return;
             }
 
+            // Validate based on selected mode
+            if (currentMode === 'github') {
+                // Validate GitHub URL format
+                const githubUrlPattern = /^https?:\/\/(www\.)?github\.com\/[\w-]+\/[\w.-]+/i;
+                
+                if (!githubUrlPattern.test(target)) {
+                    showToast('Invalid GitHub URL. Please enter a valid GitHub repository URL (e.g., https://github.com/user/repo)', 'error');
+                    highlightInputError(targetInput);
+                    return;
+                }
+            } else if (currentMode === 'local') {
+                // Validate local path format
+                // Check if it looks like a valid path (contains path separators or is a relative path)
+                const isWindowsPath = /^[a-zA-Z]:\\/.test(target) || /^\\\\/.test(target); // C:\ or \\
+                const isUnixPath = /^\//.test(target) || /^~\//.test(target); // / or ~/
+                const isRelativePath = /^\.\.?[\/\\]/.test(target) || /^[\w.-]+$/.test(target); // ./ or ../ or simple folder name
+                
+                if (!isWindowsPath && !isUnixPath && !isRelativePath) {
+                    showToast('Invalid local path. Please enter a valid file system path (e.g., C:\\path\\to\\project or /path/to/project or ./project)', 'error');
+                    highlightInputError(targetInput);
+                    return;
+                }
+                
+                // Additional check: path should not look like a URL
+                if (target.startsWith('http://') || target.startsWith('https://')) {
+                    showToast('You selected "Local" mode but entered a URL. Please switch to "GitHub" mode or enter a local file path.', 'error');
+                    highlightInputError(targetInput);
+                    return;
+                }
+            }
+
+            // Clear cached report data to ensure fresh results
+            currentReportData = null;
+            
             const analyzeBtn = document.getElementById('analyze-btn');
             const cancelBtn = document.getElementById('cancel-btn');
             
@@ -1594,8 +1648,11 @@
 
                     if (data.status === 'completed') {
                         showToast('Analysis completed successfully!', 'success');
+                        // Clear any cached data
+                        currentReportData = null;
                         setTimeout(() => {
                             showReportTab();
+                            // Force reload report with cache-busting
                             loadReport();
                             switchTab('report');
                         }, 1000);
@@ -1658,7 +1715,14 @@
             const reportContent = document.getElementById('report-content');
             
             try {
-                const response = await fetch('/api/report');
+                // Add cache-busting timestamp to force fresh data
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`/api/report?t=${cacheBuster}`, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache'
+                    }
+                });
                 
                 if (!response.ok) {
                     reportContent.innerHTML = `
@@ -1766,7 +1830,25 @@
                     
                     // Extract detailed information from evidence.details if available
                     let detailsHtml = '';
+                    let scriptInfo = '';
+                    let attackType = '';
+                    
                     if (finding.evidence && finding.evidence.details && Array.isArray(finding.evidence.details)) {
+                        // Extract Script and Attack type for special display
+                        finding.evidence.details.forEach(detail => {
+                            const detailStr = String(detail);
+                            if (detailStr.startsWith('Script:')) {
+                                scriptInfo = detailStr.replace('Script:', '').trim();
+                            } else if (detailStr.startsWith('Attack type:')) {
+                                attackType = detailStr.replace('Attack type:', '').trim();
+                            }
+                        });
+                        
+                        // Debug log
+                        if (scriptInfo || attackType) {
+                            console.log('Extracted - Script:', scriptInfo, 'Attack:', attackType);
+                        }
+                        
                         detailsHtml = '<ul style="margin: 8px 0 0 20px; font-size: 13px; color: #666; line-height: 1.8;">';
                         finding.evidence.details.forEach(detail => {
                             detailsHtml += `<li>${escapeHtml(detail)}</li>`;
@@ -1774,6 +1856,13 @@
                         detailsHtml += '</ul>';
                     } else if (finding.summary || finding.description) {
                         detailsHtml = `<div style="font-size: 13px; color: #666; margin-top: 6px;">${escapeHtml(finding.summary || finding.description || '')}</div>`;
+                        
+                        // Also try to extract from description if it contains Script: or Attack type:
+                        const desc = finding.summary || finding.description || '';
+                        if (desc.includes('Script:')) {
+                            const match = desc.match(/Script:\s*([^\n,]+)/);
+                            if (match) scriptInfo = match[1].trim();
+                        }
                     }
                     
                     html += `
@@ -1784,9 +1873,23 @@
                         }; padding: 12px 16px; margin: 8px 0; border-radius: 4px;">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                                 <div style="flex: 1;">
-                                    <div style="font-weight: 600; font-size: 14px; color: #1A1A1A;">
+                                    <div style="font-weight: 600; font-size: 14px; color: #1A1A1A; margin-bottom: 8px;">
                                         ${idx + 1}. ${findingTypeCapitalized}
                                     </div>
+                                    ${scriptInfo || attackType ? `
+                                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                                            ${scriptInfo ? `
+                                                <span style="background: #1A1A1A; color: #FFFFFF; padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 2px;">
+                                                    Script: ${escapeHtml(scriptInfo)}
+                                                </span>
+                                            ` : ''}
+                                            ${attackType ? `
+                                                <span style="background: #DC2626; color: #FFFFFF; padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 2px;">
+                                                    Attack: ${escapeHtml(attackType)}
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    ` : ''}
                                 </div>
                                 <div>
                                     <span class="severity-badge ${finding.severity}" style="font-size: 11px; padding: 4px 8px;">
@@ -1850,9 +1953,7 @@
                             references: finding.references || [],
                             confidence: finding.confidence || pkg.confidence || 0.9,
                             remediation: finding.remediation || '',
-                            evidence: Array.isArray(finding.evidence) 
-                                ? finding.evidence 
-                                : (finding.evidence?.source ? [`Source: ${finding.evidence.source}`] : [])
+                            evidence: finding.evidence || {}
                         });
                     });
                     
@@ -2000,65 +2101,6 @@
             html += `
                 </div>
 
-                <!-- AGENT-BASED ANALYSIS SECTION -->
-                <div class="report-section">
-                    <h3>Agent-Based Analysis - Security</h3>
-                    <div class="stats-grid" style="margin-bottom: 20px;">
-                        <div class="stat-card">
-                            <div class="stat-value">${agentBasedFindings.length}</div>
-                            <div class="stat-label">Total Findings</div>
-                        </div>
-                        <div class="stat-card critical">
-                            <div class="stat-value">${agentBasedSeverity.critical}</div>
-                            <div class="stat-label">Critical</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agentBasedSeverity.high}</div>
-                            <div class="stat-label">High</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agentBasedSeverity.medium}</div>
-                            <div class="stat-label">Medium</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${agentBasedSeverity.low}</div>
-                            <div class="stat-label">Low</div>
-                        </div>
-                    </div>
-            `;
-            
-            // Add agent-based findings
-            if (agentBasedFindings.length > 0) {
-                html += renderFindingsSection(agentBasedFindings, 'agent-based');
-            } else {
-                html += '<p>No agent-based security findings detected. Enable agent analysis for deeper insights.</p>';
-            }
-            
-            html += `
-                    ${agentInsights.agent_details ? `
-                        <div style="margin-top: 20px;">
-                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1A1A1A;">Agent Execution Details</h4>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
-                                ${Object.entries(agentInsights.agent_details).map(([agentName, details]) => `
-                                    <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; border-left: 3px solid ${details.success ? '#4ADE80' : '#DC2626'};">
-                                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; text-transform: capitalize;">
-                                            ${escapeHtml(agentName.replace(/_/g, ' '))}
-                                            <span style="float: right; padding: 2px 8px; background: ${details.success ? '#E8F5E9' : '#FFEBEE'}; color: ${details.success ? '#2E7D32' : '#C62828'}; font-size: 10px; font-weight: 600;">${details.success ? 'SUCCESS' : 'FAILED'}</span>
-                                        </div>
-                                        <div style="font-size: 12px; color: #666666; line-height: 1.6;">
-                                            <p style="margin: 4px 0;"><strong>Duration:</strong> ${details.duration_seconds.toFixed(2)}s</p>
-                                            <p style="margin: 4px 0;"><strong>Confidence:</strong> ${(details.confidence * 100).toFixed(0)}%</p>
-                                            ${details.packages_analyzed > 0 ? `<p style="margin: 4px 0;"><strong>Packages Analyzed:</strong> ${details.packages_analyzed}</p>` : ''}
-                                            ${details.findings_count > 0 ? `<p style="margin: 4px 0;"><strong>Findings:</strong> ${details.findings_count}</p>` : ''}
-                                            ${details.error ? `<p style="margin: 4px 0; color: #DC2626;"><strong>Error:</strong> ${escapeHtml(details.error)}</p>` : ''}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-                
                 <!-- DEPENDENCY GRAPH SECTION -->
                 ${data.dependency_graph && data.dependency_graph.metadata ? `
                 <div class="report-section">
@@ -2173,34 +2215,103 @@
                 </div>
                 ` : ''}
 
-                <!-- LLM RECOMMENDATIONS SECTION -->
-                ${recommendations.immediate_actions && recommendations.immediate_actions.length > 0 ? `
+                <!-- AGENT-BASED ANALYSIS SECTION -->
                 <div class="report-section">
-                    <h3>LLM Recommendations</h3>
-                    ${recommendations.immediate_actions.length > 0 ? `
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #DC2626;">🚨 Immediate Actions</h4>
-                            <ul style="margin-left: 20px; line-height: 1.8;">
-                                ${recommendations.immediate_actions.map(action => `<li>${escapeHtml(action)}</li>`).join('')}
-                            </ul>
+                    <h3>Agent-Based Analysis - Security</h3>
+                    <div class="stats-grid" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-value">${agentBasedFindings.length}</div>
+                            <div class="stat-label">Total Findings</div>
+                        </div>
+                        <div class="stat-card critical">
+                            <div class="stat-value">${agentBasedSeverity.critical}</div>
+                            <div class="stat-label">Critical</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agentBasedSeverity.high}</div>
+                            <div class="stat-label">High</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agentBasedSeverity.medium}</div>
+                            <div class="stat-label">Medium</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${agentBasedSeverity.low}</div>
+                            <div class="stat-label">Low</div>
+                        </div>
+                    </div>
+            `;
+            
+            // Add agent-based findings
+            if (agentBasedFindings.length > 0) {
+                html += renderFindingsSection(agentBasedFindings, 'agent-based');
+            } else {
+                html += '<p>No agent-based security findings detected. Enable agent analysis for deeper insights.</p>';
+            }
+            
+            html += `
+                    ${agentInsights.agent_details ? `
+                        <div style="margin-top: 20px;">
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1A1A1A;">Agent Execution Details</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                                ${Object.entries(agentInsights.agent_details).map(([agentName, details]) => `
+                                    <div style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 16px; border-left: 3px solid ${details.success ? '#4ADE80' : '#DC2626'};">
+                                        <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; text-transform: capitalize;">
+                                            ${escapeHtml(agentName.replace(/_/g, ' '))}
+                                            <span style="float: right; padding: 2px 8px; background: ${details.success ? '#E8F5E9' : '#FFEBEE'}; color: ${details.success ? '#2E7D32' : '#C62828'}; font-size: 10px; font-weight: 600;">${details.success ? 'SUCCESS' : 'FAILED'}</span>
+                                        </div>
+                                        <div style="font-size: 12px; color: #666666; line-height: 1.6;">
+                                            <p style="margin: 4px 0;"><strong>Duration:</strong> ${details.duration_seconds.toFixed(2)}s</p>
+                                            <p style="margin: 4px 0;"><strong>Confidence:</strong> ${(details.confidence * 100).toFixed(0)}%</p>
+                                            ${details.packages_analyzed > 0 ? `<p style="margin: 4px 0;"><strong>Packages Analyzed:</strong> ${details.packages_analyzed}</p>` : ''}
+                                            ${details.findings_count > 0 ? `<p style="margin: 4px 0;"><strong>Findings:</strong> ${details.findings_count}</p>` : ''}
+                                            ${details.error ? `<p style="margin: 4px 0; color: #DC2626;"><strong>Error:</strong> ${escapeHtml(details.error)}</p>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     ` : ''}
-                    ${recommendations.preventive_measures && recommendations.preventive_measures.length > 0 ? `
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #1A1A1A;">🛡️ Preventive Measures</h4>
-                            <ul style="margin-left: 20px; line-height: 1.8;">
-                                ${recommendations.preventive_measures.map(measure => `<li>${escapeHtml(measure)}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                    ${recommendations.monitoring && recommendations.monitoring.length > 0 ? `
-                        <div>
-                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #666666;">📊 Monitoring</h4>
-                            <ul style="margin-left: 20px; line-height: 1.8;">
-                                ${recommendations.monitoring.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
+                </div>
+
+                <!-- LLM RECOMMENDATIONS SECTION -->
+                ${recommendations ? `
+                <div class="report-section">
+                    <h3>🤖 LLM Recommendations</h3>
+                    <div style="background: #F9FAFB; padding: 20px; border-radius: 8px; border-left: 4px solid #3B82F6;">
+                        ${typeof recommendations === 'string' ? `
+                            <div style="line-height: 1.8; color: #1F2937; white-space: pre-wrap; font-size: 14px;">
+                                ${escapeHtml(recommendations).split('\n\n').map(para => 
+                                    `<p style="margin-bottom: 16px;">${para}</p>`
+                                ).join('')}
+                            </div>
+                        ` : recommendations.immediate_actions ? `
+                            ${recommendations.immediate_actions.length > 0 ? `
+                                <div style="margin-bottom: 20px;">
+                                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #DC2626;">🚨 Immediate Actions</h4>
+                                    <ul style="margin-left: 20px; line-height: 1.8;">
+                                        ${recommendations.immediate_actions.map(action => `<li>${escapeHtml(action)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${recommendations.short_term && recommendations.short_term.length > 0 ? `
+                                <div style="margin-bottom: 20px;">
+                                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #F59E0B;">⚡ Short-Term Actions</h4>
+                                    <ul style="margin-left: 20px; line-height: 1.8;">
+                                        ${recommendations.short_term.map(action => `<li>${escapeHtml(action)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${recommendations.long_term && recommendations.long_term.length > 0 ? `
+                                <div>
+                                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #10B981;">📈 Long-Term Strategy</h4>
+                                    <ul style="margin-left: 20px; line-height: 1.8;">
+                                        ${recommendations.long_term.map(action => `<li>${escapeHtml(action)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        ` : '<p style="color: #6B7280;">No recommendations available</p>'}
+                    </div>
                 </div>
                 ` : ''}
             `;
