@@ -54,10 +54,43 @@ class SpiderWebSystem {
         // Setup jump scare
         this.setupJumpScare();
         
+        // Setup logo glitch animation
+        this.setupLogoGlitch();
+        
         // Start animation loop
         this.animate();
         
         this.initialized = true;
+    }
+
+    setupLogoGlitch() {
+        const logoText = document.querySelector('.header h1');
+        if (!logoText) return;
+        
+        let lastGlitchTime = Date.now();
+        
+        const animateGlitch = () => {
+            const now = Date.now();
+            const timeSinceLastGlitch = now - lastGlitchTime;
+            
+            // Trigger glitch every 8-12 seconds
+            if (timeSinceLastGlitch > 8000 + Math.random() * 4000) {
+                // Add glitch class
+                logoText.classList.add('glitch-font');
+                
+                // Hold for 2 seconds
+                setTimeout(() => {
+                    // Remove glitch class
+                    logoText.classList.remove('glitch-font');
+                }, 2000);
+                
+                lastGlitchTime = now;
+            }
+            
+            requestAnimationFrame(animateGlitch);
+        };
+        
+        animateGlitch();
     }
 
     resize() {

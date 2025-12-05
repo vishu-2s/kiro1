@@ -387,20 +387,23 @@ select:focus {
     animation-play-state: paused;
 }
 
-/* Title glitch animation */
+/* Title - starts with normal font, JavaScript will animate glitch */
 .header h1 {
-    font-family: 'Rubik Glitch', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     text-shadow: 
         0 0 20px rgba(255, 117, 24, 0.5),
         0 0 40px rgba(255, 117, 24, 0.3),
         2px 2px 0 rgba(255, 117, 24, 0.2);
-    animation: glitchFlicker var(--halloween-glitch-duration) ease-in-out infinite;
-    animation-delay: 3s;
-    animation-duration: 3s;
     /* GPU acceleration */
     will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
+    transition: font-family 0.3s ease;
+}
+
+/* Glitch state - applied by JavaScript */
+.header h1.glitch-font {
+    font-family: 'Rubik Glitch', 'Inter', sans-serif !important;
 }
 
 @keyframes glitchFlicker {
@@ -522,10 +525,7 @@ select:focus {
    Typography System
    ============================================ */
 
-/* Rubik Glitch font for branding only */
-.header h1 {
-    font-family: 'Rubik Glitch', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-}
+/* Header title uses normal font by default, JavaScript animates glitch effect */
 
 /* Ensure Inter font for all other UI text */
 body,
