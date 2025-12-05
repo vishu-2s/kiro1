@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/halloween-theme.css">
     <style>
         * {
             margin: 0;
@@ -359,13 +360,13 @@
         @media (max-width: 768px) { .history-grid { grid-template-columns: 1fr; } }
 
         .history-table-container { overflow-x: auto; border: 1px solid #E5E5E5; background: #FFFFFF; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
         .history-table thead { background: #FAFAFA; border-bottom: 2px solid #E5E5E5; }
         .history-table th { padding: 12px 16px; text-align: left; font-weight: 600; color: #1A1A1A; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; white-space: nowrap; user-select: none; }
         .history-table th:hover { background: #F0F0F0; }
-        .history-table tbody tr { border-bottom: 1px solid #E5E5E5; transition: background 0.2s ease; }
+        .history-table tbody tr { border-bottom: 1px solid #E5E5E5; transition: background 0.2s ease; position: relative; }
         .history-table tbody tr:hover { background: #FAFAFA; }
-        .history-table td { padding: 12px 16px; color: #1A1A1A; vertical-align: middle; }
+        .history-table td { padding: 12px 16px; color: #1A1A1A; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         .type-badge { display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 500; text-transform: capitalize; border: 1px solid #D4D4D4; background: #FFFFFF; color: #666666; }
         .type-badge.github_repository { border-color: #1A1A1A; background: #1A1A1A; color: #FFFFFF; }
@@ -486,6 +487,35 @@
     </style>
 </head>
 <body>
+    <!-- Halloween Decorative Elements -->
+    <div class="corner-web corner-web-top-left" aria-hidden="true"></div>
+    <div class="corner-web corner-web-top-right" aria-hidden="true"></div>
+    <div class="corner-web corner-web-bottom-left" aria-hidden="true"></div>
+    <div class="corner-web corner-web-bottom-right" aria-hidden="true"></div>
+    
+    <!-- Floating Particles -->
+    <div class="floating-particles" aria-hidden="true">
+        <!-- Embers -->
+        <div class="particle particle-ember" style="left: 10%; animation-delay: 0s; animation-duration: 12s;"></div>
+        <div class="particle particle-ember" style="left: 25%; animation-delay: 3s; animation-duration: 15s;"></div>
+        <div class="particle particle-ember" style="left: 45%; animation-delay: 6s; animation-duration: 13s;"></div>
+        <div class="particle particle-ember" style="left: 65%; animation-delay: 2s; animation-duration: 14s;"></div>
+        <div class="particle particle-ember" style="left: 80%; animation-delay: 5s; animation-duration: 16s;"></div>
+        <div class="particle particle-ember" style="left: 90%; animation-delay: 8s; animation-duration: 11s;"></div>
+        
+        <!-- Fog -->
+        <div class="particle particle-fog" style="left: 5%; top: 20%; animation-delay: 0s;"></div>
+        <div class="particle particle-fog" style="left: 40%; top: 50%; animation-delay: 8s;"></div>
+        <div class="particle particle-fog" style="left: 75%; top: 30%; animation-delay: 15s;"></div>
+        
+        <!-- Ghosts -->
+        <div class="particle particle-ghost" style="left: 15%; animation-delay: 1s; animation-duration: 18s;"></div>
+        <div class="particle particle-ghost" style="left: 35%; animation-delay: 7s; animation-duration: 22s;"></div>
+        <div class="particle particle-ghost" style="left: 55%; animation-delay: 4s; animation-duration: 19s;"></div>
+        <div class="particle particle-ghost" style="left: 75%; animation-delay: 10s; animation-duration: 21s;"></div>
+        <div class="particle particle-ghost" style="left: 85%; animation-delay: 13s; animation-duration: 20s;"></div>
+    </div>
+    
     <div class="container">
         <div class="header">
             <div class="header-content">
@@ -1073,23 +1103,23 @@
                 const agentBasedSeverity = { critical: agentBasedFindings.filter(f => f.severity === 'critical').length, high: agentBasedFindings.filter(f => f.severity === 'high').length, medium: agentBasedFindings.filter(f => f.severity === 'medium').length, low: agentBasedFindings.filter(f => f.severity === 'low').length };
                 
                 // ========== SECTION 1: SECURITY ADVISORIES (GitHub/CVE/GHSA) ==========
-                html += `<div class="report-section" style="background: #FFFFFF; border: 2px solid #0EA5E9; padding: 0; margin-bottom: 24px;"><div style="background: #0369A1; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #0EA5E9;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">🔍 Security Advisories (GitHub/CVE/GHSA)</h3></div><div style="padding: 32px; background: #F0F9FF;">`;
+                html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0; margin-bottom: 24px;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Security Advisories (GitHub/CVE/GHSA)</h3></div><div style="padding: 32px; background: #FFFFFF;">`;
                 
                 // Rule-based summary cards
-                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FFFFFF; border: 1px solid #BAE6FD; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #0369A1; line-height: 1; margin-bottom: 4px;">${ruleBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #0369A1;">Packages</div></div><div style="background: ${ruleBasedSeverity.critical > 0 ? '#FEF2F2' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.critical > 0 ? '#FECACA' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${ruleBasedSeverity.high > 0 ? '#FFF7ED' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.high > 0 ? '#FED7AA' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.high > 0 ? '#EA580C' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.high > 0 ? '#EA580C' : '#666'};">High</div></div><div style="background: ${ruleBasedSeverity.medium > 0 ? '#FFFBEB' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.medium > 0 ? '#FDE68A' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.medium > 0 ? '#D97706' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.medium > 0 ? '#D97706' : '#666'};">Medium</div></div><div style="background: ${ruleBasedSeverity.low > 0 ? '#F0FDF4' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.low > 0 ? '#BBF7D0' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.low > 0 ? '#16A34A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.low > 0 ? '#16A34A' : '#666'};">Low</div></div></div>`;
+                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 4px;">${ruleBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666;">Packages</div></div><div style="background: ${ruleBasedSeverity.critical > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${ruleBasedSeverity.high > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.high > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.high > 0 ? '#1A1A1A' : '#666'};">High</div></div><div style="background: ${ruleBasedSeverity.medium > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.medium > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.medium > 0 ? '#1A1A1A' : '#666'};">Medium</div></div><div style="background: ${ruleBasedSeverity.low > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.low > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.low > 0 ? '#1A1A1A' : '#666'};">Low</div></div></div>`;
                 
                 if (ruleBasedFindings.length > 0) html += renderFindingsSection(ruleBasedFindings, 'advisory');
-                else html += '<p style="color: #0369A1; font-style: italic;">No security advisories found from GitHub/CVE/GHSA databases.</p>';
+                else html += '<p style="color: #666; font-style: italic;">No security advisories found from GitHub/CVE/GHSA databases.</p>';
                 html += '</div></div>';
                 
                 // ========== SECTION 2: WEB INTELLIGENCE (Snyk/NVD/CVE Details) ==========
-                html += `<div class="report-section" style="background: #FFFFFF; border: 2px solid #22C55E; padding: 0;"><div style="background: #15803D; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #22C55E;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">🤖 Web Intelligence (Snyk/NVD/CVE Details)</h3></div><div style="padding: 32px; background: #F0FDF4;">`;
+                html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Web Intelligence (Snyk/NVD/CVE Details)</h3></div><div style="padding: 32px; background: #FFFFFF;">`;
                 
                 // Agent-based summary cards
-                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FFFFFF; border: 1px solid #BBF7D0; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #15803D; line-height: 1; margin-bottom: 4px;">${agentBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #15803D;">Packages</div></div><div style="background: ${agentBasedSeverity.critical > 0 ? '#FEF2F2' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.critical > 0 ? '#FECACA' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${agentBasedSeverity.high > 0 ? '#FFF7ED' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.high > 0 ? '#FED7AA' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.high > 0 ? '#EA580C' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.high > 0 ? '#EA580C' : '#666'};">High</div></div><div style="background: ${agentBasedSeverity.medium > 0 ? '#FFFBEB' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.medium > 0 ? '#FDE68A' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.medium > 0 ? '#D97706' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.medium > 0 ? '#D97706' : '#666'};">Medium</div></div><div style="background: ${agentBasedSeverity.low > 0 ? '#F0FDF4' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.low > 0 ? '#BBF7D0' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.low > 0 ? '#16A34A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.low > 0 ? '#16A34A' : '#666'};">Low</div></div></div>`;
+                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 4px;">${agentBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666;">Packages</div></div><div style="background: ${agentBasedSeverity.critical > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${agentBasedSeverity.high > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.high > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.high > 0 ? '#1A1A1A' : '#666'};">High</div></div><div style="background: ${agentBasedSeverity.medium > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.medium > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.medium > 0 ? '#1A1A1A' : '#666'};">Medium</div></div><div style="background: ${agentBasedSeverity.low > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.low > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.low > 0 ? '#1A1A1A' : '#666'};">Low</div></div></div>`;
                 
                 if (agentBasedFindings.length > 0) html += renderFindingsSection(agentBasedFindings, 'webintel');
-                else html += '<p style="color: #15803D; font-style: italic;">No web intelligence findings from Snyk/NVD/CVE Details.</p>';
+                else html += '<p style="color: #666; font-style: italic;">No web intelligence findings from Snyk/NVD/CVE Details.</p>';
                 html += '</div></div>';
 
                 if (data.dependency_graph && data.dependency_graph.metadata) {
@@ -1099,7 +1129,7 @@
                 // Recommendations section
                 const recommendations = data.recommendations || {};
                 if (recommendations && (recommendations.immediate_priority || recommendations.security_hardening || recommendations.ongoing_monitoring || recommendations.immediate_actions || typeof recommendations === 'string')) {
-                    html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 20px 32px;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">Security Recommendations</h3></div><div style="padding: 32px;">`;
+                    html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Security Recommendations</h3></div><div style="padding: 32px;">`;
                     
                     // New professional format
                     if (recommendations.immediate_priority || recommendations.security_hardening || recommendations.ongoing_monitoring) {
@@ -1339,5 +1369,8 @@
 
         document.addEventListener('DOMContentLoaded', () => { console.log('Spyder - AI-Powered Supply Chain Security Scanner initialized'); loadDashboard(); });
     </script>
+    
+    <!-- Spider Web Animation System -->
+    <script src="/static/spider-web-animation.js"></script>
 </body>
 </html>

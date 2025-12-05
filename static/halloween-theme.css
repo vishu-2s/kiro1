@@ -1,0 +1,4191 @@
+/* ============================================
+   Halloween Theme for Spyder Security Scanner
+   ============================================ */
+
+/* Halloween Color Palette - CSS Custom Properties */
+:root {
+    /* Base Colors - FULL DARK GOTHIC THEME */
+    --halloween-bg-primary: #0a0a0f;           /* Darker purple-charcoal */
+    --halloween-bg-secondary: #1a0f1f;         /* Deeper purple-tinted charcoal */
+    --halloween-bg-tertiary: #0f0f15;          /* DARK instead of light! */
+    --halloween-bg-card: #1a1520;              /* DARK PURPLE CARDS instead of white! */
+    --halloween-bg-mist: rgba(57, 255, 20, 0.08); /* Enhanced green mist */
+    --halloween-bg-panel: #15111a;             /* Dark panel background */
+
+    /* Accent Colors - Enhanced with red spider eyes */
+    --halloween-accent-critical: #FF7518;      /* Pumpkin orange */
+    --halloween-accent-red: #DC143C;           /* Crimson red for spider eyes */
+    --halloween-accent-high: #1A1A1A;          /* Dark (unchanged) */
+    --halloween-accent-medium: #666666;        /* Gray (unchanged) */
+    --halloween-accent-low: #D4D4D4;           /* Light gray (unchanged) */
+    --halloween-accent-success: #39FF14;       /* Ectoplasmic green - enhanced */
+    --halloween-accent-purple: #6A0DAD;        /* Haunted purple */
+    --halloween-accent-silver: #C0C0C0;        /* Metallic silver for gothic text */
+
+    /* Text Colors */
+    --halloween-text-primary: #E5E5E5;         /* Light gray on dark */
+    --halloween-text-secondary: #A0A0A0;       /* Medium gray */
+    --halloween-text-dark: #1A1A1A;            /* Dark on light */
+    --halloween-text-glow: #39FF14;            /* Green glow text */
+
+    /* Border Colors */
+    --halloween-border-primary: #E5E5E5;       /* Light gray (unchanged) */
+    --halloween-border-accent: #FF7518;        /* Pumpkin orange */
+    --halloween-border-web: rgba(255, 117, 24, 0.2);  /* Translucent orange */
+    --halloween-border-green: rgba(57, 255, 20, 0.3); /* Green web borders */
+
+    /* Animation Timings */
+    --halloween-mist-duration: 20s;
+    --halloween-glitch-duration: 0.3s;
+    --halloween-pulse-duration: 2s;
+    --halloween-drip-duration: 3s;
+
+    /* Decoration Opacities */
+    --halloween-web-opacity: 0.2;              /* Increased for more visibility */
+    --halloween-particle-opacity: 0.7;         /* Increased */
+    --halloween-silhouette-opacity: 0.12;      /* Increased */
+    --halloween-glow-opacity: 0.8;             /* Green glow intensity */
+
+    /* Spacing System (8px grid) */
+    --spacing-xs: 4px;   /* 0.5 units */
+    --spacing-sm: 8px;   /* 1 unit */
+    --spacing-md: 16px;  /* 2 units */
+    --spacing-lg: 24px;  /* 3 units */
+    --spacing-xl: 32px;  /* 4 units */
+    --spacing-2xl: 40px; /* 5 units */
+}
+
+/* ============================================
+   Color Mapping Table (Documentation)
+   ============================================
+   
+   Element                  | Original Color | Halloween Color | Rationale
+   -------------------------|----------------|-----------------|------------------
+   Body background          | #FAFAFA        | #FAFAFA         | Maintain light base
+   Header background        | #1A1A1A        | #0F0F0F         | Deeper, ominous
+   Critical severity        | #DC2626        | #FF7518         | Pumpkin orange
+   Success indicators       | #4ADE80        | #39FF14         | Ectoplasmic green
+   Tab active underline     | #DC2626        | #FF7518         | Consistent critical
+   Accent purple            | N/A            | #6A0DAD         | New haunted purple
+   
+   ============================================ */
+
+/* ============================================
+   Custom Spider Cursor - Enhanced Design
+   ============================================ */
+
+/* Default spider cursor for entire body - Green with glow */
+body {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><defs><filter id="glow"><feGaussianBlur stdDeviation="1" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(%23glow)"><ellipse cx="20" cy="22" rx="6" ry="7" fill="%2339FF14" stroke="%23000000" stroke-width="1.2"/><ellipse cx="20" cy="15" rx="4.5" ry="5" fill="%2339FF14" stroke="%23000000" stroke-width="1.2"/><circle cx="18" cy="14" r="2" fill="%23FF0000"/><circle cx="22" cy="14" r="2" fill="%23FF0000"/><circle cx="18" cy="14" r="1" fill="%23FFFFFF" opacity="0.6"/><circle cx="22" cy="14" r="1" fill="%23FFFFFF" opacity="0.6"/><g stroke="%23000000" stroke-width="0.8"><line x1="14" y1="22" x2="5" y2="16" stroke="%2339FF14" stroke-width="2"/><line x1="14" y1="22" x2="3" y2="22" stroke="%2339FF14" stroke-width="2"/><line x1="14" y1="22" x2="5" y2="28" stroke="%2339FF14" stroke-width="2"/><line x1="14" y1="22" x2="6" y2="34" stroke="%2339FF14" stroke-width="2"/><line x1="26" y1="22" x2="35" y2="16" stroke="%2339FF14" stroke-width="2"/><line x1="26" y1="22" x2="37" y2="22" stroke="%2339FF14" stroke-width="2"/><line x1="26" y1="22" x2="35" y2="28" stroke="%2339FF14" stroke-width="2"/><line x1="26" y1="22" x2="34" y2="34" stroke="%2339FF14" stroke-width="2"/></g><path d="M 18 28 Q 20 30 22 28" stroke="%23000000" stroke-width="0.8" fill="none"/></g></svg>') 20 20, auto;
+}
+
+/* Pointer cursor for clickable elements - Orange with glow */
+a, button, .btn, .mode-btn, .tab, .stat-card, .finding-card, .history-card, 
+.recent-scan-item, input[type="submit"], .table-btn-view, .table-btn-download,
+.history-btn-view, .history-btn-download, .btn-export, .btn-primary, 
+.history-table tbody tr {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><defs><filter id="glow2"><feGaussianBlur stdDeviation="1.5" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(%23glow2)"><ellipse cx="20" cy="22" rx="6" ry="7" fill="%23FF7518" stroke="%23000000" stroke-width="1.2"/><ellipse cx="20" cy="15" rx="4.5" ry="5" fill="%23FF7518" stroke="%23000000" stroke-width="1.2"/><circle cx="18" cy="14" r="2.2" fill="%23FF0000"/><circle cx="22" cy="14" r="2.2" fill="%23FF0000"/><circle cx="18" cy="14" r="1.2" fill="%23FFFF00" opacity="0.8"/><circle cx="22" cy="14" r="1.2" fill="%23FFFF00" opacity="0.8"/><g stroke="%23000000" stroke-width="0.8"><line x1="14" y1="22" x2="5" y2="16" stroke="%23FF7518" stroke-width="2.2"/><line x1="14" y1="22" x2="3" y2="22" stroke="%23FF7518" stroke-width="2.2"/><line x1="14" y1="22" x2="5" y2="28" stroke="%23FF7518" stroke-width="2.2"/><line x1="14" y1="22" x2="6" y2="34" stroke="%23FF7518" stroke-width="2.2"/><line x1="26" y1="22" x2="35" y2="16" stroke="%23FF7518" stroke-width="2.2"/><line x1="26" y1="22" x2="37" y2="22" stroke="%23FF7518" stroke-width="2.2"/><line x1="26" y1="22" x2="35" y2="28" stroke="%23FF7518" stroke-width="2.2"/><line x1="26" y1="22" x2="34" y2="34" stroke="%23FF7518" stroke-width="2.2"/></g><path d="M 18 28 Q 20 30 22 28" stroke="%23000000" stroke-width="1" fill="none"/><line x1="17" y1="22" x2="19" y2="22" stroke="%23000000" stroke-width="0.6"/><line x1="21" y1="22" x2="23" y2="22" stroke="%23000000" stroke-width="0.6"/></g></svg>') 20 20, pointer;
+}
+
+/* Text cursor for input fields - Web strand style */
+input[type="text"], input[type="number"], textarea, select {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="32" viewBox="0 0 24 32"><defs><filter id="glow3"><feGaussianBlur stdDeviation="0.8" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(%23glow3)"><line x1="12" y1="4" x2="12" y2="28" stroke="%2339FF14" stroke-width="2.5"/><line x1="7" y1="4" x2="17" y2="4" stroke="%2339FF14" stroke-width="2.5"/><line x1="7" y1="28" x2="17" y2="28" stroke="%2339FF14" stroke-width="2.5"/><circle cx="12" cy="2" r="2" fill="%2339FF14"/><circle cx="12" cy="30" r="2" fill="%2339FF14"/></g></svg>') 12 16, text;
+}
+
+/* Disabled cursor - Dead spider */
+button:disabled, .btn:disabled, input:disabled {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g opacity="0.5"><ellipse cx="20" cy="22" rx="6" ry="7" fill="%23666666" stroke="%23000000" stroke-width="1.2"/><ellipse cx="20" cy="15" rx="4.5" ry="5" fill="%23666666" stroke="%23000000" stroke-width="1.2"/><line x1="16" y1="12" x2="20" y2="16" stroke="%23000000" stroke-width="1.5"/><line x1="20" y1="12" x2="16" y2="16" stroke="%23000000" stroke-width="1.5"/><line x1="20" y1="12" x2="24" y2="16" stroke="%23000000" stroke-width="1.5"/><line x1="24" y1="12" x2="20" y2="16" stroke="%23000000" stroke-width="1.5"/><g stroke="%23000000" stroke-width="0.8"><line x1="14" y1="22" x2="8" y2="26" stroke="%23666666" stroke-width="2"/><line x1="14" y1="22" x2="6" y2="28" stroke="%23666666" stroke-width="2"/><line x1="14" y1="22" x2="8" y2="30" stroke="%23666666" stroke-width="2"/><line x1="14" y1="22" x2="10" y2="32" stroke="%23666666" stroke-width="2"/><line x1="26" y1="22" x2="32" y2="26" stroke="%23666666" stroke-width="2"/><line x1="26" y1="22" x2="34" y2="28" stroke="%23666666" stroke-width="2"/><line x1="26" y1="22" x2="32" y2="30" stroke="%23666666" stroke-width="2"/><line x1="26" y1="22" x2="30" y2="32" stroke="%23666666" stroke-width="2"/></g></g></svg>') 20 20, not-allowed;
+}
+
+/* ============================================
+   Base Color Transformations - FULL DARK MODE
+   ============================================ */
+
+/* Body - Dark background with atmospheric gradient (NO HEAVY IMAGES) */
+body {
+    background: linear-gradient(180deg, #0a0a0f 0%, #1a0f1f 50%, #0a0a0f 100%) !important;
+    background-attachment: fixed;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Container - Dark with subtle glow and relative positioning */
+.container {
+    background: rgba(10, 10, 15, 0.85) !important;
+    box-shadow: 
+        0 0 60px rgba(57, 255, 20, 0.15),
+        0 0 100px rgba(106, 13, 173, 0.1),
+        0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(2px);
+}
+
+/* All white backgrounds to dark */
+.control-panel,
+.stat-card,
+.finding-card,
+.report-section,
+.history-card,
+.recent-scan-item,
+.history-table-container,
+.no-report {
+    background: var(--halloween-bg-card) !important;
+    border-color: rgba(57, 255, 20, 0.2) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Light gray backgrounds to dark purple */
+.control-panel,
+.report-section {
+    background: var(--halloween-bg-panel) !important;
+    border: 1px solid rgba(255, 117, 24, 0.3) !important;
+    box-shadow: 
+        inset 0 0 30px rgba(57, 255, 20, 0.05),
+        0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Cards with gothic glow */
+.stat-card,
+.finding-card,
+.history-card,
+.recent-scan-item {
+    background: var(--halloween-bg-card) !important;
+    border: 1px solid rgba(57, 255, 20, 0.25) !important;
+    box-shadow: 
+        0 0 20px rgba(57, 255, 20, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover,
+.finding-card:hover,
+.history-card:hover,
+.recent-scan-item:hover {
+    border-color: rgba(255, 117, 24, 0.5) !important;
+    box-shadow: 
+        0 0 30px rgba(57, 255, 20, 0.2),
+        0 0 40px rgba(255, 117, 24, 0.15),
+        0 8px 20px rgba(0, 0, 0, 0.5) !important;
+    transform: translateY(-2px);
+}
+
+/* Text colors for dark theme */
+.stat-label,
+.finding-package,
+.history-title,
+.recent-scan-name,
+h2, h3, h4, h5, h6,
+label,
+.report-section p,
+.report-section strong {
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Secondary text */
+.history-meta,
+.recent-scan-meta,
+.stat-label {
+    color: var(--halloween-text-secondary) !important;
+}
+
+/* Tabs - Dark with glow */
+.tabs {
+    background: var(--halloween-bg-primary) !important;
+    border-bottom: 1px solid rgba(57, 255, 20, 0.3) !important;
+}
+
+.tab {
+    color: var(--halloween-text-secondary) !important;
+}
+
+.tab:hover {
+    background: rgba(57, 255, 20, 0.1) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+.tab.active {
+    color: var(--halloween-accent-success) !important;
+    background: rgba(57, 255, 20, 0.05) !important;
+}
+
+/* Inputs and selects - Dark theme */
+input[type="text"],
+input[type="number"],
+select,
+.mode-btn {
+    background: var(--halloween-bg-primary) !important;
+    border-color: rgba(57, 255, 20, 0.3) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+input::placeholder {
+    color: var(--halloween-text-secondary) !important;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--halloween-accent-success) !important;
+    box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.2) !important;
+}
+
+.mode-btn.active {
+    background: var(--halloween-accent-success) !important;
+    color: var(--halloween-bg-primary) !important;
+    border-color: var(--halloween-accent-success) !important;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.4) !important;
+}
+
+.mode-btn:hover {
+    background: rgba(57, 255, 20, 0.2) !important;
+    border-color: var(--halloween-accent-success) !important;
+    color: var(--halloween-accent-success) !important;
+}
+
+/* Tables - Dark theme */
+.history-table {
+    background: var(--halloween-bg-card) !important;
+}
+
+.history-table thead {
+    background: var(--halloween-bg-primary) !important;
+    border-bottom-color: rgba(57, 255, 20, 0.3) !important;
+}
+
+.history-table th {
+    color: var(--halloween-accent-success) !important;
+}
+
+.history-table tbody tr {
+    border-bottom-color: rgba(57, 255, 20, 0.15) !important;
+}
+
+.history-table tbody tr:hover {
+    background: rgba(57, 255, 20, 0.08) !important;
+}
+
+.history-table td {
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Badges - Enhanced glow */
+.type-badge,
+.findings-badge,
+.severity-badge,
+.recent-scan-badge {
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3) !important;
+}
+
+/* No report state - Dark */
+.no-report {
+    background: var(--halloween-bg-panel) !important;
+    border: 2px dashed rgba(57, 255, 20, 0.3) !important;
+}
+
+.no-report h3 {
+    color: var(--halloween-accent-success) !important;
+}
+
+.no-report p {
+    color: var(--halloween-text-secondary) !important;
+}
+
+.no-report svg {
+    stroke: var(--halloween-accent-success) !important;
+    opacity: 0.4 !important;
+}
+
+/* Status bar - Dark */
+.status-bar {
+    background: var(--halloween-bg-card) !important;
+    border-color: rgba(57, 255, 20, 0.2) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Buttons - Enhanced */
+.btn-export,
+.table-btn-view,
+.table-btn-download,
+.history-btn-view,
+.history-btn-download {
+    background: var(--halloween-bg-primary) !important;
+    color: var(--halloween-accent-success) !important;
+    border-color: var(--halloween-accent-success) !important;
+}
+
+.btn-export:hover,
+.table-btn-view:hover,
+.history-btn-view:hover {
+    background: var(--halloween-accent-success) !important;
+    color: var(--halloween-bg-primary) !important;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.5) !important;
+}
+
+/* ============================================
+   Base Color Transformations
+   ============================================ */
+
+/* ============================================
+   Header Component - Halloween Theme
+   ============================================ */
+
+/* Header - Deep charcoal background with enhanced gothic atmosphere */
+.header {
+    background: linear-gradient(180deg, var(--halloween-bg-primary) 0%, var(--halloween-bg-secondary) 100%) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Enhanced misty background for header */
+.header::after {
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(57, 255, 20, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(106, 13, 173, 0.06) 0%, transparent 50%),
+        radial-gradient(circle, transparent 30%, rgba(255, 117, 24, 0.03) 30%, rgba(255, 117, 24, 0.03) 31%, transparent 31%);
+}
+
+/* Logo - Enhanced for gothic aesthetic with green glow and crawling animation */
+.header-logo {
+    height: 160px !important; /* Increased size for better visibility */
+    position: relative;
+}
+
+.header-logo img {
+    height: 100% !important;
+    filter: 
+        drop-shadow(0 0 25px rgba(57, 255, 20, 0.6))
+        drop-shadow(0 0 40px rgba(255, 117, 24, 0.4))
+        drop-shadow(0 0 60px rgba(106, 13, 173, 0.3));
+    transition: filter 0.3s ease, transform 0.3s ease;
+    animation: spiderCrawl 8s ease-in-out infinite;
+    /* GPU acceleration */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes spiderCrawl {
+    0%, 100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translateX(5px) translateY(-3px) rotate(2deg) scale(1.02);
+    }
+    50% {
+        transform: translateX(-3px) translateY(3px) rotate(-2deg) scale(0.98);
+    }
+    75% {
+        transform: translateX(4px) translateY(2px) rotate(1deg) scale(1.01);
+    }
+}
+
+.header-logo img:hover {
+    filter: 
+        drop-shadow(0 0 35px rgba(57, 255, 20, 0.8))
+        drop-shadow(0 0 50px rgba(255, 117, 24, 0.6))
+        drop-shadow(0 0 80px rgba(106, 13, 173, 0.5));
+    transform: scale(1.08) rotate(3deg);
+    animation-play-state: paused;
+}
+
+/* Title glitch animation */
+.header h1 {
+    font-family: 'Rubik Glitch', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    text-shadow: 
+        0 0 20px rgba(255, 117, 24, 0.5),
+        0 0 40px rgba(255, 117, 24, 0.3),
+        2px 2px 0 rgba(255, 117, 24, 0.2);
+    animation: glitchFlicker var(--halloween-glitch-duration) ease-in-out infinite;
+    animation-delay: 3s;
+    animation-duration: 3s;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes glitchFlicker {
+    0%, 100% { 
+        opacity: 1; 
+        transform: translateX(0) translateZ(0);
+        text-shadow: 
+            0 0 20px rgba(255, 117, 24, 0.5),
+            0 0 40px rgba(255, 117, 24, 0.3);
+    }
+    50% { 
+        opacity: 0.95; 
+        transform: translateX(2px) translateZ(0);
+        text-shadow: 
+            0 0 25px rgba(255, 117, 24, 0.6),
+            0 0 50px rgba(255, 117, 24, 0.4),
+            -2px 0 0 rgba(57, 255, 20, 0.3);
+    }
+    51% { 
+        opacity: 1; 
+        transform: translateX(-2px) translateZ(0);
+        text-shadow: 
+            0 0 25px rgba(255, 117, 24, 0.6),
+            2px 0 0 rgba(106, 13, 173, 0.3);
+    }
+    52% { 
+        opacity: 1; 
+        transform: translateX(0) translateZ(0);
+    }
+}
+
+/* Badge pumpkin orange accents */
+.header-badge {
+    border-color: rgba(255, 117, 24, 0.3) !important;
+    transition: all 0.3s ease;
+}
+
+.header-badge:hover {
+    border-color: rgba(255, 117, 24, 0.6) !important;
+    box-shadow: 0 0 15px rgba(255, 117, 24, 0.3);
+}
+
+/* Header web overlay - Enhanced with orange tint */
+.header::before {
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 50px, 
+          var(--halloween-border-web) 50px, var(--halloween-border-web) 51px),
+        repeating-linear-gradient(60deg, transparent, transparent 50px, 
+          rgba(57, 255, 20, 0.03) 50px, rgba(57, 255, 20, 0.03) 51px),
+        repeating-linear-gradient(120deg, transparent, transparent 50px, 
+          var(--halloween-border-web) 50px, var(--halloween-border-web) 51px),
+        repeating-linear-gradient(-60deg, transparent, transparent 50px, 
+          rgba(57, 255, 20, 0.02) 50px, rgba(57, 255, 20, 0.02) 51px) !important;
+}
+
+/* Header shockwave effect - Orange tint */
+.header::after {
+    background: 
+        radial-gradient(circle, transparent 30%, var(--halloween-border-web) 30%, var(--halloween-border-web) 31%, transparent 31%),
+        radial-gradient(circle, transparent 45%, rgba(57, 255, 20, 0.04) 45%, rgba(57, 255, 20, 0.04) 46%, transparent 46%),
+        radial-gradient(circle, transparent 60%, var(--halloween-border-web) 60%, var(--halloween-border-web) 61%, transparent 61%),
+        radial-gradient(circle, transparent 75%, rgba(57, 255, 20, 0.02) 75%, rgba(57, 255, 20, 0.02) 76%, transparent 76%) !important;
+}
+
+/* Critical severity color - Pumpkin orange */
+.severity-badge.critical,
+.recent-scan-badge.critical {
+    background: var(--halloween-accent-critical) !important;
+    border-color: var(--halloween-accent-critical) !important;
+}
+
+.finding-card.critical {
+    border-left-color: var(--halloween-accent-critical) !important;
+}
+
+.stat-card.critical .stat-value {
+    color: var(--halloween-accent-critical) !important;
+}
+
+/* Success indicators - Ectoplasmic green */
+.header-badge.status {
+    background: rgba(57, 255, 20, 0.15) !important;
+    border-color: rgba(57, 255, 20, 0.3) !important;
+    color: var(--halloween-accent-success) !important;
+}
+
+/* Tab active underline - Pumpkin orange */
+.tab.active {
+    border-bottom-color: var(--halloween-accent-critical) !important;
+}
+
+.tab::before {
+    background: var(--halloween-accent-critical) !important;
+}
+
+/* Primary buttons - Pumpkin orange */
+.btn-primary {
+    background: var(--halloween-accent-critical) !important;
+    /* GPU acceleration */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #E66A15 !important; /* Darker orange on hover */
+    box-shadow: 0 0 20px rgba(255, 117, 24, 0.5);
+    animation: buttonPulse var(--halloween-pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Logs container - Ectoplasmic green text */
+.logs-container {
+    background: var(--halloween-bg-primary) !important;
+    color: var(--halloween-accent-success) !important;
+}
+
+/* ============================================
+   Typography System
+   ============================================ */
+
+/* Rubik Glitch font for branding only */
+.header h1 {
+    font-family: 'Rubik Glitch', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Ensure Inter font for all other UI text */
+body,
+.tab,
+.btn,
+.mode-btn,
+input,
+select,
+.stat-label,
+.finding-package,
+.report-section,
+.report-section p,
+.report-section strong {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif !important;
+}
+
+/* Monospace for logs/terminal */
+.logs-container,
+.log-entry {
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace !important;
+}
+
+/* ============================================
+   Glitch Effect for Jump Scares
+   ============================================ */
+
+.glitch-active {
+    animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    position: relative;
+}
+
+.glitch-active::before,
+.glitch-active::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.glitch-active::before {
+    animation: glitchTop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+    transform: translate(-5px, 0);
+    opacity: 0.8;
+}
+
+.glitch-active::after {
+    animation: glitchBottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+    transform: translate(5px, 0);
+    opacity: 0.8;
+}
+
+@keyframes glitch {
+    0%, 100% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(-2px, 2px);
+    }
+    40% {
+        transform: translate(-2px, -2px);
+    }
+    60% {
+        transform: translate(2px, 2px);
+    }
+    80% {
+        transform: translate(2px, -2px);
+    }
+}
+
+@keyframes glitchTop {
+    0%, 100% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
+    25% {
+        transform: translate(-5px, 0);
+        filter: hue-rotate(90deg);
+    }
+    50% {
+        transform: translate(5px, 0);
+        filter: hue-rotate(180deg);
+    }
+    75% {
+        transform: translate(-3px, 0);
+        filter: hue-rotate(270deg);
+    }
+}
+
+@keyframes glitchBottom {
+    0%, 100% {
+        transform: translate(0);
+        filter: hue-rotate(0deg);
+    }
+    20% {
+        transform: translate(3px, 0);
+        filter: hue-rotate(60deg);
+    }
+    40% {
+        transform: translate(-3px, 0);
+        filter: hue-rotate(120deg);
+    }
+    60% {
+        transform: translate(5px, 0);
+        filter: hue-rotate(180deg);
+    }
+    80% {
+        transform: translate(-5px, 0);
+        filter: hue-rotate(240deg);
+    }
+}
+
+/* Screen flash effect during glitch */
+.glitch-active {
+    animation: 
+        glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite,
+        screenFlash 0.15s ease-in-out infinite;
+}
+
+@keyframes screenFlash {
+    0%, 100% {
+        filter: brightness(1) contrast(1);
+    }
+    50% {
+        filter: brightness(1.2) contrast(1.3) saturate(1.5);
+    }
+}
+
+/* RGB split effect on text */
+.glitch-active * {
+    animation: rgbSplit 0.2s steps(2, end) infinite;
+}
+
+@keyframes rgbSplit {
+    0% {
+        text-shadow: 
+            -2px 0 0 rgba(255, 0, 0, 0.7),
+            2px 0 0 rgba(0, 255, 255, 0.7);
+    }
+    25% {
+        text-shadow: 
+            2px 0 0 rgba(255, 0, 0, 0.7),
+            -2px 0 0 rgba(0, 255, 255, 0.7);
+    }
+    50% {
+        text-shadow: 
+            -1px 0 0 rgba(255, 0, 0, 0.7),
+            1px 0 0 rgba(0, 255, 255, 0.7);
+    }
+    75% {
+        text-shadow: 
+            1px 0 0 rgba(255, 0, 0, 0.7),
+            -1px 0 0 rgba(0, 255, 255, 0.7);
+    }
+    100% {
+        text-shadow: 
+            0 0 0 rgba(255, 0, 0, 0.7),
+            0 0 0 rgba(0, 255, 255, 0.7);
+    }
+}
+
+/* ============================================
+   Performance Optimizations
+   ============================================ */
+
+/* ============================================
+   Performance Optimizations
+   ============================================ */
+
+/* GPU acceleration for animated elements */
+.header::before,
+.header::after,
+.header h1,
+.stat-card,
+.finding-card,
+.tab,
+.control-panel::before,
+.severity-badge.critical,
+.tab.active::before {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Optimize animations for 60fps */
+/* All animations use transform and opacity for best performance */
+
+/* Prevent flickering */
+.header-logo img,
+.stat-card,
+.finding-card,
+.history-card {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Optimize hover effects */
+.stat-card:hover,
+.finding-card:hover,
+.history-card:hover,
+.tab:hover {
+    will-change: transform, box-shadow;
+}
+
+/* Remove will-change after animation completes */
+.stat-card:not(:hover),
+.finding-card:not(:hover),
+.history-card:not(:hover),
+.tab:not(:hover) {
+    will-change: auto;
+}
+
+/* ============================================
+   Spider Web Overlays on Interactive Elements
+   ============================================ */
+
+/* Add spider web corners to all buttons */
+.btn,
+.mode-btn,
+.btn-primary,
+.btn-export,
+.table-btn-view,
+.table-btn-download,
+.history-btn-view,
+.history-btn-download {
+    position: relative;
+    overflow: visible !important;
+}
+
+.btn::before,
+.mode-btn::before,
+.btn-primary::before,
+.btn-export::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><g stroke="%2339FF14" stroke-width="0.8" fill="none" opacity="0.4"><line x1="0" y1="0" x2="30" y2="30"/><line x1="0" y1="0" x2="15" y2="30"/><line x1="0" y1="0" x2="30" y2="15"/><line x1="0" y1="0" x2="0" y2="30"/><line x1="0" y1="0" x2="30" y2="0"/><circle cx="0" cy="0" r="2" fill="%2339FF14"/><circle cx="10" cy="10" r="1.5" fill="%2339FF14"/><circle cx="20" cy="20" r="1.5" fill="%2339FF14"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.btn:hover::before,
+.mode-btn:hover::before,
+.btn-primary:hover::before,
+.btn-export:hover::before {
+    opacity: 1;
+}
+
+.btn::after,
+.mode-btn::after,
+.btn-primary::after,
+.btn-export::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><g stroke="%23FF7518" stroke-width="0.8" fill="none" opacity="0.4"><line x1="30" y1="30" x2="0" y2="0"/><line x1="30" y1="30" x2="15" y2="0"/><line x1="30" y1="30" x2="0" y2="15"/><line x1="30" y1="30" x2="30" y2="0"/><line x1="30" y1="30" x2="0" y2="30"/><circle cx="30" cy="30" r="2" fill="%23FF7518"/><circle cx="20" cy="20" r="1.5" fill="%23FF7518"/><circle cx="10" cy="10" r="1.5" fill="%23FF7518"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.btn:hover::after,
+.mode-btn:hover::after,
+.btn-primary:hover::after,
+.btn-export:hover::after {
+    opacity: 1;
+}
+
+/* Spider webs on stat cards and tiles */
+.stat-card,
+.finding-card,
+.history-card,
+.recent-scan-item,
+.control-panel {
+    position: relative;
+    overflow: visible !important;
+}
+
+.stat-card::before,
+.finding-card::before,
+.history-card::before,
+.recent-scan-item::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 40px;
+    height: 40px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><g stroke="%2339FF14" stroke-width="0.6" fill="none" opacity="0.5"><line x1="40" y1="0" x2="0" y2="40"/><line x1="40" y1="0" x2="20" y2="40"/><line x1="40" y1="0" x2="40" y2="40"/><line x1="40" y1="0" x2="0" y2="20"/><line x1="40" y1="0" x2="0" y2="0"/><path d="M35 0 Q32 5 30 0 M40 5 Q35 8 40 10 M30 0 Q28 5 25 0 M40 15 Q35 18 40 20" stroke-width="0.5"/><circle cx="40" cy="0" r="2" fill="%2339FF14"/><circle cx="30" cy="10" r="1.2" fill="%2339FF14"/><circle cx="20" cy="20" r="1.2" fill="%2339FF14"/><circle cx="10" cy="30" r="1.2" fill="%2339FF14"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::before,
+.finding-card:hover::before,
+.history-card:hover::before,
+.recent-scan-item:hover::before {
+    opacity: 0.8;
+}
+
+/* Spider silk strands across cards */
+.stat-card::after,
+.finding-card::after,
+.history-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(135deg, transparent 0%, transparent 48%, rgba(57, 255, 20, 0.1) 49%, rgba(57, 255, 20, 0.1) 51%, transparent 52%, transparent 100%),
+        linear-gradient(45deg, transparent 0%, transparent 48%, rgba(255, 117, 24, 0.08) 49%, rgba(255, 117, 24, 0.08) 51%, transparent 52%, transparent 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::after,
+.finding-card:hover::after,
+.history-card:hover::after {
+    opacity: 1;
+}
+
+/* Random spider emoji on tiles - larger with crawling */
+.stat-card:nth-child(2)::before,
+.finding-card:nth-child(3)::before,
+.history-card:nth-child(4)::before {
+    content: '🕷';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 22px;
+    opacity: 0.4;
+    animation: spiderTwitchOnCard 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.7));
+    background: none !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+@keyframes spiderTwitchOnCard {
+    0%, 100% { 
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    20% { 
+        transform: translate(5px, -3px) rotate(10deg) scale(1.1);
+    }
+    40% { 
+        transform: translate(-3px, 5px) rotate(-8deg) scale(0.95);
+    }
+    60% { 
+        transform: translate(4px, 4px) rotate(12deg) scale(1.05);
+    }
+    80% { 
+        transform: translate(-2px, 2px) rotate(-5deg) scale(1);
+    }
+}
+
+/* Web pattern on control panel */
+.control-panel::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><g stroke="%2339FF14" stroke-width="0.8" fill="none" opacity="0.3"><circle cx="30" cy="30" r="5"/><circle cx="30" cy="30" r="12"/><circle cx="30" cy="30" r="20"/><circle cx="30" cy="30" r="28"/><line x1="30" y1="30" x2="30" y2="2"/><line x1="30" y1="30" x2="52" y2="12"/><line x1="30" y1="30" x2="58" y2="30"/><line x1="30" y1="30" x2="52" y2="48"/><line x1="30" y1="30" x2="30" y2="58"/><line x1="30" y1="30" x2="8" y2="48"/><line x1="30" y1="30" x2="2" y2="30"/><line x1="30" y1="30" x2="8" y2="12"/><circle cx="30" cy="30" r="2" fill="%2339FF14"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.4;
+    animation: webPulseOnPanel 4s ease-in-out infinite;
+}
+
+@keyframes webPulseOnPanel {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* Silk strands on tabs */
+.tab {
+    position: relative;
+    overflow: visible !important;
+}
+
+.tab::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 8px;
+    background: linear-gradient(to bottom, rgba(57, 255, 20, 0.4), transparent);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab:hover::after,
+.tab.active::after {
+    opacity: 1;
+}
+
+/* Spider on active tab - larger with swing */
+.tab.active::before {
+    content: '🕷';
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    opacity: 0.6;
+    animation: spiderDangleOnTab 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(57, 255, 20, 0.9));
+}
+
+@keyframes spiderDangleOnTab {
+    0%, 100% { 
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+    }
+    25% { 
+        transform: translateX(-48%) translateY(4px) rotate(5deg);
+    }
+    50% { 
+        transform: translateX(-50%) translateY(6px) rotate(0deg);
+    }
+    75% { 
+        transform: translateX(-52%) translateY(4px) rotate(-5deg);
+    }
+}
+
+/* Web overlay on report sections */
+.report-section {
+    position: relative;
+}
+
+.report-section::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><g stroke="%23FF7518" stroke-width="0.7" fill="none" opacity="0.3"><line x1="0" y1="50" x2="50" y2="0"/><line x1="0" y1="50" x2="25" y2="0"/><line x1="0" y1="50" x2="0" y2="0"/><line x1="0" y1="50" x2="50" y2="25"/><line x1="0" y1="50" x2="50" y2="50"/><circle cx="0" cy="50" r="2" fill="%23FF7518"/><circle cx="15" cy="35" r="1.5" fill="%23FF7518"/><circle cx="30" cy="20" r="1.5" fill="%23FF7518"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* ============================================
+   Decorative Elements
+   ============================================ */
+
+/* Corner Spider Webs */
+.corner-web {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    opacity: var(--halloween-web-opacity);
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Floating Particles */
+.floating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    pointer-events: none;
+    opacity: var(--halloween-particle-opacity);
+}
+
+/* Ember particles */
+.particle-ember {
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #FF7518 0%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 117, 24, 0.8);
+    animation: floatEmber 15s ease-in-out infinite;
+    pointer-events: none;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes floatEmber {
+    0% {
+        transform: translateY(100vh) translateX(0) scale(1) translateZ(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100px) translateX(50px) scale(0.5) translateZ(0);
+        opacity: 0;
+    }
+}
+
+/* Fog particles */
+.particle-fog {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(106, 13, 173, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(20px);
+    animation: floatFog 25s ease-in-out infinite;
+    pointer-events: none;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes floatFog {
+    0%, 100% {
+        transform: translate(0, 0) scale(1) translateZ(0);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translate(30px, -20px) scale(1.1) translateZ(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-20px, -40px) scale(0.9) translateZ(0);
+        opacity: 0.4;
+    }
+    75% {
+        transform: translate(40px, -30px) scale(1.05) translateZ(0);
+        opacity: 0.45;
+    }
+}
+
+/* Ghost particles */
+.particle-ghost {
+    width: 8px;
+    height: 12px;
+    background: linear-gradient(180deg, rgba(57, 255, 20, 0.4) 0%, transparent 100%);
+    border-radius: 50% 50% 0 0;
+    animation: floatGhost 20s ease-in-out infinite;
+    pointer-events: none;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes floatGhost {
+    0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg) translateZ(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(50vh) translateX(-30px) rotate(180deg) translateZ(0);
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-100px) translateX(20px) rotate(360deg) translateZ(0);
+        opacity: 0;
+    }
+}
+
+/* Background Patterns */
+/* Web texture for background grids with silk strands */
+.stats-grid::before,
+.history-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 117, 24, 0.03) 40px, rgba(255, 117, 24, 0.03) 41px),
+        repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 117, 24, 0.03) 40px, rgba(255, 117, 24, 0.03) 41px),
+        repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(255, 117, 24, 0.02) 60px, rgba(255, 117, 24, 0.02) 61px),
+        repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255, 117, 24, 0.02) 60px, rgba(255, 117, 24, 0.02) 61px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Removed animated silk strands for performance */
+
+.stats-grid,
+.history-grid {
+    position: relative;
+}
+
+.stats-grid > *,
+.history-grid > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Removed heavy background images for performance */
+
+/* Removed for performance */
+
+/* Add more spiders throughout the page - larger with animation */
+.stats-grid::before {
+    content: '🕷';
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 32px;
+    opacity: 0.5;
+    animation: spiderDangle 5s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(57, 255, 20, 0.7));
+}
+
+/* Animated spider decorations on stat cards */
+.stat-card:nth-child(3)::after {
+    content: '🕷';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 20px;
+    opacity: 0.4;
+    filter: drop-shadow(0 0 6px rgba(255, 117, 24, 0.7));
+    background: none !important;
+    animation: spiderCrawlCard 10s ease-in-out infinite;
+}
+
+@keyframes spiderCrawlCard {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    20% {
+        transform: translate(10px, 5px) rotate(25deg) scale(1.1);
+    }
+    40% {
+        transform: translate(20px, -5px) rotate(-15deg) scale(0.95);
+    }
+    60% {
+        transform: translate(15px, 10px) rotate(30deg) scale(1.05);
+    }
+    80% {
+        transform: translate(5px, 8px) rotate(-10deg) scale(1);
+    }
+}
+
+/* Animated spiders on cards - slow crawling */
+.finding-card:nth-child(5n)::after {
+    content: '🕷';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    opacity: 0.35;
+    filter: drop-shadow(0 0 6px rgba(57, 255, 20, 0.6));
+    background: none !important;
+    animation: spiderCrawlSlow 12s ease-in-out infinite;
+}
+
+@keyframes spiderCrawlSlow {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0.35;
+    }
+    25% {
+        transform: translate(-8px, 5px) rotate(15deg);
+        opacity: 0.45;
+    }
+    50% {
+        transform: translate(-15px, -3px) rotate(-10deg);
+        opacity: 0.4;
+    }
+    75% {
+        transform: translate(-5px, 8px) rotate(20deg);
+        opacity: 0.5;
+    }
+}
+
+/* Removed spiders from table rows to prevent layout issues */
+
+@keyframes spiderDangle {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateX(-50%) translateY(10px) rotate(5deg);
+    }
+}
+
+/* Removed for performance */
+
+@keyframes spiderCrawlSlow {
+    0% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-50px) rotate(90deg);
+    }
+    50% {
+        transform: translateX(-50px) translateY(50px) rotate(180deg);
+    }
+    75% {
+        transform: translateX(0) translateY(50px) rotate(270deg);
+    }
+    100% {
+        transform: translateX(0) rotate(360deg);
+    }
+}
+
+@keyframes spiderFloat {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg) translateZ(0);
+    }
+    25% {
+        transform: translate(10px, -15px) rotate(5deg) translateZ(0);
+    }
+    50% {
+        transform: translate(-5px, -25px) rotate(-3deg) translateZ(0);
+    }
+    75% {
+        transform: translate(15px, -10px) rotate(4deg) translateZ(0);
+    }
+}
+
+.corner-web-top-left {
+    top: 0;
+    left: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g stroke="%2339FF14" stroke-width="2" fill="none" opacity="1"><path d="M0 0 L200 200 M0 0 L100 200 M0 0 L0 200 M0 0 L200 100 M0 0 L200 0"/><circle cx="0" cy="0" r="6" fill="%23FF7518"/><circle cx="40" cy="40" r="4" fill="%2339FF14"/><circle cx="80" cy="80" r="4" fill="%2339FF14"/><circle cx="120" cy="120" r="4" fill="%2339FF14"/><circle cx="160" cy="160" r="4" fill="%2339FF14"/><path d="M20 0 Q30 10 40 0 M0 20 Q10 30 0 40 M60 0 Q70 10 80 0 M0 60 Q10 70 0 80 M100 0 Q110 10 120 0 M0 100 Q10 110 0 120 M140 0 Q150 10 160 0 M0 140 Q10 150 0 160" stroke-width="1.5"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.5));
+    opacity: 0.4;
+}
+
+.corner-web-top-right {
+    top: 0;
+    right: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g stroke="%23FF7518" stroke-width="1.5" fill="none" opacity="0.8"><path d="M200 0 L0 200 M200 0 L100 200 M200 0 L200 200 M200 0 L0 100 M200 0 L0 0"/><circle cx="200" cy="0" r="5" fill="%23FF7518"/><circle cx="160" cy="40" r="3" fill="%23FF7518"/><circle cx="120" cy="80" r="3" fill="%23FF7518"/><circle cx="80" cy="120" r="3" fill="%23FF7518"/><circle cx="40" cy="160" r="3" fill="%23FF7518"/><path d="M180 0 Q170 10 160 0 M200 20 Q190 30 200 40 M140 0 Q130 10 120 0 M200 60 Q190 70 200 80 M100 0 Q90 10 80 0 M200 100 Q190 110 200 120 M60 0 Q50 10 40 0 M200 140 Q190 150 200 160" stroke-width="1"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.corner-web-bottom-left {
+    bottom: 0;
+    left: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g stroke="%23FF7518" stroke-width="1.5" fill="none" opacity="0.8"><path d="M0 200 L200 0 M0 200 L100 0 M0 200 L0 0 M0 200 L200 100 M0 200 L200 200"/><circle cx="0" cy="200" r="5" fill="%23FF7518"/><circle cx="40" cy="160" r="3" fill="%23FF7518"/><circle cx="80" cy="120" r="3" fill="%23FF7518"/><circle cx="120" cy="80" r="3" fill="%23FF7518"/><circle cx="160" cy="40" r="3" fill="%23FF7518"/><path d="M20 200 Q30 190 40 200 M0 180 Q10 170 0 160 M60 200 Q70 190 80 200 M0 140 Q10 130 0 120 M100 200 Q110 190 120 200 M0 100 Q10 90 0 80 M140 200 Q150 190 160 200 M0 60 Q10 50 0 40" stroke-width="1"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.corner-web-bottom-right {
+    bottom: 0;
+    right: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g stroke="%23FF7518" stroke-width="1.5" fill="none" opacity="0.8"><path d="M200 200 L0 0 M200 200 L100 0 M200 200 L200 0 M200 200 L0 100 M200 200 L0 200"/><circle cx="200" cy="200" r="5" fill="%23FF7518"/><circle cx="160" cy="160" r="3" fill="%23FF7518"/><circle cx="120" cy="120" r="3" fill="%23FF7518"/><circle cx="80" cy="80" r="3" fill="%23FF7518"/><circle cx="40" cy="40" r="3" fill="%23FF7518"/><path d="M180 200 Q170 190 160 200 M200 180 Q190 170 200 160 M140 200 Q130 190 120 200 M200 140 Q190 130 200 120 M100 200 Q90 190 80 200 M200 100 Q190 90 200 80 M60 200 Q50 190 40 200 M200 60 Q190 50 200 40" stroke-width="1"/></g></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* ============================================
+   Accessibility Support
+   ============================================ */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    /* Disable all Halloween animations */
+    .header h1,
+    .stat-card:hover,
+    .severity-badge.critical,
+    .tab.active::before,
+    .control-panel::before {
+        animation: none !important;
+    }
+    
+    /* Hide decorative elements */
+    .corner-web,
+    .floating-particles,
+    .container::before,
+    .container::after,
+    .stats-grid::before,
+    .history-grid::before,
+    .history-card::after,
+    .recent-scan-item::before,
+    .finding-card::before,
+    .tab::after {
+        display: none !important;
+    }
+    
+    /* Remove glow effects */
+    .header-logo img,
+    .header h1,
+    .logs-container,
+    .log-entry {
+        filter: none !important;
+        text-shadow: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --halloween-bg-primary: #000000;
+        --halloween-bg-secondary: #000000;
+        --halloween-accent-critical: #FF8C00;
+        --halloween-accent-success: #00FF00;
+        --halloween-text-primary: #FFFFFF;
+        --halloween-border-accent: #FF8C00;
+    }
+    
+    /* Increase contrast ratios beyond WCAG AA */
+    .header {
+        background: #000000 !important;
+    }
+    
+    .header h1 {
+        color: #FFFFFF !important;
+        text-shadow: none !important;
+    }
+    
+    .severity-badge.critical {
+        background: #FF8C00 !important;
+        color: #000000 !important;
+        border: 2px solid #000000 !important;
+    }
+    
+    .severity-badge.high {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        border: 2px solid #000000 !important;
+    }
+    
+    .logs-container {
+        background: #000000 !important;
+        color: #00FF00 !important;
+        border: 2px solid #00FF00 !important;
+    }
+    
+    /* Hide decorative elements */
+    .corner-web,
+    .floating-particles,
+    .container::before,
+    .container::after,
+    .stats-grid::before,
+    .history-grid::before,
+    .history-card::after,
+    .recent-scan-item::before,
+    .finding-card::before,
+    .tab::after,
+    .control-panel::before {
+        display: none !important;
+    }
+    
+    /* Remove subtle effects */
+    .header-logo img,
+    .stat-card:hover,
+    .finding-card {
+        filter: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Ensure all text is high contrast */
+    .stat-value,
+    .finding-package,
+    .history-title {
+        color: #000000 !important;
+    }
+    
+    .tab.active {
+        border-bottom: 3px solid #FF8C00 !important;
+    }
+}
+
+
+/* ============================================
+   Dashboard Tab - Halloween Theme
+   ============================================ */
+
+/* Stat cards - Pulsing glow on hover */
+.stat-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    /* GPU acceleration */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.stat-card:hover {
+    box-shadow: 
+        0 0 30px rgba(255, 117, 24, 0.3),
+        0 8px 16px rgba(0, 0, 0, 0.15);
+    animation: pulseGlow var(--halloween-pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { 
+        box-shadow: 
+            0 0 20px rgba(255, 117, 24, 0.2),
+            0 8px 16px rgba(0, 0, 0, 0.15);
+        transform: translateZ(0) scale(1);
+    }
+    50% { 
+        box-shadow: 
+            0 0 40px rgba(255, 117, 24, 0.4),
+            0 12px 24px rgba(0, 0, 0, 0.2);
+        transform: translateZ(0) scale(1.02);
+    }
+}
+
+/* Control panel - Mist overlay */
+.control-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.control-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, 
+        rgba(106, 13, 173, 0.03) 0%, 
+        rgba(57, 255, 20, 0.02) 100%);
+    pointer-events: none;
+    animation: mistMove var(--halloween-mist-duration) ease-in-out infinite;
+    z-index: 0;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes mistMove {
+    0%, 100% { 
+        transform: translateY(0) translateZ(0); 
+        opacity: 0.5; 
+    }
+    50% { 
+        transform: translateY(-10px) translateZ(0); 
+        opacity: 0.8; 
+    }
+}
+
+.control-panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Recent scans - Spider web dividers */
+.recent-scan-item {
+    position: relative;
+    border-left: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.recent-scan-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 117, 24, 0.2) 10px,
+        rgba(255, 117, 24, 0.2) 11px,
+        transparent 11px,
+        transparent 20px
+    );
+}
+
+.recent-scan-item:hover {
+    border-left-color: rgba(255, 117, 24, 0.5);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 117, 24, 0.03) 0%,
+        transparent 100%
+    );
+}
+
+/* Logs container - Ectoplasmic green with glow */
+.logs-container {
+    background: var(--halloween-bg-primary) !important;
+    color: var(--halloween-accent-success) !important;
+    box-shadow: 
+        inset 0 0 50px rgba(57, 255, 20, 0.1),
+        0 0 20px rgba(57, 255, 20, 0.05);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.log-entry {
+    text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+.log-level.success {
+    background: rgba(57, 255, 20, 0.2) !important;
+    border-color: var(--halloween-accent-success) !important;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.log-level.error {
+    background: var(--halloween-accent-critical) !important;
+    border-color: var(--halloween-accent-critical) !important;
+    box-shadow: 0 0 10px rgba(255, 117, 24, 0.4);
+}
+
+
+/* ============================================
+   Report Tab - Halloween Theme
+   ============================================ */
+
+/* Finding cards - Web-pattern borders */
+.finding-card {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.finding-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 117, 24, 0.3) 10px,
+        rgba(255, 117, 24, 0.3) 11px
+    );
+}
+
+.finding-card.critical {
+    border-left-color: var(--halloween-accent-critical) !important;
+    box-shadow: -3px 0 15px rgba(255, 117, 24, 0.2);
+}
+
+.finding-card.critical:hover {
+    box-shadow: 
+        -3px 0 20px rgba(255, 117, 24, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Severity badges - Pulsing animation */
+.severity-badge.critical {
+    background: var(--halloween-accent-critical) !important;
+    border-color: var(--halloween-accent-critical) !important;
+    box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+    animation: badgePulse var(--halloween-pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    /* GPU acceleration */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes badgePulse {
+    0%, 100% { 
+        transform: scale(1) translateZ(0);
+        box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+    }
+    50% { 
+        transform: scale(1.05) translateZ(0);
+        box-shadow: 0 0 20px rgba(255, 117, 24, 0.7);
+    }
+}
+
+.severity-badge.high {
+    box-shadow: 0 0 8px rgba(26, 26, 26, 0.3);
+}
+
+.severity-badge.medium {
+    box-shadow: 0 0 5px rgba(102, 102, 102, 0.2);
+}
+
+/* Report sections - Shadow effects */
+.report-section {
+    position: relative;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 0 30px rgba(255, 117, 24, 0.02);
+    transition: all 0.3s ease;
+}
+
+.report-section:hover {
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 0 40px rgba(255, 117, 24, 0.03);
+}
+
+.report-section h3 {
+    border-bottom-color: var(--halloween-accent-critical) !important;
+    text-shadow: 0 0 10px rgba(255, 117, 24, 0.1);
+}
+
+/* Stats grid - Animated on load */
+.stats-grid {
+    animation: statsGridFadeIn 0.8s ease-out;
+}
+
+@keyframes statsGridFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-grid .stat-card {
+    animation: statCardPop 0.6s ease-out backwards;
+}
+
+.stats-grid .stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stats-grid .stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stats-grid .stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stats-grid .stat-card:nth-child(4) { animation-delay: 0.4s; }
+.stats-grid .stat-card:nth-child(5) { animation-delay: 0.5s; }
+.stats-grid .stat-card:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes statCardPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ============================================
+   History Tab - Halloween Theme
+   ============================================ */
+
+/* History cards - Spider web corners */
+.history-card {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.history-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><path d="M60 0 L60 60 M60 0 L0 0 M60 0 L50 10 M60 0 L45 5 M60 0 L40 8 M60 10 L50 20 M60 15 L45 25 M60 20 L40 30" stroke="%23FF7518" stroke-width="0.5" fill="none" opacity="0.3"/></svg>');
+    opacity: 0.15;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.history-card:hover::after {
+    opacity: 0.25;
+}
+
+.history-card:hover {
+    border-color: rgba(255, 117, 24, 0.4);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        0 0 20px rgba(255, 117, 24, 0.1);
+}
+
+/* Table rows - Web pattern on hover */
+.history-table tbody tr {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.history-table tbody tr:hover {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 117, 24, 0.05) 0%,
+        transparent 100%
+    );
+}
+
+.history-table tbody tr:hover::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--halloween-accent-critical);
+    box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+}
+
+/* Badges - Halloween colors */
+.type-badge.github_repository {
+    background: var(--halloween-bg-primary) !important;
+    border-color: var(--halloween-accent-critical) !important;
+    box-shadow: 0 0 8px rgba(255, 117, 24, 0.2);
+}
+
+.type-badge.local_directory {
+    border-color: var(--halloween-accent-purple) !important;
+    color: var(--halloween-accent-purple) !important;
+}
+
+.findings-badge {
+    transition: all 0.2s ease;
+}
+
+.findings-badge:hover {
+    background: rgba(255, 117, 24, 0.1);
+    border-color: var(--halloween-accent-critical);
+}
+
+/* Buttons - Glow effects */
+.table-btn-view,
+.history-btn-view {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* GPU acceleration */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.table-btn-view:hover,
+.history-btn-view:hover {
+    background: var(--halloween-accent-critical) !important;
+    border-color: var(--halloween-accent-critical) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 0 15px rgba(255, 117, 24, 0.4);
+    transform: translateY(-2px) translateZ(0);
+    animation: buttonPulse var(--halloween-pulse-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(255, 117, 24, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 117, 24, 0.6);
+    }
+}
+
+.table-btn-download:hover,
+.history-btn-download:hover {
+    border-color: var(--halloween-accent-critical) !important;
+    background: rgba(255, 117, 24, 0.05) !important;
+    box-shadow: 0 0 10px rgba(255, 117, 24, 0.2);
+}
+
+
+/* ============================================
+   Tabs Component - Halloween Theme
+   ============================================ */
+
+/* Tab active underline - Pumpkin orange with web animation */
+.tab {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--halloween-accent-critical) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+}
+
+.tab:hover {
+    color: var(--halloween-text-dark);
+    background: rgba(255, 117, 24, 0.05);
+}
+
+.tab:hover::before {
+    width: 80%;
+}
+
+.tab.active {
+    color: var(--halloween-text-dark);
+    border-bottom-color: var(--halloween-accent-critical) !important;
+    background: transparent;
+}
+
+.tab.active::before {
+    width: 100%;
+    animation: webUnderline 2s ease-in-out infinite;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes webUnderline {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+        opacity: 1;
+        transform: translateZ(0);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 117, 24, 0.7);
+        opacity: 0.8;
+        transform: translateZ(0);
+    }
+}
+
+/* Web-like pattern on tab hover */
+.tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 8px,
+        rgba(255, 117, 24, 0.1) 8px,
+        rgba(255, 117, 24, 0.1) 9px
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab:hover::after {
+    opacity: 1;
+}
+
+
+/* ============================================
+   Non-Color Information Indicators
+   ============================================ */
+
+/* Add text labels and icons to severity badges */
+.severity-badge::before {
+    margin-right: 4px;
+}
+
+.severity-badge.critical::before {
+    content: '⚠ ';
+    font-weight: bold;
+}
+
+.severity-badge.high::before {
+    content: '⬆ ';
+}
+
+.severity-badge.medium::before {
+    content: '➡ ';
+}
+
+.severity-badge.low::before {
+    content: '⬇ ';
+}
+
+/* Add patterns to supplement color coding */
+.finding-card.critical {
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 117, 24, 0.02) 10px,
+        rgba(255, 117, 24, 0.02) 20px
+    );
+}
+
+.finding-card.high {
+    background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        rgba(26, 26, 26, 0.02) 10px,
+        rgba(26, 26, 26, 0.02) 20px
+    );
+}
+
+/* Status indicators with icons */
+.header-badge.status::before {
+    content: '✓ ';
+    font-weight: bold;
+}
+
+.log-level.success::before {
+    content: '✓ ';
+}
+
+.log-level.error::before {
+    content: '✗ ';
+}
+
+.log-level.warning::before {
+    content: '⚠ ';
+}
+
+.log-level.info::before {
+    content: 'ℹ ';
+}
+
+
+/* ============================================
+   Atmospheric Web Overlays for All Sections
+   ============================================ */
+
+/* Dashboard tab - Web overlay */
+#dashboard {
+    position: relative;
+}
+
+#dashboard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 40px, 
+          rgba(57, 255, 20, 0.03) 40px, rgba(57, 255, 20, 0.03) 41px),
+        repeating-linear-gradient(90deg, transparent, transparent 40px, 
+          rgba(57, 255, 20, 0.03) 40px, rgba(57, 255, 20, 0.03) 41px),
+        repeating-linear-gradient(45deg, transparent, transparent 60px, 
+          rgba(255, 117, 24, 0.02) 60px, rgba(255, 117, 24, 0.02) 61px),
+        repeating-linear-gradient(-45deg, transparent, transparent 60px, 
+          rgba(106, 13, 173, 0.02) 60px, rgba(106, 13, 173, 0.02) 61px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+#dashboard > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Report tab - Web overlay */
+#report {
+    position: relative;
+}
+
+#report::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 35px, 
+          rgba(255, 117, 24, 0.04) 35px, rgba(255, 117, 24, 0.04) 36px),
+        repeating-linear-gradient(90deg, transparent, transparent 35px, 
+          rgba(255, 117, 24, 0.04) 35px, rgba(255, 117, 24, 0.04) 36px),
+        repeating-linear-gradient(60deg, transparent, transparent 50px, 
+          rgba(57, 255, 20, 0.03) 50px, rgba(57, 255, 20, 0.03) 51px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+}
+
+#report > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* History tab - Web overlay */
+#history {
+    position: relative;
+}
+
+#history::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 45px, 
+          rgba(106, 13, 173, 0.03) 45px, rgba(106, 13, 173, 0.03) 46px),
+        repeating-linear-gradient(90deg, transparent, transparent 45px, 
+          rgba(106, 13, 173, 0.03) 45px, rgba(106, 13, 173, 0.03) 46px),
+        repeating-linear-gradient(-60deg, transparent, transparent 55px, 
+          rgba(57, 255, 20, 0.02) 55px, rgba(57, 255, 20, 0.02) 56px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+#history > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Add mist effect to all tabs */
+.tab-content.active::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(57, 255, 20, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(106, 13, 173, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 117, 24, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: mistFloat 30s ease-in-out infinite;
+}
+
+@keyframes mistFloat {
+    0%, 100% {
+        opacity: 0.5;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-20px);
+    }
+}
+
+/* ============================================
+   Gothic Dripping Text Effects
+   ============================================ */
+
+/* Dripping effect for major headings */
+.dripping-text {
+    position: relative;
+    display: inline-block;
+}
+
+.dripping-text::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 20%;
+    width: 8px;
+    height: 15px;
+    background: linear-gradient(180deg, var(--halloween-accent-success) 0%, transparent 100%);
+    border-radius: 0 0 50% 50%;
+    animation: drip 3s ease-in-out infinite;
+    opacity: 0.7;
+}
+
+@keyframes drip {
+    0%, 100% {
+        height: 15px;
+        opacity: 0.7;
+    }
+    50% {
+        height: 25px;
+        opacity: 0.9;
+    }
+}
+
+/* Apply dripping to report section headings */
+.report-section h3 {
+    position: relative;
+}
+
+.report-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 15%;
+    width: 6px;
+    height: 12px;
+    background: linear-gradient(180deg, var(--halloween-accent-success) 0%, transparent 100%);
+    border-radius: 0 0 50% 50%;
+    animation: drip 4s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+/* Metallic silver text effect for gothic aesthetic */
+.gothic-text {
+    background: linear-gradient(180deg, 
+        var(--halloween-accent-silver) 0%, 
+        #808080 50%, 
+        var(--halloween-accent-silver) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 
+        0 0 20px rgba(57, 255, 20, 0.5),
+        0 0 40px rgba(57, 255, 20, 0.3);
+}
+
+/* Enhanced green glow for text */
+.glow-text {
+    text-shadow: 
+        0 0 10px rgba(57, 255, 20, 0.8),
+        0 0 20px rgba(57, 255, 20, 0.6),
+        0 0 30px rgba(57, 255, 20, 0.4),
+        0 0 40px rgba(57, 255, 20, 0.2);
+    color: var(--halloween-text-glow);
+}
+
+/* Red glowing spider eyes effect */
+.spider-eyes {
+    position: relative;
+}
+
+.spider-eyes::before,
+.spider-eyes::after {
+    content: '●';
+    position: absolute;
+    color: var(--halloween-accent-red);
+    font-size: 8px;
+    text-shadow: 
+        0 0 8px rgba(220, 20, 60, 0.9),
+        0 0 15px rgba(220, 20, 60, 0.6);
+    animation: eyeGlow 2s ease-in-out infinite;
+}
+
+.spider-eyes::before {
+    left: -15px;
+    top: 50%;
+}
+
+.spider-eyes::after {
+    left: -8px;
+    top: 50%;
+}
+
+@keyframes eyeGlow {
+    0%, 100% {
+        opacity: 1;
+        text-shadow: 
+            0 0 8px rgba(220, 20, 60, 0.9),
+            0 0 15px rgba(220, 20, 60, 0.6);
+    }
+    50% {
+        opacity: 0.6;
+        text-shadow: 
+            0 0 12px rgba(220, 20, 60, 1),
+            0 0 20px rgba(220, 20, 60, 0.8);
+    }
+}
+
+/* ============================================
+   Spider-Themed Iconography
+   ============================================ */
+
+/* Spider-themed dividers - Web pattern dividers between sections */
+.spider-divider {
+    width: 100%;
+    height: 40px;
+    margin: var(--spacing-lg) 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.spider-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 15px,
+        var(--halloween-border-accent) 15px,
+        var(--halloween-border-accent) 16px,
+        transparent 16px,
+        transparent 25px,
+        rgba(255, 117, 24, 0.3) 25px,
+        rgba(255, 117, 24, 0.3) 26px
+    );
+    opacity: 0.4;
+}
+
+.spider-divider::after {
+    content: '🕷';
+    font-size: 20px;
+    background: var(--halloween-bg-card);
+    padding: 0 var(--spacing-md);
+    position: relative;
+    z-index: 1;
+    opacity: 0.6;
+    animation: spiderCrawl 8s ease-in-out infinite;
+}
+
+@keyframes spiderCrawl {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(10px) rotate(5deg);
+    }
+    50% {
+        transform: translateX(0) rotate(0deg);
+    }
+    75% {
+        transform: translateX(-10px) rotate(-5deg);
+    }
+}
+
+/* Web pattern divider variant - More intricate */
+.spider-divider.web-pattern::before {
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 10px,
+            var(--halloween-border-accent) 10px,
+            var(--halloween-border-accent) 11px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 117, 24, 0.2) 20px,
+            rgba(255, 117, 24, 0.2) 21px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 117, 24, 0.2) 20px,
+            rgba(255, 117, 24, 0.2) 21px
+        );
+    height: 2px;
+}
+
+/* Silk strand divider - Thin and delicate */
+.spider-divider.silk-strand {
+    height: 24px;
+}
+
+.spider-divider.silk-strand::before {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--halloween-border-accent) 20%,
+        var(--halloween-border-accent) 80%,
+        transparent 100%
+    );
+    height: 1px;
+    opacity: 0.5;
+    box-shadow: 0 0 3px rgba(255, 117, 24, 0.3);
+}
+
+.spider-divider.silk-strand::after {
+    font-size: 16px;
+    padding: 0 var(--spacing-sm);
+}
+
+/* Apply dividers between Dashboard sections */
+.control-panel + * {
+    position: relative;
+}
+
+.control-panel + *::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 12px,
+        rgba(255, 117, 24, 0.2) 12px,
+        rgba(255, 117, 24, 0.2) 13px
+    );
+    margin: var(--spacing-xl) 0;
+    opacity: 0.5;
+}
+
+/* Apply dividers between Report sections */
+.report-section + .report-section {
+    position: relative;
+}
+
+.report-section + .report-section::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 10px,
+            var(--halloween-border-accent) 10px,
+            var(--halloween-border-accent) 11px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 15px,
+            rgba(255, 117, 24, 0.15) 15px,
+            rgba(255, 117, 24, 0.15) 16px
+        );
+    margin: var(--spacing-xl) 0 calc(var(--spacing-xl) * -1) 0;
+    opacity: 0.4;
+    position: absolute;
+    top: calc(var(--spacing-xl) * -1);
+    left: 0;
+    right: 0;
+}
+
+/* Divider between recent scans */
+.recent-scan-item + .recent-scan-item::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 8px,
+        rgba(255, 117, 24, 0.15) 8px,
+        rgba(255, 117, 24, 0.15) 9px
+    );
+    margin-bottom: var(--spacing-md);
+    opacity: 0.6;
+}
+
+/* Web-like connectors - Spider silk-style connector lines */
+.web-connector {
+    position: relative;
+    display: inline-block;
+}
+
+/* Horizontal web connector */
+.web-connector-horizontal {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--halloween-border-accent) 10%,
+        var(--halloween-border-accent) 90%,
+        transparent 100%
+    );
+    position: relative;
+    margin: var(--spacing-md) 0;
+    opacity: 0.4;
+}
+
+.web-connector-horizontal::before,
+.web-connector-horizontal::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--halloween-accent-critical);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 8px rgba(255, 117, 24, 0.6);
+}
+
+.web-connector-horizontal::before {
+    left: 10%;
+}
+
+.web-connector-horizontal::after {
+    right: 10%;
+}
+
+/* Vertical web connector */
+.web-connector-vertical {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        var(--halloween-border-accent) 10%,
+        var(--halloween-border-accent) 90%,
+        transparent 100%
+    );
+    position: relative;
+    margin: 0 var(--spacing-md);
+    opacity: 0.4;
+}
+
+.web-connector-vertical::before,
+.web-connector-vertical::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--halloween-accent-critical);
+    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(255, 117, 24, 0.6);
+}
+
+.web-connector-vertical::before {
+    top: 10%;
+}
+
+.web-connector-vertical::after {
+    bottom: 10%;
+}
+
+/* Diagonal web connector (top-left to bottom-right) */
+.web-connector-diagonal {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        var(--halloween-border-accent) 20%,
+        var(--halloween-border-accent) 80%,
+        transparent 100%
+    );
+    transform: rotate(45deg);
+    transform-origin: center;
+    opacity: 0.3;
+}
+
+/* Curved web connector - Bezier-like silk strand */
+.web-connector-curve {
+    position: relative;
+    width: 100%;
+    height: 60px;
+}
+
+.web-connector-curve::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at 25% 50%, var(--halloween-border-accent) 0%, transparent 2%),
+        radial-gradient(ellipse at 50% 50%, var(--halloween-border-accent) 0%, transparent 1.5%),
+        radial-gradient(ellipse at 75% 50%, var(--halloween-border-accent) 0%, transparent 2%);
+    opacity: 0.5;
+}
+
+.web-connector-curve::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: 
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--halloween-border-accent) 25%,
+            var(--halloween-border-accent) 75%,
+            transparent 100%
+        );
+    transform: translateY(-50%);
+    opacity: 0.4;
+    box-shadow: 0 0 3px rgba(255, 117, 24, 0.3);
+}
+
+/* Apply web connectors to stat cards */
+.stats-grid {
+    position: relative;
+}
+
+.stats-grid::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    right: 5%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 30px,
+        rgba(255, 117, 24, 0.1) 30px,
+        rgba(255, 117, 24, 0.1) 31px
+    );
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+/* Web connectors between finding cards */
+.finding-card + .finding-card {
+    position: relative;
+}
+
+.finding-card + .finding-card::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--spacing-md) * -1);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 117, 24, 0.15) 10px,
+        rgba(255, 117, 24, 0.15) 11px
+    );
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Silk strand animation for connectors */
+@keyframes silkStrandSway {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(2px) scaleY(1.02);
+    }
+}
+
+.web-connector-vertical,
+.web-connector-horizontal {
+    animation: silkStrandSway 4s ease-in-out infinite;
+    /* GPU acceleration */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Glitched branding symbols - Distorted spooky symbols */
+.glitch-symbol {
+    position: relative;
+    display: inline-block;
+    font-size: 48px;
+    color: var(--halloween-accent-critical);
+    text-shadow: 
+        0 0 10px rgba(255, 117, 24, 0.8),
+        0 0 20px rgba(255, 117, 24, 0.6),
+        0 0 30px rgba(255, 117, 24, 0.4);
+    animation: glitchSymbol 3s ease-in-out infinite;
+    /* GPU acceleration */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes glitchSymbol {
+    0%, 100% {
+        transform: translateX(0) translateZ(0);
+        opacity: 1;
+        filter: hue-rotate(0deg);
+    }
+    10% {
+        transform: translateX(-2px) translateZ(0);
+        opacity: 0.9;
+    }
+    20% {
+        transform: translateX(2px) translateZ(0);
+        opacity: 1;
+    }
+    30% {
+        transform: translateX(-1px) translateZ(0);
+        opacity: 0.95;
+        filter: hue-rotate(10deg);
+    }
+    40% {
+        transform: translateX(1px) translateZ(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0.85;
+        filter: hue-rotate(-10deg);
+    }
+    60% {
+        transform: translateX(-2px) translateZ(0);
+        opacity: 1;
+    }
+    70% {
+        transform: translateX(2px) translateZ(0);
+        opacity: 0.9;
+    }
+    80% {
+        transform: translateX(0) translateZ(0);
+        opacity: 1;
+        filter: hue-rotate(5deg);
+    }
+}
+
+/* Glitch effect layers */
+.glitch-symbol::before,
+.glitch-symbol::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+.glitch-symbol::before {
+    color: var(--halloween-accent-success);
+    animation: glitchBefore 2s ease-in-out infinite;
+    z-index: -1;
+}
+
+.glitch-symbol::after {
+    color: var(--halloween-accent-purple);
+    animation: glitchAfter 2.5s ease-in-out infinite;
+    z-index: -2;
+}
+
+@keyframes glitchBefore {
+    0%, 100% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+    10% {
+        transform: translateX(-3px) translateY(2px) translateZ(0);
+        opacity: 0.8;
+    }
+    20% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(2px) translateY(-1px) translateZ(0);
+        opacity: 0.7;
+    }
+    60% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+}
+
+@keyframes glitchAfter {
+    0%, 100% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+    15% {
+        transform: translateX(3px) translateY(-2px) translateZ(0);
+        opacity: 0.6;
+    }
+    25% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+    55% {
+        transform: translateX(-2px) translateY(1px) translateZ(0);
+        opacity: 0.5;
+    }
+    65% {
+        transform: translateX(0) translateZ(0);
+        opacity: 0;
+    }
+}
+
+/* Distorted spider symbol for loading states */
+.loading-spider {
+    display: inline-block;
+    font-size: 32px;
+    animation: spiderGlitch 1.5s ease-in-out infinite;
+    /* GPU acceleration */
+    will-change: transform, filter;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+@keyframes spiderGlitch {
+    0%, 100% {
+        transform: rotate(0deg) scale(1) translateZ(0);
+        filter: hue-rotate(0deg) brightness(1);
+    }
+    25% {
+        transform: rotate(-5deg) scale(1.05) translateZ(0);
+        filter: hue-rotate(20deg) brightness(1.2);
+    }
+    50% {
+        transform: rotate(5deg) scale(0.95) translateZ(0);
+        filter: hue-rotate(-20deg) brightness(0.8);
+    }
+    75% {
+        transform: rotate(-3deg) scale(1.02) translateZ(0);
+        filter: hue-rotate(10deg) brightness(1.1);
+    }
+}
+
+/* Apply glitched symbols to status indicators */
+.status-bar.running::before {
+    content: '🕷';
+    margin-right: var(--spacing-sm);
+    display: inline-block;
+    animation: spiderGlitch 1.5s ease-in-out infinite;
+}
+
+/* Glitched branding for no-report state */
+.no-report svg {
+    filter: drop-shadow(0 0 10px rgba(255, 117, 24, 0.3));
+    animation: svgGlitch 4s ease-in-out infinite;
+}
+
+@keyframes svgGlitch {
+    0%, 100% {
+        transform: translateX(0) translateZ(0);
+        filter: drop-shadow(0 0 10px rgba(255, 117, 24, 0.3));
+    }
+    10% {
+        transform: translateX(-1px) translateZ(0);
+        filter: drop-shadow(0 0 15px rgba(255, 117, 24, 0.5)) hue-rotate(10deg);
+    }
+    20% {
+        transform: translateX(1px) translateZ(0);
+        filter: drop-shadow(0 0 10px rgba(255, 117, 24, 0.3));
+    }
+    50% {
+        transform: translateX(0) translateZ(0);
+        filter: drop-shadow(0 0 20px rgba(57, 255, 20, 0.4)) hue-rotate(-10deg);
+    }
+}
+
+/* Glitched spinner for loading states */
+.spinner {
+    position: relative;
+    animation: spin 0.8s linear infinite, spinnerGlitch 2s ease-in-out infinite;
+}
+
+@keyframes spinnerGlitch {
+    0%, 100% {
+        border-top-color: var(--halloween-accent-critical);
+        filter: drop-shadow(0 0 5px rgba(255, 117, 24, 0.5));
+    }
+    25% {
+        border-top-color: var(--halloween-accent-success);
+        filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.6));
+    }
+    50% {
+        border-top-color: var(--halloween-accent-purple);
+        filter: drop-shadow(0 0 5px rgba(106, 13, 173, 0.5));
+    }
+    75% {
+        border-top-color: var(--halloween-accent-critical);
+        filter: drop-shadow(0 0 8px rgba(255, 117, 24, 0.6));
+    }
+}
+
+/* Distorted icon effects for badges */
+.header-badge::before {
+    display: inline-block;
+    margin-right: 4px;
+    animation: badgeIconGlitch 5s ease-in-out infinite;
+}
+
+@keyframes badgeIconGlitch {
+    0%, 90%, 100% {
+        transform: translateX(0) translateZ(0);
+        opacity: 1;
+    }
+    92% {
+        transform: translateX(-1px) translateZ(0);
+        opacity: 0.8;
+    }
+    94% {
+        transform: translateX(1px) translateZ(0);
+        opacity: 1;
+    }
+    96% {
+        transform: translateX(-1px) translateZ(0);
+        opacity: 0.9;
+    }
+    98% {
+        transform: translateX(0) translateZ(0);
+        opacity: 1;
+    }
+}
+
+/* Glitched web pattern for branding screens */
+.branding-screen {
+    position: relative;
+    background: var(--halloween-bg-primary);
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.branding-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 30px, 
+          rgba(255, 117, 24, 0.05) 30px, rgba(255, 117, 24, 0.05) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, 
+          rgba(255, 117, 24, 0.05) 30px, rgba(255, 117, 24, 0.05) 31px),
+        repeating-linear-gradient(45deg, transparent, transparent 40px, 
+          rgba(57, 255, 20, 0.03) 40px, rgba(57, 255, 20, 0.03) 41px),
+        repeating-linear-gradient(-45deg, transparent, transparent 40px, 
+          rgba(106, 13, 173, 0.03) 40px, rgba(106, 13, 173, 0.03) 41px);
+    pointer-events: none;
+    animation: brandingGlitch 8s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+@keyframes brandingGlitch {
+    0%, 100% {
+        transform: translateX(0) translateY(0) translateZ(0);
+        opacity: 0.6;
+    }
+    10% {
+        transform: translateX(-2px) translateY(1px) translateZ(0);
+        opacity: 0.8;
+    }
+    20% {
+        transform: translateX(2px) translateY(-1px) translateZ(0);
+        opacity: 0.6;
+    }
+    30% {
+        transform: translateX(-1px) translateY(2px) translateZ(0);
+        opacity: 0.7;
+    }
+    40% {
+        transform: translateX(1px) translateY(-2px) translateZ(0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateX(0) translateY(0) translateZ(0);
+        opacity: 0.5;
+    }
+}
+
+/* ============================================
+   Browser Fallbacks
+   ============================================ */
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(10px)) {
+    .control-panel::before {
+        background: rgba(15, 15, 15, 0.8);
+        backdrop-filter: none;
+    }
+}
+
+/* Fallback for browsers without CSS Grid */
+@supports not (display: grid) {
+    .stats-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .stats-grid .stat-card {
+        flex: 1 1 calc(33.333% - 16px);
+        margin: 8px;
+    }
+    
+    .history-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .history-card {
+        flex: 1 1 calc(33.333% - 20px);
+        margin: 10px;
+    }
+}
+
+/* Fallback for browsers without custom properties */
+@supports not (--css: variables) {
+    .header {
+        background: #0F0F0F;
+    }
+    
+    .severity-badge.critical,
+    .btn-primary {
+        background: #FF7518;
+    }
+    
+    .logs-container {
+        color: #39FF14;
+    }
+    
+    .tab.active {
+        border-bottom-color: #FF7518;
+    }
+}
+
+/* Fallback for older browsers without CSS animations */
+@supports not (animation: name) {
+    .header h1,
+    .stat-card:hover,
+    .severity-badge.critical,
+    .control-panel::before {
+        animation: none;
+    }
+}
+
+/* Fallback for browsers without filter property */
+@supports not (filter: drop-shadow(0 0 10px black)) {
+    .header-logo img {
+        filter: none;
+        box-shadow: 0 0 20px rgba(255, 117, 24, 0.4);
+    }
+}
+
+/* Fallback for browsers without text-shadow */
+@supports not (text-shadow: 0 0 10px black) {
+    .header h1 {
+        text-shadow: none;
+        color: #FFFFFF;
+    }
+    
+    .log-entry {
+        text-shadow: none;
+    }
+}
+
+/* IE11 specific fallbacks */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    /* Disable all animations for IE11 */
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    /* Simplify layout for IE11 */
+    .stats-grid {
+        display: block;
+    }
+    
+    .stat-card {
+        display: inline-block;
+        width: 30%;
+        margin: 1%;
+    }
+}
+
+
+/* ============================================
+   AGGRESSIVE WHITE BACKGROUND ELIMINATION
+   ============================================ */
+
+/* Force ALL white backgrounds to dark - Nuclear option! */
+* {
+    /* Override any white backgrounds */
+}
+
+*[style*="background: #FFFFFF"],
+*[style*="background: #FFF"],
+*[style*="background: white"],
+*[style*="background-color: #FFFFFF"],
+*[style*="background-color: #FFF"],
+*[style*="background-color: white"] {
+    background: var(--halloween-bg-card) !important;
+    background-color: var(--halloween-bg-card) !important;
+}
+
+/* Target specific white background elements in report */
+.report-container > div,
+.report-container > div > div,
+.report-section > div,
+#report-content > div,
+#report-content > div > div {
+    background: var(--halloween-bg-card) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Stats grids in reports - force dark */
+.report-container .stats-grid,
+#report .stats-grid,
+.stats-grid > div {
+    background: transparent !important;
+}
+
+.report-container .stat-card,
+#report .stat-card {
+    background: var(--halloween-bg-card) !important;
+    border: 1px solid rgba(57, 255, 20, 0.25) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Report metadata sections */
+.report-container > div[style*="background"],
+#report > div[style*="background"] {
+    background: var(--halloween-bg-panel) !important;
+}
+
+/* Any div with white/light background */
+div[style*="background: #FFFFFF"],
+div[style*="background: #FFF"],
+div[style*="background: white"],
+div[style*="background-color: #FFFFFF"],
+div[style*="background-color: #FFF"],
+div[style*="background-color: white"],
+div[style*="background: #FAFAFA"],
+div[style*="background-color: #FAFAFA"] {
+    background: var(--halloween-bg-card) !important;
+    background-color: var(--halloween-bg-card) !important;
+}
+
+/* History table rows with white backgrounds */
+.history-table tbody tr[style*="background"],
+.history-table tbody tr > td[style*="background"] {
+    background: transparent !important;
+}
+
+/* Tip boxes and info sections */
+div[style*="background: #FAFAFA"] {
+    background: var(--halloween-bg-panel) !important;
+    border-color: rgba(57, 255, 20, 0.3) !important;
+}
+
+/* Search inputs */
+input[style*="background"],
+select[style*="background"] {
+    background: var(--halloween-bg-primary) !important;
+}
+
+/* Any remaining white cards */
+[class*="card"][style*="background: #FFFFFF"],
+[class*="card"][style*="background: white"],
+[class*="section"][style*="background: #FFFFFF"],
+[class*="section"][style*="background: white"],
+[class*="panel"][style*="background: #FFFFFF"],
+[class*="panel"][style*="background: white"] {
+    background: var(--halloween-bg-card) !important;
+}
+
+/* Report specific overrides */
+#report-content {
+    background: transparent !important;
+}
+
+#report-content * {
+    /* Inherit dark theme */
+}
+
+/* Performance metrics and stats */
+.report-container [style*="display: grid"],
+.report-container [style*="display: flex"] {
+    background: transparent !important;
+}
+
+/* Ensure all text is visible on dark backgrounds */
+.report-container *,
+#report *,
+.history-table * {
+    color: inherit;
+}
+
+.report-container h1,
+.report-container h2,
+.report-container h3,
+.report-container h4,
+.report-container strong,
+#report h1,
+#report h2,
+#report h3,
+#report h4,
+#report strong {
+    color: var(--halloween-text-primary) !important;
+}
+
+.report-container p,
+.report-container span,
+.report-container div,
+#report p,
+#report span,
+#report div {
+    color: var(--halloween-text-primary);
+}
+
+/* Labels and small text */
+.report-container label,
+.report-container small,
+#report label,
+#report small {
+    color: var(--halloween-text-secondary) !important;
+}
+
+/* ============================================
+   END AGGRESSIVE OVERRIDES
+   ============================================ */
+
+
+/* ============================================
+   ULTRA AGGRESSIVE - CATCH EVERYTHING
+   ============================================ */
+
+/* Use !important on EVERYTHING to override inline styles */
+body * {
+    /* Force inheritance */
+}
+
+/* Target by background color value */
+[style*="background:#FFFFFF"],
+[style*="background: #FFFFFF"],
+[style*="background:#FFF"],
+[style*="background: #FFF"],
+[style*="background:white"],
+[style*="background: white"],
+[style*="background-color:#FFFFFF"],
+[style*="background-color: #FFFFFF"],
+[style*="background-color:#FFF"],
+[style*="background-color: #FFF"],
+[style*="background-color:white"],
+[style*="background-color: white"],
+[style*="background:#FAFAFA"],
+[style*="background: #FAFAFA"],
+[style*="background-color:#FAFAFA"],
+[style*="background-color: #FAFAFA"] {
+    background: var(--halloween-bg-card) !important;
+    background-color: var(--halloween-bg-card) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Catch all divs, sections, articles with light backgrounds */
+div, section, article, aside, main {
+    /* Check if they have white/light backgrounds and override */
+}
+
+/* Specific report elements that might have white backgrounds */
+.report-container,
+.report-container > *,
+.report-container > * > *,
+.report-container > * > * > * {
+    background-color: transparent;
+}
+
+/* Force dark on all cards */
+.stat-card,
+.finding-card,
+.history-card,
+.recent-scan-item,
+[class*="card"] {
+    background: var(--halloween-bg-card) !important;
+    background-color: var(--halloween-bg-card) !important;
+    border-color: rgba(57, 255, 20, 0.25) !important;
+}
+
+/* Force dark on all panels/sections */
+.control-panel,
+.report-section,
+[class*="panel"],
+[class*="section"] {
+    background: var(--halloween-bg-panel) !important;
+    background-color: var(--halloween-bg-panel) !important;
+    border-color: rgba(255, 117, 24, 0.3) !important;
+}
+
+/* Tables */
+table,
+thead,
+tbody,
+tr,
+td,
+th {
+    background-color: transparent !important;
+}
+
+.history-table {
+    background: var(--halloween-bg-card) !important;
+}
+
+.history-table thead {
+    background: var(--halloween-bg-primary) !important;
+}
+
+/* Override any remaining white */
+.bg-white,
+.background-white,
+[class*="bg-white"],
+[class*="background-white"] {
+    background: var(--halloween-bg-card) !important;
+    background-color: var(--halloween-bg-card) !important;
+}
+
+/* ============================================
+   JAVASCRIPT DYNAMIC CONTENT OVERRIDES
+   ============================================ */
+
+/* For dynamically generated content */
+#report-content,
+#report-content *,
+#history-list,
+#history-list *,
+#recent-scans-list,
+#recent-scans-list * {
+    /* These will be styled by JS, but CSS should still apply */
+}
+
+/* Ensure generated report sections are dark */
+#report-content > div,
+#report-content .report-section,
+#report-content .finding-card,
+#report-content .stat-card {
+    background: var(--halloween-bg-card) !important;
+    color: var(--halloween-text-primary) !important;
+}
+
+/* Generated stats */
+#report-content .stats-grid > div,
+#report-content [class*="stat"] {
+    background: var(--halloween-bg-card) !important;
+    border: 1px solid rgba(57, 255, 20, 0.25) !important;
+}
+
+/* ============================================
+   END ULTRA AGGRESSIVE OVERRIDES
+   ============================================ */
+
+
+/* ============================================
+   TEXT READABILITY IMPROVEMENTS
+   ============================================ */
+
+/* Make all stat values/numbers bright white */
+.stat-value,
+.stat-number,
+.stat-card .stat-value,
+#dash-total-scans,
+#dash-total-threats,
+#dash-total-packages {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Make stat labels more visible */
+.stat-label,
+.stat-card .stat-label {
+    color: #CCCCCC !important;
+    font-weight: 600 !important;
+}
+
+/* Analysis metadata - make all text white */
+.report-section strong,
+.report-section p,
+.report-section span,
+.report-section div {
+    color: #FFFFFF !important;
+}
+
+/* Metadata labels */
+.report-section strong {
+    color: #39FF14 !important;
+    font-weight: 700 !important;
+}
+
+/* Metadata values */
+.report-section p {
+    color: #FFFFFF !important;
+}
+
+/* Table headers - bright green */
+.history-table th,
+.findings-table th {
+    color: #39FF14 !important;
+    font-weight: 700 !important;
+}
+
+/* Table data - white */
+.history-table td,
+.findings-table td {
+    color: #FFFFFF !important;
+}
+
+/* Finding package names - bright white */
+.finding-package {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* History card titles - white */
+.history-title,
+.history-card-header,
+.recent-scan-name {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* All headings - bright white */
+h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* Report section headings - white with green glow */
+.report-section h3 {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+    border-bottom-color: #39FF14 !important;
+}
+
+/* Numbers in badges */
+.findings-badge,
+.type-badge,
+.history-number {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* Severity badge text - ensure visibility */
+.severity-badge {
+    font-weight: 700 !important;
+}
+
+.severity-badge.critical {
+    color: #FFFFFF !important;
+}
+
+.severity-badge.high {
+    color: #FFFFFF !important;
+}
+
+.severity-badge.medium {
+    color: #1A1A1A !important;
+    background: #CCCCCC !important;
+}
+
+.severity-badge.low {
+    color: #1A1A1A !important;
+    background: #E5E5E5 !important;
+}
+
+/* Recent scan badges */
+.recent-scan-badge {
+    font-weight: 700 !important;
+}
+
+.recent-scan-badge.critical,
+.recent-scan-badge.high {
+    color: #FFFFFF !important;
+}
+
+/* Meta information - lighter gray */
+.history-meta,
+.recent-scan-meta {
+    color: #CCCCCC !important;
+}
+
+/* Labels - bright */
+label {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Button text */
+.btn,
+.mode-btn,
+.table-btn-view,
+.table-btn-download,
+.history-btn-view,
+.history-btn-download {
+    font-weight: 600 !important;
+}
+
+/* Status bar text */
+.status-bar {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Log text - keep green but brighter */
+.log-entry {
+    color: #39FF14 !important;
+}
+
+.log-timestamp {
+    color: #CCCCCC !important;
+}
+
+/* No report text */
+.no-report h3 {
+    color: #FFFFFF !important;
+}
+
+.no-report p {
+    color: #CCCCCC !important;
+}
+
+/* Input text */
+input,
+select,
+textarea {
+    color: #FFFFFF !important;
+    font-weight: 500 !important;
+}
+
+input::placeholder {
+    color: #999999 !important;
+}
+
+/* Tab text */
+.tab {
+    font-weight: 600 !important;
+}
+
+.tab.active {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================
+   END TEXT READABILITY IMPROVEMENTS
+   ============================================ */
+
+
+/* ============================================
+   HISTORY TABLE HOVER FIX
+   ============================================ */
+
+/* Remove the ::before pseudo-element that causes layout shift */
+.history-table tbody tr:hover::before {
+    display: none !important;
+}
+
+/* Instead, use a simple background color change */
+.history-table tbody tr:hover {
+    background: rgba(57, 255, 20, 0.08) !important;
+    transform: none !important;
+    box-shadow: inset 3px 0 0 0 var(--halloween-accent-critical) !important;
+}
+
+/* Ensure table layout is stable */
+.history-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.history-table tbody tr {
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Remove any transform on hover that might cause shift */
+.history-card:hover {
+    transform: translateY(0) !important;
+}
+
+/* Fix recent scan items hover */
+.recent-scan-item:hover {
+    transform: none !important;
+}
+
+/* ============================================
+   END HISTORY TABLE HOVER FIX
+   ============================================ */
+
+
+/* ============================================
+   ENHANCED READABILITY FOR BADGES AND SCORES
+   ============================================ */
+
+/* Type badges - make them bright and visible */
+.type-badge {
+    background: #39FF14 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    border: 2px solid #39FF14 !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.5) !important;
+}
+
+.type-badge.github_repository {
+    background: #FF7518 !important;
+    color: #FFFFFF !important;
+    border-color: #FF7518 !important;
+    box-shadow: 0 0 15px rgba(255, 117, 24, 0.5) !important;
+}
+
+.type-badge.local_directory {
+    background: #6A0DAD !important;
+    color: #FFFFFF !important;
+    border-color: #6A0DAD !important;
+    box-shadow: 0 0 15px rgba(106, 13, 173, 0.5) !important;
+}
+
+.type-badge.sbom_file {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-color: #FFFFFF !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+}
+
+.type-badge.backup {
+    background: #CCCCCC !important;
+    color: #000000 !important;
+    border-color: #CCCCCC !important;
+    font-weight: 800 !important;
+}
+
+/* Findings badge - bright white with glow */
+.findings-badge {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    border: 2px solid #39FF14 !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.6) !important;
+    min-width: 40px !important;
+}
+
+/* Confidence scores - make them pop */
+.report-section p:contains("Confidence"),
+.report-section span:contains("Confidence"),
+.report-section div:contains("Confidence") {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* Target all confidence text */
+[class*="confidence"],
+[id*="confidence"] {
+    color: #39FF14 !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    text-shadow: 0 0 10px rgba(57, 255, 20, 0.5) !important;
+}
+
+/* Finding card text - all white */
+.finding-card * {
+    color: #FFFFFF !important;
+}
+
+.finding-card strong {
+    color: #39FF14 !important;
+    font-weight: 700 !important;
+}
+
+/* Package names in findings */
+.finding-card h3,
+.finding-card h4,
+.finding-card .package-name {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+}
+
+/* Sources text */
+.finding-card p:contains("Sources"),
+.finding-card span:contains("Sources") {
+    color: #CCCCCC !important;
+}
+
+/* GitHub IDs and references */
+.finding-card code,
+.finding-card [class*="github"],
+.finding-card [class*="ghsa"],
+.finding-card [class*="cve"] {
+    color: #FF7518 !important;
+    font-weight: 600 !important;
+    background: rgba(255, 117, 24, 0.15) !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+}
+
+/* Report section metadata - all bright */
+.report-section [style*="display: flex"],
+.report-section [style*="display: grid"] {
+    color: #FFFFFF !important;
+}
+
+.report-section [style*="display: flex"] > div,
+.report-section [style*="display: grid"] > div {
+    color: #FFFFFF !important;
+}
+
+/* Make all small text more visible */
+.report-section small,
+.finding-card small {
+    color: #CCCCCC !important;
+    font-size: 13px !important;
+}
+
+/* History table - make all text bright */
+.history-table tbody td {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+/* Date and time columns */
+.history-table tbody td:nth-child(3) {
+    color: #39FF14 !important;
+}
+
+/* Size column */
+.history-table tbody td:nth-child(6) {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* Report name column */
+.history-table tbody td:nth-child(2) {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================
+   END ENHANCED READABILITY
+   ============================================ */
+
+
+/* ============================================
+   SECURITY ADVISORIES READABILITY FIXES
+   ============================================ */
+
+/* GHSA/CVE ID badges - make them readable */
+.vulnerability-card code,
+.vulnerability-item code,
+[class*="ghsa"] code,
+[class*="cve"] code {
+    background: rgba(57, 255, 20, 0.2) !important;
+    color: #39FF14 !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+    border: 1px solid rgba(57, 255, 20, 0.4) !important;
+    font-size: 13px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Confidence level badges - make them stand out */
+[class*="confidence"],
+.confidence-badge,
+.badge[class*="confidence"] {
+    background: rgba(57, 255, 20, 0.25) !important;
+    color: #FFFFFF !important;
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    border: 2px solid #39FF14 !important;
+    font-size: 13px !important;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.6) !important;
+    letter-spacing: 0.8px !important;
+}
+
+/* High confidence - bright green */
+[class*="confidence-high"],
+.confidence-badge.high {
+    background: rgba(57, 255, 20, 0.3) !important;
+    border-color: #39FF14 !important;
+    color: #FFFFFF !important;
+}
+
+/* Medium confidence - yellow/orange */
+[class*="confidence-medium"],
+.confidence-badge.medium {
+    background: rgba(255, 193, 7, 0.3) !important;
+    border-color: #ffc107 !important;
+    color: #FFFFFF !important;
+    text-shadow: 0 0 8px rgba(255, 193, 7, 0.6) !important;
+}
+
+/* Low confidence - orange */
+[class*="confidence-low"],
+.confidence-badge.low {
+    background: rgba(255, 117, 24, 0.3) !important;
+    border-color: #FF7518 !important;
+    color: #FFFFFF !important;
+    text-shadow: 0 0 8px rgba(255, 117, 24, 0.6) !important;
+}
+
+/* Security advisory titles */
+.vulnerability-card h4,
+.vulnerability-item h4,
+.advisory-title {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+}
+
+/* Advisory descriptions */
+.vulnerability-card p,
+.vulnerability-item p,
+.advisory-description {
+    color: #FFFFFF !important;
+    line-height: 1.7 !important;
+    font-weight: 500 !important;
+}
+
+/* Sources text (GitHub Security Advisories, etc.) */
+.vulnerability-card .source,
+.vulnerability-item .source,
+[class*="source"] {
+    color: #CCCCCC !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+/* Security Recommendations highlighted intro text */
+.report-section mark,
+.report-section [style*="background"],
+.security-intro-highlight {
+    background: rgba(57, 255, 20, 0.15) !important;
+    color: #FFFFFF !important;
+    padding: 12px 16px !important;
+    border-radius: 6px !important;
+    border-left: 4px solid #39FF14 !important;
+    font-weight: 600 !important;
+    display: block !important;
+    margin: 16px 0 !important;
+}
+
+/* Fix any blue highlighted text to be readable */
+[style*="background-color: blue"],
+[style*="background: blue"],
+.highlight-blue {
+    background: rgba(57, 255, 20, 0.2) !important;
+    color: #FFFFFF !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+}
+
+/* Severity badges in advisories */
+.severity-badge,
+[class*="severity"] {
+    padding: 4px 12px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.severity-critical {
+    background: rgba(220, 38, 38, 0.3) !important;
+    color: #FFFFFF !important;
+    border: 2px solid #dc2626 !important;
+    text-shadow: 0 0 8px rgba(220, 38, 38, 0.6) !important;
+}
+
+.severity-high {
+    background: rgba(255, 117, 24, 0.3) !important;
+    color: #FFFFFF !important;
+    border: 2px solid #FF7518 !important;
+    text-shadow: 0 0 8px rgba(255, 117, 24, 0.6) !important;
+}
+
+.severity-medium {
+    background: rgba(255, 193, 7, 0.3) !important;
+    color: #FFFFFF !important;
+    border: 2px solid #ffc107 !important;
+    text-shadow: 0 0 8px rgba(255, 193, 7, 0.6) !important;
+}
+
+.severity-low {
+    background: rgba(57, 255, 20, 0.3) !important;
+    color: #FFFFFF !important;
+    border: 2px solid #39FF14 !important;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.6) !important;
+}
+
+/* Advisory card containers */
+.vulnerability-card,
+.vulnerability-item,
+.advisory-card {
+    background: rgba(10, 10, 15, 0.6) !important;
+    border: 1px solid rgba(57, 255, 20, 0.3) !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+.vulnerability-card:hover,
+.vulnerability-item:hover,
+.advisory-card:hover {
+    border-color: #39FF14 !important;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3) !important;
+}
+
+/* Package version text in advisories */
+.package-version,
+[class*="version"] {
+    color: #39FF14 !important;
+    font-weight: 600 !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+/* Links in advisories */
+.vulnerability-card a,
+.vulnerability-item a,
+.advisory-card a {
+    color: #FF7518 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(255, 117, 24, 0.5) !important;
+}
+
+.vulnerability-card a:hover,
+.vulnerability-item a:hover,
+.advisory-card a:hover {
+    color: #FFFFFF !important;
+    border-bottom-color: #FFFFFF !important;
+    text-shadow: 0 0 10px rgba(255, 117, 24, 0.5) !important;
+}
+
+/* ============================================
+   END SECURITY ADVISORIES READABILITY FIXES
+   ============================================ */
+
+
+/* ============================================
+   ENHANCED SPIDER WEB ANIMATIONS
+   ============================================ */
+
+/* Spider web canvas styling */
+#spider-web-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+    mix-blend-mode: screen;
+}
+
+/* Animated spider web corners - enhanced */
+.corner-web {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.4;
+    background-image: 
+        radial-gradient(circle at center, transparent 40%, rgba(57, 255, 20, 0.1) 40%, rgba(57, 255, 20, 0.1) 41%, transparent 41%),
+        radial-gradient(circle at center, transparent 55%, rgba(57, 255, 20, 0.08) 55%, rgba(57, 255, 20, 0.08) 56%, transparent 56%),
+        radial-gradient(circle at center, transparent 70%, rgba(57, 255, 20, 0.06) 70%, rgba(57, 255, 20, 0.06) 71%, transparent 71%),
+        radial-gradient(circle at center, transparent 85%, rgba(57, 255, 20, 0.04) 85%, rgba(57, 255, 20, 0.04) 86%, transparent 86%);
+    animation: webPulse 4s ease-in-out infinite;
+}
+
+.corner-web::before,
+.corner-web::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(57, 255, 20, 0.3), transparent);
+    transform-origin: left center;
+}
+
+.corner-web::before {
+    transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.corner-web::after {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.corner-web-top-left {
+    top: -50px;
+    left: -50px;
+    transform-origin: top left;
+}
+
+.corner-web-top-right {
+    top: -50px;
+    right: -50px;
+    transform-origin: top right;
+    transform: scaleX(-1);
+}
+
+.corner-web-bottom-left {
+    bottom: -50px;
+    left: -50px;
+    transform-origin: bottom left;
+    transform: scaleY(-1);
+}
+
+.corner-web-bottom-right {
+    bottom: -50px;
+    right: -50px;
+    transform-origin: bottom right;
+    transform: scale(-1, -1);
+}
+
+/* Crawling spider trails */
+.spider-trail {
+    position: fixed;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(57, 255, 20, 0.3), transparent);
+    pointer-events: none;
+    z-index: 1;
+    animation: fadeOut 2s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Animated web strands across the page */
+.web-strand {
+    position: fixed;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.2), transparent);
+    pointer-events: none;
+    z-index: 1;
+    animation: strandShimmer 3s ease-in-out infinite;
+}
+
+@keyframes strandShimmer {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.6; }
+}
+
+/* Spider web overlay on cards */
+.stat-card::before,
+.finding-card::before,
+.control-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(57, 255, 20, 0.02) 50px, rgba(57, 255, 20, 0.02) 51px),
+        repeating-linear-gradient(60deg, transparent, transparent 50px, rgba(57, 255, 20, 0.02) 50px, rgba(57, 255, 20, 0.02) 51px),
+        repeating-linear-gradient(120deg, transparent, transparent 50px, rgba(57, 255, 20, 0.02) 50px, rgba(57, 255, 20, 0.02) 51px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.stat-card:hover::before,
+.finding-card:hover::before,
+.control-panel:hover::before {
+    opacity: 1;
+}
+
+/* Floating spider decorations */
+.floating-spider {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 3;
+    animation: floatSpider 15s ease-in-out infinite;
+}
+
+.floating-spider::before {
+    content: '🕷️';
+    font-size: 20px;
+    display: block;
+    filter: drop-shadow(0 0 5px rgba(57, 255, 20, 0.5));
+}
+
+@keyframes floatSpider {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(100px, -50px) rotate(90deg);
+    }
+    50% {
+        transform: translate(200px, 0) rotate(180deg);
+    }
+    75% {
+        transform: translate(100px, 50px) rotate(270deg);
+    }
+}
+
+/* Web particle effects */
+.web-particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: #39FF14;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+    animation: particleFloat 8s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Silk thread effect on hover */
+.btn:hover::after,
+.mode-btn:hover::after,
+.tab:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(57, 255, 20, 0.05) 10px, rgba(57, 255, 20, 0.05) 11px);
+    pointer-events: none;
+    animation: silkSheen 1s ease-in-out;
+}
+
+@keyframes silkSheen {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(100%); }
+}
+
+/* Cobweb texture on dark backgrounds */
+.header::after {
+    background-image: 
+        radial-gradient(circle at 20% 30%, transparent 30%, rgba(57, 255, 20, 0.03) 30%, rgba(57, 255, 20, 0.03) 31%, transparent 31%),
+        radial-gradient(circle at 80% 70%, transparent 40%, rgba(57, 255, 20, 0.02) 40%, rgba(57, 255, 20, 0.02) 41%, transparent 41%),
+        radial-gradient(circle at 50% 50%, transparent 50%, rgba(57, 255, 20, 0.01) 50%, rgba(57, 255, 20, 0.01) 51%, transparent 51%);
+}
+
+/* Spider web loading animation */
+.spinner::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 2px solid transparent;
+    border-top-color: rgba(57, 255, 20, 0.3);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+}
+
+/* Glowing web nodes */
+.web-node {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: #39FF14;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 
+        0 0 10px rgba(57, 255, 20, 0.8),
+        0 0 20px rgba(57, 255, 20, 0.4),
+        0 0 30px rgba(57, 255, 20, 0.2);
+    animation: nodePulse 2s ease-in-out infinite;
+}
+
+@keyframes nodePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.6;
+    }
+}
+
+/* Sticky web effect on interactive elements */
+.btn:active,
+.mode-btn:active,
+.tab:active {
+    position: relative;
+}
+
+.btn:active::before,
+.mode-btn:active::before,
+.tab:active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(57, 255, 20, 0.2), transparent);
+    transform: translate(-50%, -50%);
+    animation: stickyPulse 0.6s ease-out;
+}
+
+@keyframes stickyPulse {
+    from {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Web shimmer on scroll */
+@keyframes webShimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.container {
+    position: relative;
+    background-image: 
+        repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(57, 255, 20, 0.01) 100px, rgba(57, 255, 20, 0.01) 101px);
+    background-size: 1000px 100%;
+    animation: webShimmer 20s linear infinite;
+}
+
+/* ============================================
+   END ENHANCED SPIDER WEB ANIMATIONS
+   ============================================ */
