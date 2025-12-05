@@ -22,6 +22,14 @@ class Config:
     # GitHub Configuration
     GITHUB_TOKEN: Optional[str] = os.getenv("GITHUB_TOKEN")
     
+    # Web Search API Configuration (for supply chain attack detection)
+    SERPER_API_KEY: Optional[str] = os.getenv("SERPER_API_KEY")  # https://serper.dev
+    BRAVE_SEARCH_API_KEY: Optional[str] = os.getenv("BRAVE_SEARCH_API_KEY")  # https://brave.com/search/api/
+    TAVILY_API_KEY: Optional[str] = os.getenv("TAVILY_API_KEY")  # https://tavily.com
+    
+    # Snyk API Configuration (for vulnerability checking)
+    SNYK_TOKEN: Optional[str] = os.getenv("SNYK_TOKEN")
+    
     # System Configuration
     CACHE_ENABLED: bool = os.getenv("CACHE_ENABLED", "true").lower() == "true"
     CACHE_DURATION_HOURS: int = int(os.getenv("CACHE_DURATION_HOURS", "24"))

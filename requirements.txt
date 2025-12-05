@@ -41,3 +41,6 @@ aiohttp>=3.8.0
 
 # Web Application Framework
 flask>=3.0.0
+# MCP 
+Server Framework
+mcp>=1.0.0

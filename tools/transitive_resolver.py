@@ -16,11 +16,15 @@ import logging
 import tempfile
 import shutil
 import subprocess
+import asyncio
+import aiohttp
+import time
 from typing import Dict, List, Optional, Any, Set, Tuple
 from pathlib import Path
 import requests
 from dataclasses import dataclass
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
 
@@ -56,20 +60,55 @@ class TransitiveDependencyResolver:
     - Handles version resolution and conflicts
     """
     
-    def __init__(self, cache_dir: Optional[str] = None):
+    def __init__(self, cache_dir: Optional[str] = None, cache_ttl_hours: int = 5):
         """
         Initialize resolver.
         
         Args:
             cache_dir: Directory for caching package metadata
+            cache_ttl_hours: Cache time-to-live in hours (default: 5)
         """
         self.cache_dir = cache_dir or os.path.join(tempfile.gettempdir(), "dep_resolver_cache")
         os.makedirs(self.cache_dir, exist_ok=True)
         
+        self.cache_ttl_seconds = cache_ttl_hours * 3600
         self.metadata_cache: Dict[str, PackageMetadata] = {}
         self.github_token = os.getenv("GITHUB_TOKEN") or os.getenv("GITHUB_PAT_TOKEN")
         
-        logger.info(f"Initialized TransitiveDependencyResolver with cache: {self.cache_dir}")
+        logger.info(f"Initialized TransitiveDependencyResolver with cache: {self.cache_dir} (TTL: {cache_ttl_hours}h)")
+        
+        # Check cache version and clear if outdated
+        self._check_cache_version()
+    
+    def _check_cache_version(self):
+        """Check cache version and clear if format changed."""
+        CACHE_VERSION = "2.0"  # Increment when cache format changes
+        version_file = os.path.join(self.cache_dir, ".cache_version")
+        
+        current_version = None
+        if os.path.exists(version_file):
+            try:
+                with open(version_file, 'r') as f:
+                    current_version = f.read().strip()
+            except Exception:
+                pass
+        
+        if current_version != CACHE_VERSION:
+            logger.info(f"Cache version changed ({current_version} -> {CACHE_VERSION}), clearing cache...")
+            self.clear_cache()
+            with open(version_file, 'w') as f:
+                f.write(CACHE_VERSION)
+    
+    def clear_cache(self):
+        """Clear all cached package metadata."""
+        try:
+            for filename in os.listdir(self.cache_dir):
+                if filename.endswith('.json'):
+                    os.remove(os.path.join(self.cache_dir, filename))
+            self.metadata_cache.clear()
+            logger.info("Cache cleared successfully")
+        except Exception as e:
+            logger.warning(f"Error clearing cache: {e}")
     
     def resolve_transitive_dependencies(
         self,
@@ -79,7 +118,7 @@ class TransitiveDependencyResolver:
         max_depth: int = 10
     ) -> Dict[str, Any]:
         """
-        Resolve complete transitive dependency tree.
+        Resolve complete transitive dependency tree with PARALLEL fetching.
         
         Args:
             package_name: Root package name
@@ -90,57 +129,72 @@ class TransitiveDependencyResolver:
         Returns:
             Complete dependency tree with all transitive dependencies
         """
-        logger.info(f"Resolving transitive dependencies for {package_name}@{version} ({ecosystem})")
+        logger.info(f"🚀 PARALLEL MODE: Resolving transitive dependencies for {package_name}@{version} ({ecosystem})")
         
         # Track visited to avoid cycles
         visited: Set[str] = set()
         dependency_tree: Dict[str, Any] = {}
         
-        # BFS to resolve dependencies
-        queue = deque([(package_name, version, 0)])  # (name, version, depth)
+        # BFS to resolve dependencies with parallel fetching per level
+        current_level = [(package_name, version, 0)]  # (name, version, depth)
         
-        while queue:
-            pkg_name, pkg_version, depth = queue.popleft()
-            
-            if depth > max_depth:
-                logger.debug(f"Max depth {max_depth} reached at {pkg_name}")
-                continue
-            
-            pkg_key = f"{pkg_name}@{pkg_version}"
-            if pkg_key in visited:
-                continue
-            
-            visited.add(pkg_key)
-            
-            # Fetch package metadata
-            try:
-                metadata = self._fetch_package_metadata(pkg_name, pkg_version, ecosystem)
-                if not metadata:
-                    logger.warning(f"Could not fetch metadata for {pkg_key}")
+        while current_level:
+            # Filter out already visited
+            to_fetch = []
+            for pkg_name, pkg_version, depth in current_level:
+                if depth > max_depth:
                     continue
-                
-                # Add to tree
-                dependency_tree[pkg_key] = {
-                    "name": metadata.name,
-                    "version": metadata.version,
-                    "ecosystem": metadata.ecosystem,
-                    "depth": depth,
-                    "dependencies": metadata.dependencies,
-                    "repository_url": metadata.repository_url
+                pkg_key = f"{pkg_name}@{pkg_version}"
+                if pkg_key not in visited:
+                    visited.add(pkg_key)
+                    to_fetch.append((pkg_name, pkg_version, depth))
+            
+            if not to_fetch:
+                break
+            
+            # Fetch all packages in this level in PARALLEL
+            logger.info(f"⚡ Fetching {len(to_fetch)} packages in parallel (depth {to_fetch[0][2] if to_fetch else 0})")
+            next_level = []
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                future_to_pkg = {
+                    executor.submit(self._fetch_package_metadata, pkg_name, pkg_version, ecosystem): (pkg_name, pkg_version, depth)
+                    for pkg_name, pkg_version, depth in to_fetch
                 }
                 
-                # Queue transitive dependencies
-                for dep_name, dep_version_spec in metadata.dependencies.items():
-                    # Resolve version spec to actual version
-                    resolved_version = self._resolve_version(dep_name, dep_version_spec, ecosystem)
-                    if resolved_version:
-                        queue.append((dep_name, resolved_version, depth + 1))
-                
-            except Exception as e:
-                logger.error(f"Error resolving {pkg_key}: {e}")
-                continue
+                for future in as_completed(future_to_pkg):
+                    pkg_name, pkg_version, depth = future_to_pkg[future]
+                    pkg_key = f"{pkg_name}@{pkg_version}"
+                    
+                    try:
+                        metadata = future.result()
+                        if not metadata:
+                            logger.warning(f"Could not fetch metadata for {pkg_key}")
+                            continue
+                        
+                        # Add to tree
+                        dependency_tree[pkg_key] = {
+                            "name": metadata.name,
+                            "version": metadata.version,
+                            "ecosystem": metadata.ecosystem,
+                            "depth": depth,
+                            "dependencies": metadata.dependencies,
+                            "repository_url": metadata.repository_url
+                        }
+                        
+                        # Queue transitive dependencies for next level
+                        for dep_name, dep_version_spec in metadata.dependencies.items():
+                            # Resolve version spec to actual version
+                            resolved_version = self._resolve_version(dep_name, dep_version_spec, ecosystem)
+                            if resolved_version:
+                                next_level.append((dep_name, resolved_version, depth + 1))
+                        
+                    except Exception as e:
+                        logger.error(f"Error resolving {pkg_key}: {e}")
+                        continue
+            
+            current_level = next_level
         
-        logger.info(f"Resolved {len(dependency_tree)} packages in dependency tree")
+        logger.info(f"✅ PARALLEL RESOLUTION COMPLETE: {len(dependency_tree)} packages resolved")
         
         return {
             "root_package": f"{package_name}@{version}",
@@ -168,15 +222,23 @@ class TransitiveDependencyResolver:
             PackageMetadata or None if fetch fails
         """
         cache_key = f"{ecosystem}:{package_name}@{version}"
+        cache_file = os.path.join(self.cache_dir, f"{cache_key.replace('/', '_').replace(':', '_')}.json")
         
-        # Check memory cache
-        if cache_key in self.metadata_cache:
-            logger.debug(f"Cache hit for {cache_key}")
+        # Check if cache file exists and is within TTL
+        cache_valid = False
+        if os.path.exists(cache_file):
+            file_age = time.time() - os.path.getmtime(cache_file)
+            cache_valid = file_age < self.cache_ttl_seconds
+            if not cache_valid:
+                logger.debug(f"Cache expired for {cache_key} (age: {file_age/3600:.1f}h)")
+        
+        # Check memory cache (only if disk cache is valid)
+        if cache_valid and cache_key in self.metadata_cache:
+            logger.debug(f"Memory cache hit for {cache_key}")
             return self.metadata_cache[cache_key]
         
-        # Check disk cache
-        cache_file = os.path.join(self.cache_dir, f"{cache_key.replace('/', '_').replace(':', '_')}.json")
-        if os.path.exists(cache_file):
+        # Check disk cache (only if within TTL)
+        if cache_valid:
             try:
                 with open(cache_file, 'r') as f:
                     data = json.load(f)
@@ -299,30 +361,45 @@ class TransitiveDependencyResolver:
         
         Args:
             package_name: PyPI package name
-            version: Package version
+            version: Package version or "latest"
         
         Returns:
             PackageMetadata or None
         """
         try:
-            # Fetch from PyPI API
-            url = f"https://pypi.org/pypi/{package_name}/{version}/json"
-            response = requests.get(url, timeout=10)
+            # If version is "latest", fetch without version to get latest
+            if version == "latest":
+                url = f"https://pypi.org/pypi/{package_name}/json"
+            else:
+                url = f"https://pypi.org/pypi/{package_name}/{version}/json"
+            
+            response = requests.get(url, timeout=3)  # Faster timeout for PyPI
             
             if response.status_code != 200:
-                logger.warning(f"PyPI returned {response.status_code} for {package_name}@{version}")
+                logger.debug(f"PyPI returned {response.status_code} for {package_name}@{version}")  # Changed to debug to reduce noise
                 return None
             
             data = response.json()
             info = data.get("info", {})
+            
+            # Get actual version (important when version was "latest")
+            actual_version = info.get("version", version)
             
             # Extract dependencies from requires_dist
             dependencies = {}
             requires_dist = info.get("requires_dist", [])
             if requires_dist:
                 for req in requires_dist:
+                    # Skip optional/extra dependencies (dev, test, docs, etc.)
+                    # These have markers like: ; extra == "dev" or ; extra == "testing"
+                    if "extra ==" in req or "extra==" in req:
+                        continue
+                    
                     # Parse requirement string (e.g., "requests>=2.0.0")
                     parts = req.split(";")[0].strip()  # Remove environment markers
+                    if not parts:
+                        continue
+                        
                     if " " in parts:
                         dep_name = parts.split()[0]
                         dep_version = parts.split()[1] if len(parts.split()) > 1 else "*"
@@ -330,14 +407,16 @@ class TransitiveDependencyResolver:
                         dep_name = parts
                         dep_version = "*"
                     
-                    dependencies[dep_name] = dep_version
+                    # Skip empty names
+                    if dep_name:
+                        dependencies[dep_name] = dep_version
             
             # Extract repository URL
             repo_url = info.get("project_urls", {}).get("Source") or info.get("home_page")
             
             return PackageMetadata(
                 name=package_name,
-                version=version,
+                version=actual_version,  # Use actual version, not "latest"
                 dependencies=dependencies,
                 ecosystem="pypi",
                 repository_url=repo_url
@@ -359,18 +438,27 @@ class TransitiveDependencyResolver:
         Returns:
             Resolved version or None
         """
-        # For now, use simplified version resolution
-        # In production, you'd use semver library for npm and packaging for Python
-        
-        # Remove common prefixes
+        # For complex version specs (especially PyPI with commas), fetch latest
+        # Examples: "h2<5,>=3", "pytest>=6", "colorama>=0.4"
         version = version_spec.strip()
-        for prefix in ["^", "~", ">=", "<=", ">", "<", "="]:
-            version = version.lstrip(prefix)
         
-        # If wildcard, fetch latest
-        if version in ["*", "latest", ""]:
-            return self._fetch_latest_version(package_name, ecosystem)
+        # If wildcard or empty, fetch latest
+        if version in ["*", "latest", "", "x", "X"]:
+            return "latest"
         
+        # If contains complex operators (especially commas for PyPI), use latest
+        if "," in version or any(op in version for op in [">=", "<=", ">", "<", "~=", "!="]):
+            return "latest"
+        
+        # For simple versions with ^ or ~ (npm), strip and use
+        if version.startswith("^") or version.startswith("~"):
+            return version[1:].strip()
+        
+        # For exact versions with = prefix
+        if version.startswith("="):
+            return version.lstrip("=").strip()
+        
+        # Return as-is for simple versions
         return version.strip()
     
     def _fetch_latest_version(self, package_name: str, ecosystem: str) -> Optional[str]:
@@ -393,7 +481,7 @@ class TransitiveDependencyResolver:
             
             elif ecosystem == "pypi":
                 url = f"https://pypi.org/pypi/{package_name}/json"
-                response = requests.get(url, timeout=10)
+                response = requests.get(url, timeout=3)  # Faster timeout for PyPI
                 if response.status_code == 200:
                     return response.json().get("info", {}).get("version")
             

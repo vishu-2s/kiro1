@@ -57,19 +57,12 @@ class AgentOrchestrator:
             max_retries=1,  # Reduced from 2
             retry_delay=0.5  # Reduced from 1.0
         ),
-        "code_analysis": AgentConfig(
-            name="code_analysis",
-            timeout=25,  # Reduced from 40
+        "supply_chain_detector": AgentConfig(
+            name="supply_chain_detector",
+            timeout=60,  # Allow more time for web searches
             required=False,
             max_retries=1,
-            retry_delay=0.5  # Reduced from 1.0
-        ),
-        "supply_chain_analysis": AgentConfig(
-            name="supply_chain_analysis",
-            timeout=20,  # Reduced from 30
-            required=False,
-            max_retries=1,
-            retry_delay=0.5  # Reduced from 1.0
+            retry_delay=0.5
         ),
         "synthesis": AgentConfig(
             name="synthesis",
@@ -234,48 +227,34 @@ class AgentOrchestrator:
                     score = pkg.get("reputation_score", 0)
                     self._log(f"  > [!] {pkg_name}: reputation score {score:.2f}")
         
-        # Stage 3: Code Analysis (Conditional - only if suspicious patterns found)
+        # Stage 3: Supply Chain Detector (Always run - checks malicious packages, web intel)
         self._log("=" * 60)
-        if self._should_run_code_analysis(context):
-            self._log("Stage 3: Code Analysis (triggered by suspicious patterns)")
-            self._log("=" * 60)
-            code_result = self._run_agent_stage(
-                stage_name="code_analysis",
-                context=context
-            )
-            context.add_agent_result(code_result)
-            
-            # Log detailed results
-            if code_result.success and code_result.data:
-                packages_analyzed = code_result.data.get("total_packages_analyzed", 0)
-                issues_found = code_result.data.get("total_code_issues_found", 0)
-                self._log(f"  > Packages analyzed: {packages_analyzed}")
-                self._log(f"  > Code issues found: {issues_found}")
-                self._log(f"  > Confidence: {code_result.data.get('confidence', 0):.2f}")
-        else:
-            self._log("Stage 3: Code Analysis (skipped - no suspicious patterns)")
-            self._log("=" * 60)
-        
-        # Stage 4: Supply Chain Analysis (Conditional - only if high-risk packages)
+        self._log("Stage 3: Supply Chain Attack Detection")
         self._log("=" * 60)
-        if self._should_run_supply_chain_analysis(context):
-            self._log("Stage 4: Supply Chain Analysis (triggered by high-risk packages)")
-            self._log("=" * 60)
+        if "supply_chain_detector" in self.agents:
             sc_result = self._run_agent_stage(
-                stage_name="supply_chain_analysis",
+                stage_name="supply_chain_detector",
                 context=context
             )
             context.add_agent_result(sc_result)
             
             # Log detailed results
             if sc_result.success and sc_result.data:
-                packages_analyzed = sc_result.data.get("total_packages_analyzed", 0)
-                attacks_found = sc_result.data.get("total_attacks_detected", 0)
-                self._log(f"  > Packages analyzed: {packages_analyzed}")
-                self._log(f"  > Supply chain attacks detected: {attacks_found}")
-                self._log(f"  > Confidence: {sc_result.data.get('confidence', 0):.2f}")
+                packages_checked = sc_result.data.get("total_packages_checked", 0)
+                total_threats = sc_result.data.get("total_threats_found", 0)
+                malicious = sc_result.data.get("malicious_packages_found", 0)
+                vulns = sc_result.data.get("vulnerabilities_found", 0)
+                web_intel = sc_result.data.get("web_intelligence_found", 0)
+                risk_level = sc_result.data.get("risk_level", "unknown")
+                
+                self._log(f"  > Risk Level: {risk_level}")
+                self._log(f"  > Packages checked: {packages_checked}")
+                self._log(f"  > Total threats: {total_threats}")
+                self._log(f"  > Malicious packages: {malicious}")
+                self._log(f"  > Vulnerabilities: {vulns}")
+                self._log(f"  > Web intelligence: {web_intel}")
         else:
-            self._log("Stage 4: Supply Chain Analysis (skipped - no high-risk packages)")
+            self._log("Stage 3: Supply Chain Detector (skipped - agent not registered)")
             self._log("=" * 60)
         
         # Stage 5: Synthesis (Required)
@@ -468,8 +447,10 @@ class AgentOrchestrator:
         if not isinstance(result_data, dict):
             return False
         
-        # Each agent must return a "packages" key
-        if "packages" not in result_data:
+        # Accept either "packages" key (vulnerability/reputation agents)
+        # or "threats_detected" key (supply chain detector agent)
+        valid_keys = ["packages", "threats_detected"]
+        if not any(key in result_data for key in valid_keys):
             return False
         
         return True

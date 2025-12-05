@@ -1,0 +1,137 @@
+﻿python : 2025-12-04 23:07:31,275 - tools.api_integration - INFO - GitHub API 
+client initialized
+At line:1 char:1
++ python test_npm.py 2>&1 | Out-File -FilePath npm_test_output.txt -Enc ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2025-12-04 23:0...ent initialized: 
+   String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2025-12-04 23:07:31,275 - tools.api_integration - INFO - OSV API client 
+initialized
+2025-12-04 23:07:31,275 - tools.api_integration - INFO - OpenAI API client 
+initialized
+2025-12-04 23:07:32,725 - tools.github_tools - WARNING - Failed to fetch file 
+content for requirements.txt: Resource not found
+2025-12-04 23:07:32,871 - tools.github_tools - WARNING - Failed to fetch file 
+content for setup.py: Resource not found
+2025-12-04 23:07:33,047 - tools.github_tools - WARNING - Failed to fetch file 
+content for pyproject.toml: Resource not found
+2025-12-04 23:07:54,070 - httpx - INFO - HTTP Request: POST 
+https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+======================================================================
+Testing: https://github.com/lokeshsharma99/nodejs-scanner-test
+======================================================================
+[INFO] SupplyChainDetectorAgent: OpenAI client initialized for LLM analysis
+[INFO] SupplyChainDetectorAgent: ============================================================
+[INFO] SupplyChainDetectorAgent: Starting Supply Chain Attack Detection
+[INFO] SupplyChainDetectorAgent: ============================================================
+[INFO] SupplyChainDetectorAgent: Source: https://github.com/lokeshsharma99/nodejs-scanner-test
+[INFO] SupplyChainDetectorAgent:   Extracting from GitHub: https://github.com/lokeshsharma99/nodejs-scanner-test
+[INFO] SupplyChainDetectorAgent:     Found package.json
+[INFO] SupplyChainDetectorAgent: Found 5 packages to analyze
+[INFO] SupplyChainDetectorAgent: 
+[1/4] Checking against malicious package database...
+[INFO] SupplyChainDetectorAgent:   Found 0 malicious packages
+[INFO] SupplyChainDetectorAgent: 
+[2/4] Checking vulnerability databases (OSV, Snyk)...
+[INFO] SupplyChainDetectorAgent:   Found 11 vulnerable packages
+[INFO] SupplyChainDetectorAgent: 
+[3/4] Searching for recent supply chain attacks...
+[INFO] SupplyChainDetectorAgent:   Searching trusted security sites for 5 packages...
+[INFO] SupplyChainDetectorAgent:     Serper search: request
+[INFO] SupplyChainDetectorAgent:     Serper returned 10 results
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: request from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: request from GitHub Advisories
+[INFO] SupplyChainDetectorAgent:     Found 2 results for request
+[INFO] SupplyChainDetectorAgent:     Serper search: node-uuid
+[INFO] SupplyChainDetectorAgent:     Serper returned 10 results
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: node-uuid from NIST NVD
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: node-uuid from CVE Details
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: node-uuid from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: node-uuid from CVE Details
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: node-uuid from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     Found 5 results for node-uuid
+[INFO] SupplyChainDetectorAgent:     Serper search: colors
+[INFO] SupplyChainDetectorAgent:     Serper returned 10 results
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: colors from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: colors from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: colors from GitHub Advisories
+[INFO] SupplyChainDetectorAgent:     Found 3 results for colors
+[INFO] SupplyChainDetectorAgent:     Serper search: lodash
+[INFO] SupplyChainDetectorAgent:     Serper returned 10 results
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: lodash from CVE Details
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: lodash from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: lodash from GitHub Advisories
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: lodash from NIST NVD
+[INFO] SupplyChainDetectorAgent:     Found 4 results for lodash
+[INFO] SupplyChainDetectorAgent:     Serper search: moment
+[INFO] SupplyChainDetectorAgent:     Serper returned 10 results
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: moment from Snyk Vulnerability DB
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: moment from CVE Details
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: moment from NIST NVD
+[INFO] SupplyChainDetectorAgent:     [+] Web intel: moment from CVE Details
+[INFO] SupplyChainDetectorAgent:     Found 4 results for moment
+[INFO] SupplyChainDetectorAgent:   Found 18 potential threats from web search
+[INFO] SupplyChainDetectorAgent: 
+[4/4] LLM threat analysis and assessment...
+[INFO] SupplyChainDetectorAgent:   LLM analysis complete
+[INFO] SupplyChainDetectorAgent: 
+============================================================
+[INFO] SupplyChainDetectorAgent: ANALYSIS COMPLETE - Risk Level: CRITICAL
+[INFO] SupplyChainDetectorAgent:   Total Threats: 19
+[INFO] SupplyChainDetectorAgent:   - Malicious Packages: 0
+[INFO] SupplyChainDetectorAgent:   - Vulnerabilities: 0
+[INFO] SupplyChainDetectorAgent:   - Web Intelligence: 14
+[INFO] SupplyChainDetectorAgent:   Duration: 22.21s
+[INFO] SupplyChainDetectorAgent: ============================================================
+
+======================================================================
+FINAL RESULTS
+======================================================================
+Risk Level: CRITICAL
+Total Packages: 5
+Total Threats: 19
+  - Malicious: 0
+  - Vulnerabilities: 0
+  - Web Intelligence: 14
+
+Threat Details:
+  [MEDIUM] request - GitHub Security Advisories
+       Server-Side Request Forgery in Request...
+  [CRITICAL] node-uuid - GitHub Security Advisories
+       Insecure Entropy Source - Math.random() in node-uuid...
+  [CRITICAL] colors - GitHub Security Advisories
+       Infinite Loop in colors.js...
+  [MEDIUM] lodash - GitHub Security Advisories
+       Regular Expression Denial of Service (ReDoS) in lodash...
+  [CRITICAL] moment - GitHub Security Advisories
+       Moment.js vulnerable to Inefficient Regular Expression Compl...
+  [MEDIUM] request - Snyk Vulnerability DB
+       request vulnerabilities...
+  [HIGH] request - GitHub Advisories
+       High vulnerability issue (CVE-2021-44907) #3411...
+  [CRITICAL] node-uuid - NIST NVD
+       CVE-2015-8851 Detail - NVD...
+  [MEDIUM] node-uuid - CVE Details
+       Node-uuid Project Node-uuid 1.4.3 security vulnerabilities, ...
+  [MEDIUM] node-uuid - Snyk Vulnerability DB
+       node-uuid vulnerabilities...
+  [MEDIUM] colors - Snyk Vulnerability DB
+       Denial of Service (DoS) in colors | CVE-2021-23567...
+  [MEDIUM] colors - GitHub Advisories
+       Security - lukeed/md-colors...
+  [MEDIUM] lodash - CVE Details
+       Lodash : Products and vulnerabilities, CVEs...
+  [MEDIUM] lodash - Snyk Vulnerability DB
+       lodash vulnerabilities...
+  [HIGH] lodash - GitHub Advisories
+       CVE-2021-23337 lodash versions prior to 4.17.21 are ......
+  [HIGH] lodash - NIST NVD
+       CVE-2021-23337 Detail - NVD...
+  [MEDIUM] moment - Snyk Vulnerability DB
+       moment vulnerabilities...
+  [MEDIUM] moment - CVE Details
+       Momentjs Moment 2.24.0 security vulnerabilities, CVEs...
+  [MEDIUM] moment - NIST NVD
+       Detail - cpe:2.3:a:momentjs:moment:2.27.0:*:*:*:*:node.js - ...

@@ -44,8 +44,7 @@ from agents.orchestrator import AgentOrchestrator
 from agents.types import Finding
 from agents.vulnerability_agent import VulnerabilityAnalysisAgent
 from agents.reputation_agent import ReputationAnalysisAgent
-from agents.code_agent import CodeAnalysisAgent
-from agents.supply_chain_agent import SupplyChainAttackAgent
+from agents.supply_chain_detector_agent import SupplyChainDetectorAgent
 from agents.synthesis_agent import SynthesisAgent
 from agents.proactive_validator import ProactiveValidator, validate_before_analysis
 
@@ -1461,7 +1460,6 @@ def analyze_project_hybrid(
         if ecosystem == "npm":
             logger.info("Analyzing root package.json scripts...")
             try:
-                import json
                 with open(manifest_file, 'r', encoding='utf-8') as f:
                     package_json = json.load(f)
                 
@@ -1508,8 +1506,7 @@ def analyze_project_hybrid(
                 logger.info("Registering agents...")
                 orchestrator.register_agent("vulnerability_analysis", VulnerabilityAnalysisAgent())
                 orchestrator.register_agent("reputation_analysis", ReputationAnalysisAgent())
-                orchestrator.register_agent("code_analysis", CodeAnalysisAgent())
-                orchestrator.register_agent("supply_chain_analysis", SupplyChainAttackAgent())
+                orchestrator.register_agent("supply_chain_detector", SupplyChainDetectorAgent())
                 orchestrator.register_agent("synthesis", SynthesisAgent())
                 logger.info("All agents registered successfully")
                 

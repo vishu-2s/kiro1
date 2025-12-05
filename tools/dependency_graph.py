@@ -215,7 +215,10 @@ class DependencyGraphAnalyzer:
         
         # Build graph recursively
         visited = set()
-        self._resolve_npm_dependencies(root, dependencies, visited, max_depth)
+        # Create resolver ONCE and reuse it
+        from tools.transitive_resolver import TransitiveDependencyResolver
+        resolver = TransitiveDependencyResolver()
+        self._resolve_npm_dependencies(root, dependencies, visited, max_depth, resolver)
         
         return root
     
@@ -224,59 +227,69 @@ class DependencyGraphAnalyzer:
         parent: DependencyNode, 
         dependencies: List[Dict[str, Any]], 
         visited: Set[str],
-        max_depth: int
+        max_depth: int,
+        resolver: 'TransitiveDependencyResolver'
     ):
         """Recursively resolve npm dependencies using real registry data."""
         if parent.depth >= max_depth:
             logger.debug(f"Reached max depth {max_depth} at package {parent.name}")
             return
         
-        # Import transitive resolver
-        from tools.transitive_resolver import TransitiveDependencyResolver
-        resolver = TransitiveDependencyResolver()
+        # PARALLEL FETCHING: Fetch all dependencies at this level in parallel
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         
+        # Filter out already visited
+        deps_to_fetch = []
         for dep in dependencies:
-            dep_name = dep["name"]
-            dep_version = dep["version"]
+            dep_key = f"{dep['name']}@{dep['version']}"
+            if dep_key not in visited:
+                visited.add(dep_key)
+                deps_to_fetch.append(dep)
+        
+        if not deps_to_fetch:
+            return
+        
+        logger.info(f"⚡ Fetching {len(deps_to_fetch)} npm packages in parallel at depth {parent.depth + 1}")
+        
+        # Fetch metadata in parallel
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_dep = {
+                executor.submit(resolver._fetch_package_metadata, dep["name"], dep["version"], "npm"): dep
+                for dep in deps_to_fetch
+            }
             
-            # Track all packages
-            dep_key = f"{dep_name}@{dep_version}"
-            
-            # Check for circular dependency
-            if dep_key in visited:
-                logger.debug(f"Circular dependency detected: {dep_key}")
-                continue
-            
-            # Mark as visited
-            visited.add(dep_key)
-            
-            # Create dependency node
-            dep_node = DependencyNode(
-                name=dep_name,
-                version=dep_version,
-                ecosystem="npm",
-                depth=parent.depth + 1
-            )
-            
-            # Add to parent
-            parent.dependencies[dep_name] = dep_node
-            
-            # Track in all_packages
-            self.all_packages[dep_name].append(dep_node)
-            
-            # Fetch real transitive dependencies from npm registry
-            try:
-                metadata = resolver._fetch_package_metadata(dep_name, dep_version, "npm")
-                if metadata and metadata.dependencies:
-                    # Convert to expected format
-                    transitive_deps = [
-                        {"name": name, "version": version}
-                        for name, version in metadata.dependencies.items()
-                    ]
-                    # Recursively resolve transitive dependencies
-                    self._resolve_npm_dependencies(dep_node, transitive_deps, visited, max_depth)
-            except Exception as e:
-                logger.warning(f"Could not fetch transitive deps for {dep_key}: {e}")
+            for future in as_completed(future_to_dep):
+                dep = future_to_dep[future]
+                dep_name = dep["name"]
+                dep_version = dep["version"]
+                
+                try:
+                    # Create dependency node
+                    dep_node = DependencyNode(
+                        name=dep_name,
+                        version=dep_version,
+                        ecosystem="npm",
+                        depth=parent.depth + 1
+                    )
+                    
+                    # Add to parent
+                    parent.dependencies[dep_name] = dep_node
+                    
+                    # Track in all_packages
+                    self.all_packages[dep_name].append(dep_node)
+                    
+                    # Get metadata result
+                    metadata = future.result()
+                    if metadata and metadata.dependencies:
+                        # Convert to expected format
+                        transitive_deps = [
+                            {"name": name, "version": version}
+                            for name, version in metadata.dependencies.items()
+                        ]
+                        # Recursively resolve transitive dependencies
+                        self._resolve_npm_dependencies(dep_node, transitive_deps, visited, max_depth, resolver)
+                except Exception as e:
+                    logger.warning(f"Could not fetch transitive deps for {dep_name}@{dep_version}: {e}")
             
             # Remove from visited after processing (for other branches)
             visited.discard(dep_key)
@@ -300,7 +313,10 @@ class DependencyGraphAnalyzer:
         
         # Build graph recursively
         visited = set()
-        self._resolve_python_dependencies(root, dependencies, visited, max_depth)
+        # Create resolver ONCE and reuse it
+        from tools.transitive_resolver import TransitiveDependencyResolver
+        resolver = TransitiveDependencyResolver()
+        self._resolve_python_dependencies(root, dependencies, visited, max_depth, resolver)
         
         return root
     
@@ -309,63 +325,76 @@ class DependencyGraphAnalyzer:
         parent: DependencyNode, 
         dependencies: List[Dict[str, Any]], 
         visited: Set[str],
-        max_depth: int
+        max_depth: int,
+        resolver: 'TransitiveDependencyResolver'
     ):
         """Recursively resolve Python dependencies using real PyPI data."""
         if parent.depth >= max_depth:
             logger.debug(f"Reached max depth {max_depth} at package {parent.name}")
             return
         
-        # Import transitive resolver
-        from tools.transitive_resolver import TransitiveDependencyResolver
-        resolver = TransitiveDependencyResolver()
+        # PARALLEL FETCHING: Fetch all dependencies at this level in parallel
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         
+        # Filter out already visited and resolve version specs
+        deps_to_fetch = []
         for dep in dependencies:
             dep_name = dep["name"]
             dep_version = dep.get("version", "*")
             
             # Resolve version spec to actual version
             if dep_version == "*" or not dep_version:
-                dep_version = resolver._fetch_latest_version(dep_name, "pypi") or "latest"
+                dep_version = "latest"
             
-            # Track all packages
             dep_key = f"{dep_name}@{dep_version}"
+            if dep_key not in visited:
+                visited.add(dep_key)
+                deps_to_fetch.append({"name": dep_name, "version": dep_version})
+        
+        if not deps_to_fetch:
+            return
+        
+        logger.info(f"Fetching {len(deps_to_fetch)} PyPI packages in parallel at depth {parent.depth + 1}")
+        
+        # Fetch metadata in parallel
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_dep = {
+                executor.submit(resolver._fetch_package_metadata, dep["name"], dep["version"], "pypi"): dep
+                for dep in deps_to_fetch
+            }
             
-            # Check for circular dependency
-            if dep_key in visited:
-                logger.debug(f"Circular dependency detected: {dep_key}")
-                continue
-            
-            # Mark as visited
-            visited.add(dep_key)
-            
-            # Create dependency node
-            dep_node = DependencyNode(
-                name=dep_name,
-                version=dep_version,
-                ecosystem="pypi",
-                depth=parent.depth + 1
-            )
-            
-            # Add to parent
-            parent.dependencies[dep_name] = dep_node
-            
-            # Track in all_packages
-            self.all_packages[dep_name].append(dep_node)
-            
-            # Fetch real transitive dependencies from PyPI
-            try:
-                metadata = resolver._fetch_package_metadata(dep_name, dep_version, "pypi")
-                if metadata and metadata.dependencies:
-                    # Convert to expected format
-                    transitive_deps = [
-                        {"name": name, "version": version}
-                        for name, version in metadata.dependencies.items()
-                    ]
-                    # Recursively resolve transitive dependencies
-                    self._resolve_python_dependencies(dep_node, transitive_deps, visited, max_depth)
-            except Exception as e:
-                logger.warning(f"Could not fetch transitive deps for {dep_key}: {e}")
+            for future in as_completed(future_to_dep):
+                dep = future_to_dep[future]
+                dep_name = dep["name"]
+                dep_version = dep["version"]
+                
+                try:
+                    # Create dependency node
+                    dep_node = DependencyNode(
+                        name=dep_name,
+                        version=dep_version,
+                        ecosystem="pypi",
+                        depth=parent.depth + 1
+                    )
+                    
+                    # Add to parent
+                    parent.dependencies[dep_name] = dep_node
+                    
+                    # Track in all_packages
+                    self.all_packages[dep_name].append(dep_node)
+                    
+                    # Get metadata result
+                    metadata = future.result()
+                    if metadata and metadata.dependencies:
+                        # Convert to expected format
+                        transitive_deps = [
+                            {"name": name, "version": version}
+                            for name, version in metadata.dependencies.items()
+                        ]
+                        # Recursively resolve transitive dependencies
+                        self._resolve_python_dependencies(dep_node, transitive_deps, visited, max_depth, resolver)
+                except Exception as e:
+                    logger.warning(f"Could not fetch transitive deps for {dep_name}@{dep_version}: {e}")
             
             # Remove from visited after processing (for other branches)
             visited.discard(dep_key)

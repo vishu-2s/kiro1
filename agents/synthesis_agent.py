@@ -565,22 +565,14 @@ IMPORTANT:
                 "analysis_method": "hybrid",
                 "synthesis_status": "fallback"
             },
-            "summary": {
-                "total_packages": len(context.packages),
-                "total_findings": len(context.initial_findings),
-                "critical_findings": 0,
-                "high_findings": 0,
-                "medium_findings": 0,
-                "low_findings": 0,
-                "ecosystems_analyzed": [context.ecosystem]
-            },
+            "summary": self._calculate_severity_summary(context),
             "sbom_data": {
                 "format": "multi-agent-security-sbom",
                 "version": "1.0",
                 "packages": []
             },
             "security_findings": security_findings,
-            "supply_chain_analysis": supply_chain_data,
+            "supply_chain_analysis": self._get_supply_chain_detector_data(context),
             "code_analysis": code_analysis_data,
             "suspicious_activities": [],
             "recommendations": recommendations,
@@ -588,12 +580,40 @@ IMPORTANT:
                 "synthesis": "Synthesis agent failed, using fallback report generation",
                 "risk_assessment": risk_assessment,
                 "confidence_breakdown": self._get_confidence_breakdown(context),
-                "agent_contributions": self._get_agent_contributions(context)
+                "agent_contributions": self._get_agent_contributions(context),
+                "supply_chain_detector": self._get_supply_chain_detector_summary(context)
             },
             "raw_data": {
                 "cache_statistics": {},
                 "performance_metrics": {}
             }
+        }
+    
+    def _calculate_severity_summary(self, context: SharedContext) -> Dict[str, Any]:
+        """
+        Calculate severity counts from initial findings.
+        
+        Args:
+            context: Shared context with initial findings
+        
+        Returns:
+            Summary dict with severity counts
+        """
+        severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
+        
+        for finding in context.initial_findings:
+            severity = finding.severity.lower() if hasattr(finding, 'severity') else "low"
+            if severity in severity_counts:
+                severity_counts[severity] += 1
+        
+        return {
+            "total_packages": len(context.packages),
+            "total_findings": len(context.initial_findings),
+            "critical_findings": severity_counts["critical"],
+            "high_findings": severity_counts["high"],
+            "medium_findings": severity_counts["medium"],
+            "low_findings": severity_counts["low"],
+            "ecosystems_analyzed": [context.ecosystem]
         }
     
     def aggregate_findings(self, context: SharedContext) -> Dict[str, Any]:
@@ -1207,50 +1227,91 @@ Keep it concise but comprehensive. NO bullet points, NO JSON structure - just cl
         context: SharedContext
     ) -> Dict[str, Any]:
         """
-        Build security_findings structure from RULE-BASED findings ONLY.
+        Build security_findings structure with CONSOLIDATED findings per package.
         
-        This keeps rule-based findings (OSV, malicious packages) separate from
-        agent analysis (supply chain, code analysis).
+        Creates a user-friendly summary per package with:
+        - Rule-based findings (OSV vulnerabilities)
+        - Agent-based findings (supply chain detector) - consolidated into single entry
         
         Args:
             context: Shared context with initial findings
         
         Returns:
-            Security findings dictionary with packages array (rule-based only)
+            Security findings dictionary with packages array (consolidated view)
         """
-        packages_list = []
+        packages_dict = {}
         
-        # Group initial findings by package
-        initial_findings_by_pkg = {}
+        # Group initial findings by package (rule-based)
         for finding in context.initial_findings:
             pkg_name = finding.package_name
-            if pkg_name not in initial_findings_by_pkg:
-                initial_findings_by_pkg[pkg_name] = []
-            initial_findings_by_pkg[pkg_name].append(finding)
+            if pkg_name not in packages_dict:
+                packages_dict[pkg_name] = {
+                    "name": pkg_name,
+                    "version": finding.package_version if hasattr(finding, 'package_version') else "unknown",
+                    "ecosystem": context.ecosystem,
+                    "findings": [],
+                    "agent_analysis": None,  # Will hold consolidated agent findings
+                    "risk_score": 0.0,
+                    "risk_level": "low"
+                }
+            
+            # Add rule-based finding
+            packages_dict[pkg_name]["findings"].append({
+                "type": finding.finding_type,
+                "severity": finding.severity,
+                "description": finding.description,
+                "confidence": finding.confidence,
+                "evidence": finding.evidence,
+                "remediation": finding.remediation
+            })
         
-        # Build package entries from rule-based findings only
-        for pkg_name, findings in initial_findings_by_pkg.items():
-            package_entry = {
-                "name": pkg_name,
-                "version": findings[0].package_version if findings else "unknown",
-                "ecosystem": context.ecosystem,
-                "findings": [],
-                "risk_score": 0.0,
-                "risk_level": "low"
-            }
+        # Merge supply chain detector findings - CONSOLIDATED per package
+        sc_result = context.get_agent_result("supply_chain_detector")
+        if sc_result and sc_result.success:
+            threats = sc_result.data.get("threats_detected", [])
             
-            # Add rule-based findings
-            for finding in findings:
-                package_entry["findings"].append({
-                    "type": finding.finding_type,
-                    "severity": finding.severity,
-                    "description": finding.description,
-                    "confidence": finding.confidence,
-                    "evidence": finding.evidence,
-                    "remediation": finding.remediation
+            # Group threats by package
+            threats_by_pkg = {}
+            for threat in threats:
+                pkg_name = threat.get("package_name", "unknown")
+                if pkg_name not in threats_by_pkg:
+                    threats_by_pkg[pkg_name] = []
+                threats_by_pkg[pkg_name].append(threat)
+            
+            # Create consolidated agent analysis per package
+            for pkg_name, pkg_threats in threats_by_pkg.items():
+                # Create package entry if not exists
+                if pkg_name not in packages_dict:
+                    packages_dict[pkg_name] = {
+                        "name": pkg_name,
+                        "version": pkg_threats[0].get("package_version", "*") if pkg_threats else "*",
+                        "ecosystem": pkg_threats[0].get("ecosystem", context.ecosystem) if pkg_threats else context.ecosystem,
+                        "findings": [],
+                        "agent_analysis": None,
+                        "risk_score": 0.0,
+                        "risk_level": "low"
+                    }
+                
+                # Consolidate all threats into a single agent analysis entry
+                consolidated = self._consolidate_agent_findings(pkg_name, pkg_threats)
+                packages_dict[pkg_name]["agent_analysis"] = consolidated
+                
+                # Also add as a single finding for UI compatibility
+                packages_dict[pkg_name]["findings"].append({
+                    "type": "agent_security_analysis",
+                    "severity": consolidated["highest_severity"],
+                    "description": consolidated["summary"],
+                    "confidence": consolidated["confidence"],
+                    "evidence": {
+                        "source": "supply_chain_agent",
+                        "details": consolidated["key_findings"]
+                    },
+                    "remediation": "; ".join(consolidated["recommendations"][:3])
                 })
-            
-            # Calculate risk score
+        
+        # Calculate risk scores for all packages
+        packages_list = []
+        for pkg_name, package_entry in packages_dict.items():
             risk_score = 0.0
             for finding in package_entry["findings"]:
                 severity_weight = {
@@ -1279,6 +1340,130 @@ Keep it concise but comprehensive. NO bullet points, NO JSON structure - just cl
         
         return {
             "packages": packages_list
+        }
+    
+    def _consolidate_agent_findings(
+        self, 
+        pkg_name: str, 
+        threats: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """
+        Consolidate multiple agent findings into a single user-friendly summary.
+        
+        Args:
+            pkg_name: Package name
+            threats: List of threat dictionaries from supply chain detector
+        
+        Returns:
+            Consolidated analysis dictionary
+        """
+        if not threats:
+            return {
+                "summary": "No security issues detected by agent analysis",
+                "highest_severity": "low",
+                "confidence": 1.0,
+                "key_findings": [],
+                "sources_checked": [],
+                "recommendations": [],
+                "references": []
+            }
+        
+        # Determine highest severity
+        severity_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+        highest_severity = "low"
+        for threat in threats:
+            threat_sev = threat.get("severity", "low").lower()
+            if severity_order.get(threat_sev, 0) > severity_order.get(highest_severity, 0):
+                highest_severity = threat_sev
+        
+        # Collect unique sources
+        sources = set()
+        for threat in threats:
+            sources.add(threat.get("source", "Unknown"))
+        
+        # Collect unique CVEs and advisory IDs
+        cves = set()
+        advisories = set()
+        references = []
+        for threat in threats:
+            evidence = threat.get("evidence", {})
+            if isinstance(evidence, dict):
+                if evidence.get("cve_id"):
+                    cves.add(evidence["cve_id"])
+                if evidence.get("ghsa_id"):
+                    advisories.add(evidence["ghsa_id"])
+                if evidence.get("url"):
+                    references.append(evidence["url"])
+        
+        # Build key findings (unique, important ones)
+        key_findings = []
+        seen_descriptions = set()
+        
+        # Prioritize security advisories and vulnerabilities
+        for threat in sorted(threats, key=lambda t: severity_order.get(t.get("severity", "low"), 0), reverse=True):
+            desc = threat.get("description", "")
+            threat_type = threat.get("threat_type", "")
+            
+            # Skip duplicates and generic web intelligence
+            if desc in seen_descriptions:
+                continue
+            if threat_type == "web_intelligence" and len(key_findings) >= 3:
+                continue  # Limit web intelligence entries
+            
+            seen_descriptions.add(desc)
+            
+            if threat_type == "security_advisory":
+                key_findings.append(f"⚠️ {desc}")
+            elif threat_type == "vulnerability":
+                key_findings.append(f"🔴 {desc}")
+            else:
+                key_findings.append(f"ℹ️ {desc}")
+            
+            if len(key_findings) >= 5:
+                break
+        
+        # Build recommendations (unique)
+        recommendations = []
+        seen_recs = set()
+        for threat in threats:
+            for rec in threat.get("recommendations", []):
+                if rec not in seen_recs and len(recommendations) < 3:
+                    seen_recs.add(rec)
+                    recommendations.append(rec)
+        
+        # Calculate average confidence
+        avg_confidence = sum(t.get("confidence", 0.8) for t in threats) / len(threats)
+        
+        # Build summary
+        advisory_count = len([t for t in threats if t.get("threat_type") == "security_advisory"])
+        vuln_count = len([t for t in threats if t.get("threat_type") == "vulnerability"])
+        
+        summary_parts = []
+        if advisory_count > 0:
+            summary_parts.append(f"{advisory_count} security advisor{'y' if advisory_count == 1 else 'ies'}")
+        if vuln_count > 0:
+            summary_parts.append(f"{vuln_count} vulnerabilit{'y' if vuln_count == 1 else 'ies'}")
+        if cves:
+            summary_parts.append(f"{len(cves)} CVE{'s' if len(cves) > 1 else ''}")
+        
+        if summary_parts:
+            summary = f"Found {', '.join(summary_parts)} affecting {pkg_name}"
+        else:
+            summary = f"Security analysis completed for {pkg_name}"
+        
+        return {
+            "summary": summary,
+            "highest_severity": highest_severity,
+            "confidence": round(avg_confidence, 2),
+            "total_issues": len(threats),
+            "advisory_count": advisory_count,
+            "vulnerability_count": vuln_count,
+            "cve_count": len(cves),
+            "cves": list(cves)[:5],  # Top 5 CVEs
+            "key_findings": key_findings,
+            "sources_checked": list(sources),
+            "recommendations": recommendations,
+            "references": list(set(references))[:5]  # Top 5 unique references
         }
     
     def _extract_supply_chain_data(self, context: SharedContext) -> Dict[str, Any]:
@@ -1310,3 +1495,76 @@ Keep it concise but comprehensive. NO bullet points, NO JSON structure - just cl
         if code_result and code_result.success:
             return code_result.data
         return {}
+
+    def _get_supply_chain_detector_data(self, context: SharedContext) -> Dict[str, Any]:
+        """
+        Extract supply chain detector results for the report.
+        
+        Args:
+            context: Shared context with agent results
+        
+        Returns:
+            Supply chain detector data for JSON report
+        """
+        sc_result = context.get_agent_result("supply_chain_detector")
+        
+        if not sc_result or not sc_result.success:
+            return {}
+        
+        data = sc_result.data
+        threats = data.get("threats_detected", [])
+        
+        # Format threats for UI display
+        formatted_threats = []
+        for threat in threats:
+            formatted_threats.append({
+                "package_name": threat.get("package_name"),
+                "package_version": threat.get("package_version", "*"),
+                "ecosystem": threat.get("ecosystem"),
+                "threat_type": threat.get("threat_type"),
+                "severity": threat.get("severity"),
+                "confidence": threat.get("confidence"),
+                "source": threat.get("source"),
+                "description": threat.get("description"),
+                "evidence": threat.get("evidence", {}),
+                "recommendations": threat.get("recommendations", [])
+            })
+        
+        return {
+            "risk_level": data.get("risk_level", "unknown"),
+            "total_packages_checked": data.get("total_packages_checked", 0),
+            "total_threats_found": data.get("total_threats_found", 0),
+            "malicious_packages_found": data.get("malicious_packages_found", 0),
+            "vulnerabilities_found": data.get("vulnerabilities_found", 0),
+            "web_intelligence_found": data.get("web_intelligence_found", 0),
+            "critical_severity_count": data.get("critical_severity_count", 0),
+            "high_severity_count": data.get("high_severity_count", 0),
+            "confidence": data.get("confidence", 0),
+            "duration_seconds": data.get("duration_seconds", 0),
+            "threats": formatted_threats
+        }
+    
+    def _get_supply_chain_detector_summary(self, context: SharedContext) -> Dict[str, Any]:
+        """
+        Get summary of supply chain detector for agent_insights.
+        
+        Args:
+            context: Shared context
+        
+        Returns:
+            Summary dict for agent_insights
+        """
+        sc_result = context.get_agent_result("supply_chain_detector")
+        
+        if not sc_result or not sc_result.success:
+            return {"status": "not_run", "reason": "Agent not executed"}
+        
+        data = sc_result.data
+        return {
+            "status": "completed",
+            "risk_level": data.get("risk_level", "unknown"),
+            "total_threats": data.get("total_threats_found", 0),
+            "malicious_packages": data.get("malicious_packages_found", 0),
+            "web_intelligence": data.get("web_intelligence_found", 0),
+            "sources_checked": ["GitHub Advisories", "Snyk", "NVD", "CVE Details"]
+        }

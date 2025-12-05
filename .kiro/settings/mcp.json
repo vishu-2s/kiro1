@@ -1,48 +1,24 @@
 {
   "mcpServers": {
-    "filesystem": {
+    "git": {
       "command": "uvx",
       "args": [
-        "mcp-server-filesystem",
-        "${workspaceFolder}/tools",
-        "${workspaceFolder}/tests"
+        "mcp-server-git"
       ],
-      "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
-      },
       "disabled": false,
-      "autoApprove": [
-        "read_file",
-        "list_directory"
-      ]
+      "autoApprove": []
     },
     "github": {
-      "command": "uvx",
+      "command": "npx",
       "args": [
-        "mcp-server-github"
+        "-y",
+        "@modelcontextprotocol/server-github"
       ],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}",
-        "FASTMCP_LOG_LEVEL": "ERROR"
-      },
-      "disabled": true,
-      "autoApprove": [
-        "search_repositories",
-        "get_file_contents"
-      ]
-    },
-    "fetch": {
-      "command": "uvx",
-      "args": [
-        "mcp-server-fetch"
-      ],
-      "env": {
-        "FASTMCP_LOG_LEVEL": "ERROR"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
       },
       "disabled": false,
-      "autoApprove": [
-        "fetch"
-      ]
+      "autoApprove": []
     }
   }
 }
