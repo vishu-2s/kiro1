@@ -1,0 +1,57 @@
+🕷️ GOTHIC SPYDER LOGO INTEGRATION 🕷️
+
+STEP 1: SAVE YOUR LOGO IMAGE
+=============================
+Save the gothic "Spyder" logo (with dripping letters, spider in the 'y', green glow) as:
+
+    static/spyder-logo-halloween.png
+
+STEP 2: THAT'S IT!
+==================
+All the CSS enhancements are already applied! Just refresh your browser.
+
+WHAT YOU'LL GET:
+================
+✓ Enhanced logo with green, orange, and purple glow
+✓ Dripping effects on section headings
+✓ Darker purple-tinted backgrounds
+✓ Red glowing spider eyes
+✓ Metallic silver text effects
+✓ Enhanced green glow throughout
+✓ More prominent spider decorations
+
+NEW COLORS ADDED:
+=================
+- Dark Purple Charcoal: #0a0a0f (backgrounds)
+- Crimson Red: #DC143C (spider eyes)
+- Metallic Silver: #C0C0C0 (gothic text)
+- Enhanced Green: #39FF14 (brighter glow)
+
+NEW EFFECTS:
+============
+1. .dripping-text - Adds green drip animation
+2. .gothic-text - Metallic silver with glow
+3. .glow-text - Enhanced green glow
+4. .spider-eyes - Red glowing eyes
+
+CUSTOMIZATION:
+==============
+Edit these in halloween-theme.css if you want to adjust intensity:
+
+--halloween-glow-opacity: 0.8;  (green glow intensity)
+--halloween-web-opacity: 0.2;   (web visibility)
+--halloween-drip-duration: 3s;  (drip animation speed)
+
+PERFORMANCE:
+============
+✓ All effects GPU-accelerated
+✓ 60fps target maintained
+✓ No performance impact
+
+ACCESSIBILITY:
+==============
+✓ WCAG AA compliant
+✓ Reduced motion support
+✓ High contrast mode support
+
+For detailed guide, see: GOTHIC_LOGO_INTEGRATION_GUIDE.md

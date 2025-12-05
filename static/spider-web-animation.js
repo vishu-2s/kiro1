@@ -134,44 +134,48 @@ class SpiderWebSystem {
     }
 
     triggerJumpScare() {
-        // Trigger screen glitch effect
-        this.triggerGlitchEffect();
+        // Start glitch effect 2 seconds BEFORE jump scare
+        this.triggerGlitchEffect(2000);
         
-        // Random jump scare selection
-        const random = Math.random();
-        
-        if (random < 0.5) {
-            // 50% Ghost
-            this.jumpScareGhost = new JumpScareGhost();
-            setTimeout(() => {
-                this.jumpScareGhost = null;
-            }, 2500);
-        } else if (random < 0.8) {
-            // 30% Pumpkin
-            this.jumpscarePumpkin = new JumpScarePumpkin();
-            setTimeout(() => {
-                this.jumpscarePumpkin = null;
-            }, 2500);
-        } else {
-            // 20% Spider
-            this.jumpScareSpider = new JumpScareSpider();
-            setTimeout(() => {
-                this.jumpScareSpider = null;
-            }, 2000);
-        }
+        // Wait 2 seconds, then show jump scare
+        setTimeout(() => {
+            const random = Math.random();
+            
+            if (random < 0.5) {
+                // 50% Ghost
+                this.jumpScareGhost = new JumpScareGhost();
+                setTimeout(() => {
+                    this.jumpScareGhost = null;
+                }, 2500);
+            } else if (random < 0.8) {
+                // 30% Pumpkin
+                this.jumpscarePumpkin = new JumpScarePumpkin();
+                setTimeout(() => {
+                    this.jumpscarePumpkin = null;
+                }, 2500);
+            } else {
+                // 20% Spider
+                this.jumpScareSpider = new JumpScareSpider();
+                setTimeout(() => {
+                    this.jumpScareSpider = null;
+                }, 2000);
+            }
+        }, 2000); // 2 second delay before creature appears
     }
 
-    triggerGlitchEffect() {
+    triggerGlitchEffect(delayBefore = 0) {
         const container = document.querySelector('.container');
         if (!container) return;
         
-        // Add glitch class
-        container.classList.add('glitch-active');
-        
-        // Remove after 2.5 seconds
+        // Start glitch after delay
         setTimeout(() => {
-            container.classList.remove('glitch-active');
-        }, 2500);
+            container.classList.add('glitch-active');
+            
+            // Remove glitch after: 2s buffer + max creature duration (2.5s) + 2s buffer = 6.5s
+            setTimeout(() => {
+                container.classList.remove('glitch-active');
+            }, 6500);
+        }, delayBefore);
     }
 
     animate() {

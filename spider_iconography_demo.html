@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider-Themed Iconography Demo</title>
+    <link rel="stylesheet" href="/static/halloween-theme.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FAFAFA;
+            padding: 40px;
+            color: #1A1A1A;
+        }
+        
+        .demo-section {
+            background: #FFFFFF;
+            padding: 32px;
+            margin-bottom: 40px;
+            border: 1px solid #E5E5E5;
+        }
+        
+        .demo-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #FF7518;
+        }
+        
+        .demo-description {
+            margin-bottom: 24px;
+            color: #666666;
+            line-height: 1.6;
+        }
+        
+        .demo-example {
+            background: #FAFAFA;
+            padding: 24px;
+            border: 1px solid #E5E5E5;
+            margin-bottom: 16px;
+        }
+        
+        .example-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666666;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #FF7518; margin-bottom: 40px;">
+        🕷 Spider-Themed Iconography Demo 🕷
+    </h1>
+    
+    <!-- Spider Dividers Section -->
+    <div class="demo-section">
+        <div class="demo-title">1. Spider-Themed Dividers</div>
+        <div class="demo-description">
+            Web pattern dividers that separate sections in Dashboard and Report tabs.
+            These dividers feature animated spider elements and silk-like patterns.
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Standard Spider Divider</div>
+            <div class="spider-divider"></div>
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Web Pattern Variant</div>
+            <div class="spider-divider web-pattern"></div>
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Silk Strand Variant</div>
+            <div class="spider-divider silk-strand"></div>
+        </div>
+    </div>
+    
+    <!-- Web Connectors Section -->
+    <div class="demo-section">
+        <div class="demo-title">2. Web-Like Connectors</div>
+        <div class="demo-description">
+            Spider silk-style connector lines that can be used to connect diagram elements.
+            These connectors feature subtle animations and glow effects.
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Horizontal Web Connector</div>
+            <div class="web-connector-horizontal"></div>
+        </div>
+        
+        <div class="demo-example" style="display: flex; align-items: center; justify-content: center; height: 150px;">
+            <div class="example-label" style="position: absolute; top: 24px; left: 24px;">Vertical Web Connector</div>
+            <div class="web-connector-vertical" style="height: 100px;"></div>
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Curved Web Connector</div>
+            <div class="web-connector-curve"></div>
+        </div>
+    </div>
+    
+    <!-- Glitched Symbols Section -->
+    <div class="demo-section">
+        <div class="demo-title">3. Glitched Branding Symbols</div>
+        <div class="demo-description">
+            Distorted spooky symbols for branding screens and loading states.
+            These symbols feature glitch effects with color shifting and distortion.
+        </div>
+        
+        <div class="demo-example" style="text-align: center;">
+            <div class="example-label">Glitch Symbol (with data-text attribute)</div>
+            <div class="glitch-symbol" data-text="🕷">🕷</div>
+        </div>
+        
+        <div class="demo-example" style="text-align: center;">
+            <div class="example-label">Loading Spider</div>
+            <div class="loading-spider">🕷</div>
+        </div>
+        
+        <div class="demo-example" style="text-align: center;">
+            <div class="example-label">Glitched Spinner</div>
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Integration Examples -->
+    <div class="demo-section">
+        <div class="demo-title">4. Integration Examples</div>
+        <div class="demo-description">
+            Examples of how these elements are automatically applied to existing components.
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Recent Scan Items (with automatic dividers)</div>
+            <div class="recent-scan-item">
+                <div class="recent-scan-header">
+                    <span class="recent-scan-name">First Scan</span>
+                    <span class="recent-scan-badge critical">Critical</span>
+                </div>
+                <div class="recent-scan-meta">
+                    <span>2 hours ago</span>
+                    <span>5 findings</span>
+                </div>
+            </div>
+            <div class="recent-scan-item">
+                <div class="recent-scan-header">
+                    <span class="recent-scan-name">Second Scan</span>
+                    <span class="recent-scan-badge high">High</span>
+                </div>
+                <div class="recent-scan-meta">
+                    <span>4 hours ago</span>
+                    <span>3 findings</span>
+                </div>
+            </div>
+            <div class="recent-scan-item">
+                <div class="recent-scan-header">
+                    <span class="recent-scan-name">Third Scan</span>
+                    <span class="recent-scan-badge clean">Clean</span>
+                </div>
+                <div class="recent-scan-meta">
+                    <span>6 hours ago</span>
+                    <span>0 findings</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-example">
+            <div class="example-label">Finding Cards (with automatic connectors)</div>
+            <div class="finding-card critical">
+                <div class="finding-header">
+                    <span class="finding-package">malicious-package</span>
+                    <span class="severity-badge critical">Critical</span>
+                </div>
+                <div class="finding-body">
+                    <p>This package contains malicious code that attempts to steal credentials.</p>
+                </div>
+            </div>
+            <div class="finding-card high">
+                <div class="finding-header">
+                    <span class="finding-package">vulnerable-lib</span>
+                    <span class="severity-badge high">High</span>
+                </div>
+                <div class="finding-body">
+                    <p>This package has a known vulnerability that could lead to remote code execution.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Usage Notes -->
+    <div class="demo-section">
+        <div class="demo-title">5. Usage Notes</div>
+        <div class="demo-description">
+            <strong>Automatic Application:</strong>
+            <ul style="margin-top: 12px; line-height: 1.8;">
+                <li>Spider dividers are automatically added between Dashboard sections (after .control-panel)</li>
+                <li>Web dividers are automatically added between Report sections (.report-section + .report-section)</li>
+                <li>Web connectors are automatically added between recent scan items and finding cards</li>
+                <li>Glitched symbols are applied to loading states and status indicators</li>
+            </ul>
+            
+            <strong style="display: block; margin-top: 24px;">Manual Usage:</strong>
+            <ul style="margin-top: 12px; line-height: 1.8;">
+                <li>Add <code>&lt;div class="spider-divider"&gt;&lt;/div&gt;</code> for a standard divider</li>
+                <li>Add <code>&lt;div class="web-connector-horizontal"&gt;&lt;/div&gt;</code> for horizontal connectors</li>
+                <li>Add <code>&lt;div class="glitch-symbol" data-text="🕷"&gt;🕷&lt;/div&gt;</code> for glitched symbols</li>
+            </ul>
+            
+            <strong style="display: block; margin-top: 24px;">Accessibility:</strong>
+            <ul style="margin-top: 12px; line-height: 1.8;">
+                <li>All decorative elements have <code>pointer-events: none</code></li>
+                <li>Animations are disabled when <code>prefers-reduced-motion</code> is set</li>
+                <li>Elements are hidden in high contrast mode</li>
+            </ul>
+            
+            <strong style="display: block; margin-top: 24px;">Performance:</strong>
+            <ul style="margin-top: 12px; line-height: 1.8;">
+                <li>All animations use GPU acceleration with <code>transform: translateZ(0)</code></li>
+                <li>Backface visibility is hidden to prevent flickering</li>
+                <li>Will-change property is used for animated elements</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

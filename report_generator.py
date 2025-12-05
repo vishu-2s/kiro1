@@ -644,15 +644,15 @@ class SecurityReportGenerator:
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f8f9fa;
-            color: #333;
+            background-color: #0a0a0f;
+            color: #E5E5E5;
         }}
         .container {{
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: #1a1520;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 30px rgba(57, 255, 20, 0.15);
             overflow: hidden;
         }}
         .header {{
@@ -676,17 +676,28 @@ class SecurityReportGenerator:
         }}
         .section {{
             margin-bottom: 40px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(57, 255, 20, 0.2);
             padding-bottom: 30px;
+            background: #15111a;
+            padding: 20px;
+            border-radius: 8px;
         }}
         .section:last-child {{
             border-bottom: none;
         }}
         .section h2 {{
-            color: #2c3e50;
-            border-left: 4px solid #667eea;
+            color: #FFFFFF;
+            border-left: 4px solid #39FF14;
             padding-left: 15px;
             margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+        }}
+        .section p, .section span, .section div {{
+            color: #FFFFFF;
+        }}
+        .section strong {{
+            color: #39FF14;
+            font-weight: 700;
         }}
         .risk-badge {{
             display: inline-block;
@@ -704,20 +715,24 @@ class SecurityReportGenerator:
             margin: 20px 0;
         }}
         .stat-card {{
-            background: #f8f9fa;
+            background: #1a1520;
             padding: 20px;
             border-radius: 8px;
             text-align: center;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #39FF14;
+            border: 1px solid rgba(57, 255, 20, 0.25);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
         }}
         .stat-number {{
             font-size: 2em;
             font-weight: bold;
-            color: #2c3e50;
+            color: #FFFFFF;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }}
         .stat-label {{
-            color: #6c757d;
+            color: #CCCCCC;
             margin-top: 5px;
+            font-weight: 600;
         }}
         .findings-table {{
             width: 100%;
@@ -731,13 +746,14 @@ class SecurityReportGenerator:
             border-bottom: 1px solid #ddd;
         }}
         .findings-table th {{
-            background-color: #f8f9fa;
+            background-color: #0a0a0f;
             font-weight: 600;
+            color: #39FF14;
         }}
-        .severity-critical {{ color: #dc3545; font-weight: bold; }}
-        .severity-high {{ color: #fd7e14; font-weight: bold; }}
+        .severity-critical {{ color: #FF7518; font-weight: bold; text-shadow: 0 0 10px rgba(255, 117, 24, 0.5); }}
+        .severity-high {{ color: #FFFFFF; font-weight: bold; }}
         .severity-medium {{ color: #ffc107; font-weight: bold; }}
-        .severity-low {{ color: #28a745; font-weight: bold; }}
+        .severity-low {{ color: #39FF14; font-weight: bold; }}
         .timeline {{
             position: relative;
             padding-left: 30px;
@@ -755,8 +771,9 @@ class SecurityReportGenerator:
             position: relative;
             margin-bottom: 20px;
             padding: 15px 20px;
-            background: #f8f9fa;
+            background: #15111a;
             border-radius: 8px;
+            border: 1px solid rgba(255, 117, 24, 0.3);
         }}
         .timeline-item::before {{
             content: '';
@@ -790,19 +807,19 @@ class SecurityReportGenerator:
             border-left: 4px solid;
         }}
         .alert-danger {{
-            background-color: #f8d7da;
-            border-color: #dc3545;
-            color: #721c24;
+            background-color: rgba(255, 117, 24, 0.15);
+            border-color: #FF7518;
+            color: #FF7518;
         }}
         .alert-warning {{
-            background-color: #fff3cd;
+            background-color: rgba(255, 193, 7, 0.15);
             border-color: #ffc107;
-            color: #856404;
+            color: #ffc107;
         }}
         .alert-info {{
-            background-color: #d1ecf1;
-            border-color: #17a2b8;
-            color: #0c5460;
+            background-color: rgba(57, 255, 20, 0.15);
+            border-color: #39FF14;
+            color: #39FF14;
         }}
         .footer {{
             background: #2c3e50;
@@ -812,7 +829,7 @@ class SecurityReportGenerator:
             font-size: 0.9em;
         }}
         @media print {{
-            body {{ background: white; }}
+            body {{ background: #1a1520; }}
             .container {{ box-shadow: none; }}
         }}
     </style>
