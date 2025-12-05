@@ -39,11 +39,9 @@ from constants import (
 )
 from config import config
 
-# Import agent components
+# Import agent components - OPTIMIZED: Only required agents
 from agents.orchestrator import AgentOrchestrator
 from agents.types import Finding
-from agents.vulnerability_agent import VulnerabilityAnalysisAgent
-from agents.reputation_agent import ReputationAnalysisAgent
 from agents.supply_chain_detector_agent import SupplyChainDetectorAgent
 from agents.synthesis_agent import SynthesisAgent
 from agents.proactive_validator import ProactiveValidator, validate_before_analysis
@@ -1502,13 +1500,12 @@ def analyze_project_hybrid(
                 # Initialize orchestrator
                 orchestrator = AgentOrchestrator()
                 
-                # Register agents
-                logger.info("Registering agents...")
-                orchestrator.register_agent("vulnerability_analysis", VulnerabilityAnalysisAgent())
-                orchestrator.register_agent("reputation_analysis", ReputationAnalysisAgent())
+                # Register agents - OPTIMIZED: Only supply_chain_detector and synthesis
+                # Removed: vulnerability_analysis, reputation_analysis (not needed for required output)
+                logger.info("Registering agents (optimized - supply chain + synthesis only)...")
                 orchestrator.register_agent("supply_chain_detector", SupplyChainDetectorAgent())
                 orchestrator.register_agent("synthesis", SynthesisAgent())
-                logger.info("All agents registered successfully")
+                logger.info("Required agents registered successfully")
                 
                 # Run orchestration with timeout protection
                 logger.info("Starting orchestration...")
@@ -1603,7 +1600,10 @@ def _generate_simple_report(
     ecosystem: str
 ) -> Dict[str, Any]:
     """
-    Generate simple report without agent analysis.
+    Generate MINIMAL report with only required sections.
+    
+    Required sections:
+    - metadata, sbom_data, supply_chain_analysis, performance_metrics, dependency_graph
     
     Args:
         findings: Rule-based findings
@@ -1614,63 +1614,8 @@ def _generate_simple_report(
         ecosystem: Ecosystem
     
     Returns:
-        Simple JSON report
+        Minimal JSON report with required sections only
     """
-    # Count findings by severity
-    severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
-    for finding in findings:
-        severity = finding.severity.lower()
-        if severity in severity_counts:
-            severity_counts[severity] += 1
-    
-    # Group findings by package
-    packages_dict = {}
-    for finding in findings:
-        pkg_name = finding.package_name
-        if pkg_name not in packages_dict:
-            packages_dict[pkg_name] = {
-                "name": pkg_name,
-                "version": finding.package_version,
-                "ecosystem": ecosystem,
-                "findings": [],
-                "risk_score": 0.0,
-                "risk_level": "low"
-            }
-        
-        packages_dict[pkg_name]["findings"].append({
-            "type": finding.finding_type,
-            "severity": finding.severity,
-            "description": finding.description,
-            "confidence": finding.confidence,
-            "evidence": finding.evidence,
-            "remediation": finding.remediation
-        })
-    
-    # Calculate risk scores
-    for pkg_data in packages_dict.values():
-        risk_score = 0.0
-        for finding in pkg_data["findings"]:
-            severity_weight = {
-                "critical": 1.0,
-                "high": 0.7,
-                "medium": 0.4,
-                "low": 0.2
-            }
-            weight = severity_weight.get(finding["severity"].lower(), 0.2)
-            risk_score += weight * finding["confidence"]
-        
-        pkg_data["risk_score"] = min(1.0, risk_score)
-        
-        # Determine risk level
-        if pkg_data["risk_score"] >= 0.8:
-            pkg_data["risk_level"] = "critical"
-        elif pkg_data["risk_score"] >= 0.6:
-            pkg_data["risk_level"] = "high"
-        elif pkg_data["risk_score"] >= 0.3:
-            pkg_data["risk_level"] = "medium"
-        else:
-            pkg_data["risk_level"] = "low"
-    
     return {
         "metadata": {
             "analysis_id": f"analysis_{int(datetime.now().timestamp())}",
@@ -1680,31 +1625,27 @@ def _generate_simple_report(
             "ecosystem": ecosystem,
             "agent_analysis_enabled": False
         },
-        "summary": {
-            "total_packages": len(packages),
-            "packages_with_findings": len(packages_dict),
-            "total_findings": len(findings),
-            "critical_findings": severity_counts["critical"],
-            "high_findings": severity_counts["high"],
-            "medium_findings": severity_counts["medium"],
-            "low_findings": severity_counts["low"]
+        "sbom_data": {
+            "format": "multi-agent-security-sbom",
+            "version": "1.0",
+            "packages": []
         },
-        "security_findings": {
-            "packages": list(packages_dict.values())
+        "supply_chain_analysis": {
+            "risk_level": "LOW",
+            "total_packages_checked": len(packages),
+            "total_threats_found": 0,
+            "malicious_packages_found": 0,
+            "vulnerabilities_found": 0,
+            "web_intelligence_found": 0,
+            "threats": [],
+            "note": "Agent analysis disabled - rule-based only"
         },
         "dependency_graph": dependency_graph,
-        "recommendations": {
-            "immediate_actions": [
-                f"Review {severity_counts['critical']} critical findings" if severity_counts['critical'] > 0 else None,
-                f"Address {severity_counts['high']} high-severity findings" if severity_counts['high'] > 0 else None
-            ],
-            "preventive_measures": [
-                "Implement dependency scanning in CI/CD pipeline",
-                "Use lock files to ensure reproducible builds"
-            ],
-            "monitoring": [
-                "Regularly update dependencies",
-                "Monitor security advisories"
-            ]
+        "performance_metrics": {
+            "stages_completed": 0,
+            "stages_failed": 0,
+            "total_analysis_time": 0,
+            "rule_based_time": 0,
+            "agent_time": 0
         }
     }

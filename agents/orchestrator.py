@@ -31,45 +31,28 @@ class AgentOrchestrator:
     """
     Coordinates multi-agent analysis using explicit sequential protocol.
     
-    The orchestrator manages a 5-stage conversation protocol:
-    1. Vulnerability Analysis (required, 30s timeout)
-    2. Reputation Analysis (required, 20s timeout)
-    3. Code Analysis (conditional, 40s timeout)
-    4. Supply Chain Analysis (conditional, 30s timeout)
-    5. Synthesis (required, 20s timeout)
+    OPTIMIZED: Only runs Supply Chain Detector + Synthesis agents.
+    Removed: Vulnerability Analysis, Reputation Analysis (not needed for required output).
     
-    Each stage has validation checkpoints and failure handling with graceful degradation.
+    Required output sections:
+    - metadata, sbom_data, supply_chain_analysis, performance_metrics, dependency_graph
     """
     
-    # Stage configurations with timeouts (reduced for faster execution)
+    # Stage configurations - OPTIMIZED: Only supply_chain_detector and synthesis
     STAGE_CONFIGS = {
-        "vulnerability_analysis": AgentConfig(
-            name="vulnerability_analysis",
-            timeout=20,  # Reduced from 30
-            required=True,
-            max_retries=1,  # Reduced from 2
-            retry_delay=0.5  # Reduced from 1.0
-        ),
-        "reputation_analysis": AgentConfig(
-            name="reputation_analysis",
-            timeout=15,  # Reduced from 20
-            required=True,
-            max_retries=1,  # Reduced from 2
-            retry_delay=0.5  # Reduced from 1.0
-        ),
         "supply_chain_detector": AgentConfig(
             name="supply_chain_detector",
             timeout=60,  # Allow more time for web searches
-            required=False,
+            required=True,  # Now required since it's the main analysis
             max_retries=1,
             retry_delay=0.5
         ),
         "synthesis": AgentConfig(
             name="synthesis",
-            timeout=15,  # Reduced from 20
+            timeout=15,
             required=True,
-            max_retries=1,  # Reduced from 2
-            retry_delay=0.5  # Reduced from 1.0
+            max_retries=1,
+            retry_delay=0.5
         )
     }
     
@@ -154,82 +137,9 @@ class AgentOrchestrator:
             ecosystem=ecosystem
         )
         
-        # Stage 1: Vulnerability Analysis (Required)
+        # Stage 1: Supply Chain Detector (Primary analysis - checks malicious packages, web intel)
         self._log("=" * 60)
-        self._log("Stage 1: Vulnerability Analysis")
-        self._log("=" * 60)
-        try:
-            vuln_result = self._run_agent_stage(
-                stage_name="vulnerability_analysis",
-                context=context
-            )
-            context.add_agent_result(vuln_result)
-            self._log(f"Stage 1 completed: success={vuln_result.success}")
-            
-            # Log detailed results
-            if vuln_result.success and vuln_result.data:
-                packages_analyzed = vuln_result.data.get("total_packages_analyzed", 0)
-                vulns_found = vuln_result.data.get("total_vulnerabilities_found", 0)
-                self._log(f"  > Packages analyzed: {packages_analyzed}")
-                self._log(f"  > Vulnerabilities found: {vulns_found}")
-                self._log(f"  > Confidence: {vuln_result.data.get('confidence', 0):.2f}")
-                
-                # Log per-package summary
-                for pkg in vuln_result.data.get("packages", [])[:5]:  # First 5 packages
-                    pkg_name = pkg.get("package_name", "unknown")
-                    vuln_count = pkg.get("vulnerability_count", 0)
-                    if vuln_count > 0:
-                        self._log(f"  > {pkg_name}: {vuln_count} vulnerabilities")
-            
-        except Exception as e:
-            self._log(f"Stage 1 failed with exception: {str(e)}", "ERROR")
-            import traceback
-            self._log(f"Traceback: {traceback.format_exc()}", "ERROR")
-            raise
-        
-        # Stage 2: Reputation Analysis (Required)
-        self._log("=" * 60)
-        self._log("Stage 2: Reputation Analysis")
-        self._log("=" * 60)
-        rep_result = self._run_agent_stage(
-            stage_name="reputation_analysis",
-            context=context
-        )
-        context.add_agent_result(rep_result)
-        
-        # Log detailed results
-        if rep_result.success and rep_result.data:
-            packages_analyzed = rep_result.data.get("total_packages_analyzed", 0)
-            self._log(f"  > Packages analyzed: {packages_analyzed}")
-            self._log(f"  > Confidence: {rep_result.data.get('confidence', 0):.2f}")
-            
-            # Log reputation summary
-            high_risk = 0
-            medium_risk = 0
-            low_risk = 0
-            for pkg in rep_result.data.get("packages", []):
-                risk_level = pkg.get("risk_level", "unknown")
-                if risk_level == "high" or risk_level == "critical":
-                    high_risk += 1
-                elif risk_level == "medium":
-                    medium_risk += 1
-                else:
-                    low_risk += 1
-            
-            self._log(f"  > High risk packages: {high_risk}")
-            self._log(f"  > Medium risk packages: {medium_risk}")
-            self._log(f"  > Low risk packages: {low_risk}")
-            
-            # Log specific high-risk packages
-            for pkg in rep_result.data.get("packages", []):
-                if pkg.get("risk_level") in ["high", "critical"]:
-                    pkg_name = pkg.get("package_name", "unknown")
-                    score = pkg.get("reputation_score", 0)
-                    self._log(f"  > [!] {pkg_name}: reputation score {score:.2f}")
-        
-        # Stage 3: Supply Chain Detector (Always run - checks malicious packages, web intel)
-        self._log("=" * 60)
-        self._log("Stage 3: Supply Chain Attack Detection")
+        self._log("Stage 1: Supply Chain Attack Detection")
         self._log("=" * 60)
         if "supply_chain_detector" in self.agents:
             sc_result = self._run_agent_stage(
@@ -254,25 +164,14 @@ class AgentOrchestrator:
                 self._log(f"  > Vulnerabilities: {vulns}")
                 self._log(f"  > Web intelligence: {web_intel}")
         else:
-            self._log("Stage 3: Supply Chain Detector (skipped - agent not registered)")
-            self._log("=" * 60)
+            self._log("Supply Chain Detector not registered - skipping", "WARNING")
         
-        # Stage 5: Synthesis (Required)
+        # Stage 2: Synthesis (Required - creates final minimal report)
         self._log("=" * 60)
-        self._log("Stage 5: Synthesis")
+        self._log("Stage 2: Synthesis")
         self._log("=" * 60)
-        self._log("Aggregating findings from all agents...")
+        self._log("Creating minimal report with required sections...")
         final_json = self._run_synthesis_stage(context)
-        
-        # Log synthesis results
-        if final_json:
-            summary = final_json.get("summary", {})
-            self._log(f"  > Total packages: {summary.get('total_packages', 0)}")
-            self._log(f"  > Total findings: {summary.get('total_findings', 0)}")
-            self._log(f"  > Critical: {summary.get('critical_findings', 0)}")
-            self._log(f"  > High: {summary.get('high_findings', 0)}")
-            self._log(f"  > Medium: {summary.get('medium_findings', 0)}")
-            self._log(f"  > Low: {summary.get('low_findings', 0)}")
         
         # Add performance metrics
         total_duration = time.time() - self.start_time

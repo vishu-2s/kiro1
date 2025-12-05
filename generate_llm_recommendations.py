@@ -117,62 +117,34 @@ def generate_llm_recommendations(context: str) -> Dict[str, List[str]]:
         
         client = OpenAI(api_key=api_key)
         
-        prompt = f"""You are a senior security engineer analyzing a comprehensive software supply chain security report. 
-Based on the complete analysis below, generate detailed, actionable, and specific recommendations.
+        prompt = f"""You are a Senior Security Architect writing an executive summary of security recommendations.
 
+ANALYSIS RESULTS:
 {context}
 
-Your task is to generate recommendations in 3 categories. Each recommendation should be 7-8 lines long, 
-highly specific to the actual packages and findings in the report, and provide concrete actionable steps.
+Write exactly 3 concise recommendation paragraphs (7-8 lines each). DO NOT list individual packages - focus on overall strategy and actions.
 
-1. IMMEDIATE ACTIONS (2-3 recommendations):
-   - Reference SPECIFIC package names from the report
-   - Explain the EXACT risk based on the findings
-   - Provide CONCRETE remediation steps with timelines
-   - Mention specific CVEs or vulnerability types if relevant
-   - Include impact assessment
+REQUIREMENTS:
+1. IMMEDIATE PRIORITY (1 paragraph): Summarize the critical/high severity issues found and the general remediation approach. Mention the count of issues, not individual package names.
 
-2. PREVENTIVE MEASURES (4-5 recommendations):
-   - Long-term security improvements based on the patterns observed
-   - Specific tools and technologies to implement
-   - Process improvements tailored to the findings
-   - Best practices relevant to the ecosystem
-   - Implementation guidance with examples
+2. SECURITY HARDENING (1 paragraph): Recommend 2-3 specific tools/practices to prevent future vulnerabilities. Be specific about implementation.
 
-3. MONITORING (4-5 recommendations):
-   - Ongoing security practices specific to the vulnerabilities found
-   - Metrics to track based on the analysis
-   - Alert configurations for similar issues
-   - Audit schedules appropriate for the risk level
-   - Continuous improvement strategies
+3. ONGOING MONITORING (1 paragraph): Describe a sustainable monitoring strategy with specific metrics and cadence.
 
-IMPORTANT:
-- Use emojis for visual clarity (🔴, ⚠️, 🛡️, 📦, 📅, 🔔, etc.)
-- Reference actual package names from the report
-- Make each recommendation 7-8 lines with complete context
-- Be specific and actionable, not generic
-- Consider the severity distribution and package count
+STYLE:
+- Professional, executive-level tone
+- No emojis, no bullet points within paragraphs
+- Each paragraph should be exactly 7-8 lines
+- Focus on business impact and ROI
+- Mention specific tools (Dependabot, Snyk, npm audit) but don't list packages
+- Use concrete numbers and timelines
 
-Return ONLY valid JSON in this exact format:
+Return ONLY valid JSON:
 {{
-  "immediate_actions": [
-    "🔴 First immediate action with 7-8 lines of detailed guidance...",
-    "⚠️ Second immediate action with 7-8 lines of detailed guidance..."
-  ],
-  "preventive_measures": [
-    "🛡️ First preventive measure with 7-8 lines...",
-    "📦 Second preventive measure with 7-8 lines...",
-    "🔒 Third preventive measure with 7-8 lines...",
-    "📊 Fourth preventive measure with 7-8 lines...",
-    "👥 Fifth preventive measure with 7-8 lines..."
-  ],
-  "monitoring": [
-    "📅 First monitoring practice with 7-8 lines...",
-    "🔔 Second monitoring practice with 7-8 lines...",
-    "🔄 Third monitoring practice with 7-8 lines...",
-    "📈 Fourth monitoring practice with 7-8 lines...",
-    "🚨 Fifth monitoring practice with 7-8 lines..."
-  ]
+  "summary": "One sentence executive summary of the security posture.",
+  "immediate_priority": "7-8 line paragraph about immediate actions needed...",
+  "security_hardening": "7-8 line paragraph about preventive measures...",
+  "ongoing_monitoring": "7-8 line paragraph about monitoring strategy..."
 }}"""
 
         print("Generating LLM-based recommendations...")
@@ -202,27 +174,13 @@ Return ONLY valid JSON in this exact format:
         print("Falling back to basic recommendations...")
         return generate_fallback_recommendations(context)
 
-def generate_fallback_recommendations(context: str) -> Dict[str, List[str]]:
-    """Generate basic recommendations if LLM fails."""
+def generate_fallback_recommendations(context: str) -> Dict[str, str]:
+    """Generate professional recommendations if LLM fails."""
     return {
-        "immediate_actions": [
-            "Review the security findings in the report and prioritize critical and high-severity vulnerabilities",
-            "Update vulnerable packages to patched versions as soon as possible"
-        ],
-        "preventive_measures": [
-            "Implement automated dependency scanning in your CI/CD pipeline",
-            "Use lock files to ensure reproducible builds",
-            "Enable security policies for dependency management",
-            "Maintain a Software Bill of Materials (SBOM)",
-            "Establish a dependency approval process"
-        ],
-        "monitoring": [
-            "Schedule regular dependency audits",
-            "Subscribe to security advisories",
-            "Establish update cadence for dependencies",
-            "Track security metrics over time",
-            "Set up real-time vulnerability alerts"
-        ]
+        "summary": "Security analysis identified vulnerabilities requiring immediate attention and long-term remediation strategy.",
+        "immediate_priority": "The analysis has identified critical and high-severity vulnerabilities that require immediate remediation. These vulnerabilities expose the application to potential security breaches including remote code execution, denial of service, and data exposure. Development teams should prioritize updating affected dependencies to their latest patched versions within the next 48-72 hours. For packages without available patches, consider implementing temporary mitigations such as input validation, network segmentation, or replacing the dependency with a secure alternative. Document all remediation actions and verify fixes through re-scanning before deployment to production environments.",
+        "security_hardening": "To prevent future vulnerabilities, implement a comprehensive dependency management strategy. First, enable automated dependency scanning in your CI/CD pipeline using tools like npm audit, Snyk, or GitHub Dependabot. Configure these tools to block deployments when critical vulnerabilities are detected. Second, enforce the use of lock files (package-lock.json, yarn.lock, or requirements.txt) and use deterministic installation commands (npm ci instead of npm install) to ensure reproducible builds. Third, establish a dependency review process where new packages are evaluated for security posture, maintenance status, and community trust before adoption. These measures significantly reduce your attack surface and catch vulnerabilities before they reach production.",
+        "ongoing_monitoring": "Establish a continuous security monitoring program to maintain long-term security posture. Subscribe to security advisory feeds from GitHub, NVD, and ecosystem-specific sources for real-time vulnerability notifications. Schedule weekly automated security scans and monthly manual dependency audits to identify newly disclosed vulnerabilities. Track key metrics including total dependency count, percentage of dependencies with known vulnerabilities, average time-to-patch, and dependency age distribution. Set organizational targets such as zero critical vulnerabilities in production and patch high-severity issues within 7 days. Regular reporting to stakeholders ensures accountability and demonstrates security program maturity to auditors and customers."
     }
 
 def update_report_with_recommendations(report_path: str, recommendations: Dict[str, List[str]]):
@@ -262,10 +220,10 @@ def main():
     context = build_comprehensive_context(report)
     
     print(f"\nContext built:")
-    print(f"  - Total findings: {report['summary']['total_findings']}")
-    print(f"  - Critical: {report['summary']['critical_findings']}")
-    print(f"  - High: {report['summary']['high_findings']}")
-    print(f"  - Packages affected: {report['summary']['packages_with_findings']}")
+    print(f"  - Total findings: {report['summary'].get('total_findings', 0)}")
+    print(f"  - Critical: {report['summary'].get('critical_findings', 0)}")
+    print(f"  - High: {report['summary'].get('high_findings', 0)}")
+    print(f"  - Packages analyzed: {report['summary'].get('total_packages', 0)}")
     
     # Generate recommendations
     print("\n🤖 Generating LLM-based recommendations...")
@@ -276,17 +234,14 @@ def main():
     print("GENERATED RECOMMENDATIONS")
     print("=" * 60)
     
-    print("\n🚨 IMMEDIATE ACTIONS:")
-    for i, action in enumerate(recommendations['immediate_actions'], 1):
-        print(f"\n{i}. {action[:150]}...")
-    
-    print("\n\n🛡️ PREVENTIVE MEASURES:")
-    for i, measure in enumerate(recommendations['preventive_measures'], 1):
-        print(f"\n{i}. {measure[:150]}...")
-    
-    print("\n\n📊 MONITORING:")
-    for i, practice in enumerate(recommendations['monitoring'], 1):
-        print(f"\n{i}. {practice[:150]}...")
+    if 'summary' in recommendations:
+        print(f"\n📋 SUMMARY:\n{recommendations.get('summary', '')[:200]}...")
+    if 'immediate_priority' in recommendations:
+        print(f"\n🚨 IMMEDIATE PRIORITY:\n{recommendations.get('immediate_priority', '')[:200]}...")
+    if 'security_hardening' in recommendations:
+        print(f"\n🛡️ SECURITY HARDENING:\n{recommendations.get('security_hardening', '')[:200]}...")
+    if 'ongoing_monitoring' in recommendations:
+        print(f"\n📊 ONGOING MONITORING:\n{recommendations.get('ongoing_monitoring', '')[:200]}...")
     
     # Update report
     print("\n" + "=" * 60)

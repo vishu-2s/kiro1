@@ -707,13 +707,10 @@
                         const data = await dataResponse.json();
                         const securityFindings = data.security_findings || {};
                         const packages = securityFindings.packages || [];
-                        let findingsCount = 0, vulnerablePackagesCount = 0;
-                        packages.forEach(pkg => {
-                            const pkgFindings = pkg.findings || pkg.vulnerabilities || [];
-                            if (pkgFindings.length > 0) { vulnerablePackagesCount++; findingsCount += pkgFindings.length; }
-                        });
+                        let findingsCount = 0;
+                        packages.forEach(pkg => { findingsCount += (pkg.findings || []).length; });
                         totalThreats += findingsCount;
-                        totalPackages += vulnerablePackagesCount;
+                        totalPackages += packages.length;
                     } catch (e) {}
                 }
                 
@@ -726,8 +723,8 @@
                             const securityFindings = data.security_findings || {};
                             const packages = securityFindings.packages || [];
                             let findingsCount = 0;
-                            packages.forEach(pkg => { const pkgFindings = pkg.findings || pkg.vulnerabilities || []; findingsCount += pkgFindings.length; });
-                            return { filename: report.filename, name: extractReportName(metadata.target), date: report.modified, findings: findingsCount, severity: getHighestSeverity(packages), metadata: metadata };
+                            packages.forEach(pkg => { findingsCount += (pkg.findings || []).length; });
+                            return { filename: report.filename, name: extractReportName(metadata.target), date: report.modified, findings: findingsCount, severity: getHighestSeverityFromPackages(packages), metadata: metadata };
                         } catch (e) { return null; }
                     })
                 );
@@ -739,13 +736,15 @@
             } catch (error) { console.error('Error loading dashboard:', error); }
         }
 
-        function getHighestSeverity(packages) {
+        function getHighestSeverityFromPackages(packages) {
             if (!packages || packages.length === 0) return 'clean';
-            const allFindings = [];
-            packages.forEach(pkg => { const findings = pkg.findings || pkg.vulnerabilities || []; findings.forEach(f => allFindings.push(f)); });
-            if (allFindings.length === 0) return 'clean';
             const severities = ['critical', 'high', 'medium', 'low'];
-            for (const sev of severities) { if (allFindings.some(f => f.severity === sev)) return sev; }
+            for (const sev of severities) {
+                for (const pkg of packages) {
+                    const findings = pkg.findings || [];
+                    if (findings.some(f => f.severity === sev)) return sev;
+                }
+            }
             return 'low';
         }
 
@@ -908,30 +907,51 @@
                 packageGroups[pkgKey].findings.push(finding);
             });
             let html = '<div style="margin-top: 16px;">';
-            let pkgIndex = 0;
             Object.values(packageGroups).forEach(pkgGroup => {
+                // Get highest severity
                 const highestSeverity = pkgGroup.findings.reduce((max, f) => { const severities = ['low', 'medium', 'high', 'critical']; const currentIdx = severities.indexOf(f.severity); const maxIdx = severities.indexOf(max); return currentIdx > maxIdx ? f.severity : max; }, 'low');
-                const cardId = `${sectionType}-pkg-card-${pkgIndex}`;
-                html += `<div class="finding-card ${highestSeverity} collapsed" id="${cardId}" style="margin-bottom: 16px;"><div class="finding-header" onclick="togglePackageCard('${cardId}')"><div class="finding-package"><div style="font-size: 1.1em; font-weight: 700; margin-bottom: 4px;">${escapeHtml(pkgGroup.package)} ${pkgGroup.version !== 'unknown' ? 'v' + escapeHtml(pkgGroup.version) : ''}</div><div style="font-size: 0.85em; color: #666;">${pkgGroup.findings.length} ${pkgGroup.findings.length === 1 ? 'issue' : 'issues'} found</div></div><span class="severity-badge ${highestSeverity}">${highestSeverity}</span></div><div class="finding-body">`;
-                pkgGroup.findings.forEach((finding, idx) => {
-                    const findingType = escapeHtml(finding.finding_type || 'Security Issue').replace(/_/g, ' ');
-                    const findingTypeCapitalized = findingType.charAt(0).toUpperCase() + findingType.slice(1);
-                    let detailsHtml = '', scriptInfo = '', attackType = '';
-                    if (finding.evidence && finding.evidence.details && Array.isArray(finding.evidence.details)) {
-                        finding.evidence.details.forEach(detail => { const detailStr = String(detail); if (detailStr.startsWith('Script:')) scriptInfo = detailStr.replace('Script:', '').trim(); else if (detailStr.startsWith('Attack type:')) attackType = detailStr.replace('Attack type:', '').trim(); });
-                        detailsHtml = '<ul style="margin: 8px 0 0 20px; font-size: 13px; color: #666; line-height: 1.8;">';
-                        finding.evidence.details.forEach(detail => { detailsHtml += `<li>${linkifyVulnerabilityIds(detail)}</li>`; });
-                        detailsHtml += '</ul>';
-                    } else if (finding.summary || finding.description) {
-                        detailsHtml = `<div style="font-size: 13px; color: #666; margin-top: 6px;">${linkifyVulnerabilityIds(finding.summary || finding.description || '')}</div>`;
-                        const desc = finding.summary || finding.description || '';
-                        if (desc.includes('Script:')) { const match = desc.match(/Script:\s*([^\n,]+)/); if (match) scriptInfo = match[1].trim(); }
-                    }
-                    const vulnIdHtml = finding.id && finding.id !== 'N/A' ? `<div style="margin-bottom: 8px;">${makeCVEClickable(finding.id)}</div>` : '';
-                    html += `<div style="background: #FAFAFA; border: 1px solid #E5E5E5; border-left: 3px solid ${finding.severity === 'critical' ? '#DC2626' : finding.severity === 'high' ? '#1A1A1A' : finding.severity === 'medium' ? '#666666' : '#D4D4D4'}; padding: 12px 16px; margin: 8px 0; border-radius: 4px;"><div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;"><div style="flex: 1;"><div style="font-weight: 600; font-size: 14px; color: #1A1A1A; margin-bottom: 4px;">${idx + 1}. ${findingTypeCapitalized}</div>${vulnIdHtml}${scriptInfo || attackType ? `<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">${scriptInfo ? `<span style="background: #1A1A1A; color: #FFFFFF; padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 2px;">Script: ${escapeHtml(scriptInfo)}</span>` : ''}${attackType ? `<span style="background: #DC2626; color: #FFFFFF; padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 2px;">Attack: ${escapeHtml(attackType)}</span>` : ''}</div>` : ''}</div><div><span class="severity-badge ${finding.severity}" style="font-size: 11px; padding: 4px 8px;">${finding.severity}</span></div></div>${detailsHtml}<div style="font-size: 12px; color: #888; margin-top: 8px;"><span style="background: #E5E5E5; padding: 2px 6px; border-radius: 2px;">Confidence: ${(finding.confidence * 100).toFixed(0)}%</span></div></div>`;
-                });
-                html += '</div></div>';
-                pkgIndex++;
+                
+                // Collect all CVE/GHSA IDs
+                const vulnIds = [...new Set(pkgGroup.findings.map(f => f.id).filter(id => id && id !== 'N/A'))];
+                
+                // Build consolidated summary paragraph - show all descriptions without truncation
+                const descriptions = [...new Set(pkgGroup.findings.map(f => f.summary || f.description).filter(d => d))];
+                const summaryText = descriptions.join('. ');
+                
+                // Collect sources
+                const sources = [...new Set(pkgGroup.findings.map(f => f.source).filter(s => s))];
+                
+                // Average confidence
+                const avgConfidence = pkgGroup.findings.reduce((sum, f) => sum + (f.confidence || 0.85), 0) / pkgGroup.findings.length;
+                
+                // Severity color
+                const severityColor = highestSeverity === 'critical' ? '#DC2626' : highestSeverity === 'high' ? '#EA580C' : highestSeverity === 'medium' ? '#D97706' : '#16A34A';
+                
+                html += `<div style="background: #FFFFFF; border: 1px solid #E5E5E5; border-left: 4px solid ${severityColor}; padding: 20px; margin-bottom: 16px; border-radius: 4px;">`;
+                
+                // Header: Package name + severity badge
+                html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">`;
+                html += `<div style="font-size: 16px; font-weight: 700; color: #1A1A1A;">${escapeHtml(pkgGroup.package)} <span style="font-weight: 400; color: #666;">${pkgGroup.version !== 'unknown' ? 'v' + escapeHtml(pkgGroup.version) : ''}</span></div>`;
+                html += `<span class="severity-badge ${highestSeverity}">${highestSeverity.toUpperCase()}</span>`;
+                html += `</div>`;
+                
+                // CVE/GHSA IDs as clickable badges
+                if (vulnIds.length > 0) {
+                    html += `<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">`;
+                    vulnIds.forEach(id => { html += `<span style="background: #FEF2F2; color: #DC2626; padding: 4px 8px; font-size: 11px; font-weight: 600; border-radius: 2px; border: 1px solid #FECACA;">${makeCVEClickable(id)}</span>`; });
+                    html += `</div>`;
+                }
+                
+                // Summary paragraph
+                html += `<p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0 0 12px 0;">${linkifyVulnerabilityIds(summaryText)}</p>`;
+                
+                // Footer: Sources + Confidence
+                html += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #6B7280;">`;
+                html += `<div>Sources: ${sources.join(', ') || 'Unknown'}</div>`;
+                html += `<div style="background: #F3F4F6; padding: 2px 8px; border-radius: 2px;">Confidence: ${(avgConfidence * 100).toFixed(0)}%</div>`;
+                html += `</div>`;
+                
+                html += `</div>`;
             });
             html += '</div>';
             return html;
@@ -941,26 +961,87 @@
             const reportContent = document.getElementById('report-content');
             currentReportData = data;
             try {
+                const metadata = data.metadata || {};
+                const supplyChainAnalysis = data.supply_chain_analysis || {};
                 const securityFindings = data.security_findings || {};
                 const packages = securityFindings.packages || [];
-                const metadata = data.metadata || {};
-                const summary = data.summary || {};
-                const recommendations = data.recommendations || {};
-                const agentInsights = data.agent_insights || {};
                 
+                // Build findings from security_findings.packages (contains both rule-based and agent-based)
                 const allFindings = [];
+                let ruleBasedCount = 0;
+                let agentBasedCount = 0;
+                
+                // Helper to extract CVE/GHSA from description text
+                function extractVulnIds(text) {
+                    const ids = [];
+                    const cveMatch = text.match(/CVE-\d{4}-\d{4,}/gi);
+                    const ghsaMatch = text.match(/GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}/gi);
+                    if (cveMatch) ids.push(...cveMatch.map(id => id.toUpperCase()));
+                    if (ghsaMatch) ids.push(...ghsaMatch.map(id => id.toUpperCase()));
+                    return ids;
+                }
+                
+                // First pass: collect all CVE/GHSA IDs from security_advisory findings
+                const knownVulnIds = new Set();
                 packages.forEach(pkg => {
-                    const findings = pkg.findings || pkg.vulnerabilities || [];
-                    findings.forEach(finding => {
-                        allFindings.push({ package: pkg.name || pkg.package_name, version: pkg.version || pkg.package_version, ecosystem: pkg.ecosystem, severity: finding.severity, finding_type: finding.type || 'vulnerability', id: finding.id || 'N/A', summary: finding.description || finding.summary || 'No description', details: finding.details || finding.description || '', cvss_score: finding.cvss_score || 'N/A', affected_versions: finding.affected_versions || [], fixed_versions: finding.fixed_versions || [], references: finding.references || [], confidence: finding.confidence || pkg.confidence || 0.9, remediation: finding.remediation || '', evidence: finding.evidence || {} });
-                    });
-                    if (pkg.reputation_score !== undefined) {
-                        const riskFactors = pkg.risk_factors || [];
-                        const highRiskFactors = riskFactors.filter(f => f.severity === 'high');
-                        if (pkg.risk_level === 'high' || pkg.risk_level === 'critical') {
-                            allFindings.push({ package: pkg.name || pkg.package_name, version: pkg.version || pkg.package_version || 'unknown', ecosystem: pkg.ecosystem, severity: pkg.risk_level === 'critical' ? 'critical' : 'high', finding_type: 'reputation_risk', reputation_score: pkg.reputation_score, risk_level: pkg.risk_level, confidence: pkg.confidence || 1.0, evidence: [`Reputation Score: ${pkg.reputation_score.toFixed(2)}`, `Risk Level: ${pkg.risk_level}`, ...riskFactors.map(f => `${f.type}: ${f.description} (severity: ${f.severity})`), ...(pkg.author_analysis?.suspicious_patterns || []).map(p => `Suspicious Pattern: ${p}`)], recommendations: highRiskFactors.map(f => `Address ${f.type}: ${f.description}`) });
+                    (pkg.findings || []).forEach(finding => {
+                        if (finding.type === 'security_advisory') {
+                            if (finding.evidence?.ghsa_id) knownVulnIds.add(finding.evidence.ghsa_id.toUpperCase());
+                            if (finding.evidence?.cve_id) knownVulnIds.add(finding.evidence.cve_id.toUpperCase());
                         }
-                    }
+                    });
+                });
+                
+                // Track seen CVEs in web_intelligence to avoid duplicates within that section too
+                const seenWebIntelCves = new Set();
+                
+                packages.forEach(pkg => {
+                    const findings = pkg.findings || [];
+                    findings.forEach(finding => {
+                        const findingType = finding.type || 'unknown';
+                        const isRuleBased = findingType === 'security_advisory';
+                        
+                        // For web_intelligence, deduplicate
+                        if (!isRuleBased) {
+                            const desc = finding.description || '';
+                            const title = finding.evidence?.title || '';
+                            const extractedIds = extractVulnIds(desc + ' ' + title);
+                            
+                            // Skip if references a CVE from security_advisory
+                            if (extractedIds.some(id => knownVulnIds.has(id))) return;
+                            
+                            // Skip if we've already seen this CVE in web_intelligence (avoid duplicate NVD/GitHub pages)
+                            if (extractedIds.length > 0) {
+                                const isDuplicateWebIntel = extractedIds.some(id => seenWebIntelCves.has(id));
+                                if (isDuplicateWebIntel) return;
+                                // Mark these CVEs as seen
+                                extractedIds.forEach(id => seenWebIntelCves.add(id));
+                            }
+                        }
+                        
+                        if (isRuleBased) ruleBasedCount++;
+                        else agentBasedCount++;
+                        
+                        allFindings.push({
+                            package: pkg.name,
+                            version: pkg.version || '*',
+                            ecosystem: pkg.ecosystem || 'npm',
+                            severity: finding.severity || 'medium',
+                            finding_type: findingType,
+                            id: finding.evidence?.ghsa_id || finding.evidence?.cve_id || 'N/A',
+                            summary: finding.description || 'No description',
+                            details: finding.description || '',
+                            cvss_score: finding.evidence?.cvss_score || 'N/A',
+                            affected_versions: [],
+                            fixed_versions: [],
+                            references: finding.evidence?.url ? [finding.evidence.url] : [],
+                            confidence: finding.confidence || 0.85,
+                            remediation: finding.remediation || '',
+                            evidence: finding.evidence || {},
+                            source: finding.source || 'unknown',
+                            isRuleBased: isRuleBased
+                        });
+                    });
                 });
                 
                 const findings = currentFilter ? allFindings.filter(f => f.severity === currentFilter) : allFindings;
@@ -975,28 +1056,83 @@
                 let html = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h2 style="margin: 0;">Security Analysis Report</h2><button onclick="exportToPDF()" class="btn btn-export">Export PDF</button></div>`;
                 html += `<div style="background: ${scanResultBg}; color: #FFFFFF; padding: 16px 24px; margin-bottom: 24px; border-left: 4px solid ${scanResultBorder}; display: flex; align-items: center; gap: 12px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${scanResult === 'green' ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>' : scanResult === 'amber' ? '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>' : '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>'}</svg><div style="flex: 1;"><div style="font-size: 14px; font-weight: 700; margin-bottom: 2px;">${scanResultText}</div><div style="font-size: 12px; opacity: 0.9;">${scanResultMessage}</div></div></div>`;
                 
-                html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Analysis Metadata</h3></div><div style="padding: 32px;"><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;"><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Target</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A; word-break: break-word;">${escapeHtml(extractReportName(metadata.target) || 'N/A')}</div></div><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Timestamp</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A;">${(metadata.timestamp || metadata.start_time) ? new Date(metadata.timestamp || metadata.start_time).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</div></div><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Confidence</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A;">${metadata.confidence ? (metadata.confidence * 100).toFixed(0) + '%' : (summary.total_findings > 0 ? '90%' : 'N/A')}</div></div></div></div></div>`;
+                html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Analysis Metadata</h3></div><div style="padding: 32px;"><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;"><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Target</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A; word-break: break-word;">${escapeHtml(extractReportName(metadata.target) || 'N/A')}</div></div><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Timestamp</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A;">${(metadata.timestamp || metadata.start_time) ? new Date(metadata.timestamp || metadata.start_time).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</div></div><div style="border-left: 3px solid #1A1A1A; padding-left: 16px;"><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666; margin-bottom: 8px;">Confidence</div><div style="font-size: 15px; font-weight: 600; color: #1A1A1A;">${metadata.confidence ? (metadata.confidence * 100).toFixed(0) + '%' : (supplyChainAnalysis.confidence ? (supplyChainAnalysis.confidence * 100).toFixed(0) + '%' : (allFindings.length > 0 ? '85%' : 'N/A'))}</div></div></div></div></div>`;
                 
-                html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Security Findings</h3></div><div style="padding: 32px;"><div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px;"><div style="background: ${vulnerablePackagesCount > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${vulnerablePackagesCount > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${vulnerablePackagesCount}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${vulnerablePackagesCount > 0 ? '#1A1A1A' : '#666666'};">Vulnerable Packages</div></div><div style="background: ${allFindings.length > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${allFindings.length > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${allFindings.length}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${allFindings.length > 0 ? '#1A1A1A' : '#666666'};">Total Findings</div></div><div style="background: ${severityCounts.critical > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${severityCounts.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${severityCounts.critical}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${severityCounts.critical > 0 ? '#DC2626' : '#666666'};">Critical</div></div><div style="background: ${severityCounts.high > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${severityCounts.high > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${severityCounts.high}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${severityCounts.high > 0 ? '#1A1A1A' : '#666666'};">High</div></div><div style="background: ${severityCounts.medium > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${severityCounts.medium > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${severityCounts.medium}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${severityCounts.medium > 0 ? '#1A1A1A' : '#666666'};">Medium</div></div><div style="background: ${severityCounts.low > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${severityCounts.low > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${severityCounts.low}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${severityCounts.low > 0 ? '#1A1A1A' : '#666666'};">Low</div></div></div>`;
+                // Separate findings into rule-based and agent-based
+                const ruleBasedFindings = allFindings.filter(f => f.isRuleBased);
+                const agentBasedFindings = allFindings.filter(f => !f.isRuleBased);
                 
-                if (allFindings.length > 0) html += renderFindingsSection(allFindings, 'security');
-                else html += '<p>No security findings detected.</p>';
+                // Count unique packages for each type
+                const ruleBasedPkgs = new Set(ruleBasedFindings.map(f => `${f.package}@${f.version}`));
+                const agentBasedPkgs = new Set(agentBasedFindings.map(f => `${f.package}@${f.version}`));
+                
+                // Severity counts for rule-based
+                const ruleBasedSeverity = { critical: ruleBasedFindings.filter(f => f.severity === 'critical').length, high: ruleBasedFindings.filter(f => f.severity === 'high').length, medium: ruleBasedFindings.filter(f => f.severity === 'medium').length, low: ruleBasedFindings.filter(f => f.severity === 'low').length };
+                
+                // Severity counts for agent-based
+                const agentBasedSeverity = { critical: agentBasedFindings.filter(f => f.severity === 'critical').length, high: agentBasedFindings.filter(f => f.severity === 'high').length, medium: agentBasedFindings.filter(f => f.severity === 'medium').length, low: agentBasedFindings.filter(f => f.severity === 'low').length };
+                
+                // ========== SECTION 1: SECURITY ADVISORIES (GitHub/CVE/GHSA) ==========
+                html += `<div class="report-section" style="background: #FFFFFF; border: 2px solid #0EA5E9; padding: 0; margin-bottom: 24px;"><div style="background: #0369A1; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #0EA5E9;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">🔍 Security Advisories (GitHub/CVE/GHSA)</h3></div><div style="padding: 32px; background: #F0F9FF;">`;
+                
+                // Rule-based summary cards
+                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FFFFFF; border: 1px solid #BAE6FD; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #0369A1; line-height: 1; margin-bottom: 4px;">${ruleBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #0369A1;">Packages</div></div><div style="background: ${ruleBasedSeverity.critical > 0 ? '#FEF2F2' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.critical > 0 ? '#FECACA' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${ruleBasedSeverity.high > 0 ? '#FFF7ED' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.high > 0 ? '#FED7AA' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.high > 0 ? '#EA580C' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.high > 0 ? '#EA580C' : '#666'};">High</div></div><div style="background: ${ruleBasedSeverity.medium > 0 ? '#FFFBEB' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.medium > 0 ? '#FDE68A' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.medium > 0 ? '#D97706' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.medium > 0 ? '#D97706' : '#666'};">Medium</div></div><div style="background: ${ruleBasedSeverity.low > 0 ? '#F0FDF4' : '#FFFFFF'}; border: 1px solid ${ruleBasedSeverity.low > 0 ? '#BBF7D0' : '#BAE6FD'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${ruleBasedSeverity.low > 0 ? '#16A34A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${ruleBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${ruleBasedSeverity.low > 0 ? '#16A34A' : '#666'};">Low</div></div></div>`;
+                
+                if (ruleBasedFindings.length > 0) html += renderFindingsSection(ruleBasedFindings, 'advisory');
+                else html += '<p style="color: #0369A1; font-style: italic;">No security advisories found from GitHub/CVE/GHSA databases.</p>';
+                html += '</div></div>';
+                
+                // ========== SECTION 2: WEB INTELLIGENCE (Snyk/NVD/CVE Details) ==========
+                html += `<div class="report-section" style="background: #FFFFFF; border: 2px solid #22C55E; padding: 0;"><div style="background: #15803D; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #22C55E;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">🤖 Web Intelligence (Snyk/NVD/CVE Details)</h3></div><div style="padding: 32px; background: #F0FDF4;">`;
+                
+                // Agent-based summary cards
+                html += `<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;"><div style="background: #FFFFFF; border: 1px solid #BBF7D0; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: #15803D; line-height: 1; margin-bottom: 4px;">${agentBasedPkgs.size}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #15803D;">Packages</div></div><div style="background: ${agentBasedSeverity.critical > 0 ? '#FEF2F2' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.critical > 0 ? '#FECACA' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.critical}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.critical > 0 ? '#DC2626' : '#666'};">Critical</div></div><div style="background: ${agentBasedSeverity.high > 0 ? '#FFF7ED' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.high > 0 ? '#FED7AA' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.high > 0 ? '#EA580C' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.high}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.high > 0 ? '#EA580C' : '#666'};">High</div></div><div style="background: ${agentBasedSeverity.medium > 0 ? '#FFFBEB' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.medium > 0 ? '#FDE68A' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.medium > 0 ? '#D97706' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.medium}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.medium > 0 ? '#D97706' : '#666'};">Medium</div></div><div style="background: ${agentBasedSeverity.low > 0 ? '#F0FDF4' : '#FFFFFF'}; border: 1px solid ${agentBasedSeverity.low > 0 ? '#BBF7D0' : '#BBF7D0'}; padding: 16px; text-align: center;"><div style="font-size: 28px; font-weight: 700; color: ${agentBasedSeverity.low > 0 ? '#16A34A' : '#D4D4D4'}; line-height: 1; margin-bottom: 4px;">${agentBasedSeverity.low}</div><div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${agentBasedSeverity.low > 0 ? '#16A34A' : '#666'};">Low</div></div></div>`;
+                
+                if (agentBasedFindings.length > 0) html += renderFindingsSection(agentBasedFindings, 'webintel');
+                else html += '<p style="color: #15803D; font-style: italic;">No web intelligence findings from Snyk/NVD/CVE Details.</p>';
                 html += '</div></div>';
 
                 if (data.dependency_graph && data.dependency_graph.metadata) {
                     html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Dependency Graph</h3></div><div style="padding: 32px;"><div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;"><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 8px;">${data.dependency_graph.metadata.total_packages || 0}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Total Packages</div></div><div style="background: ${data.dependency_graph.metadata.circular_dependencies_count > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${data.dependency_graph.metadata.circular_dependencies_count > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${data.dependency_graph.metadata.circular_dependencies_count || 0}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${data.dependency_graph.metadata.circular_dependencies_count > 0 ? '#1A1A1A' : '#666666'};">Circular Dependencies</div></div><div style="background: ${data.dependency_graph.metadata.version_conflicts_count > 0 ? '#FFFFFF' : '#FAFAFA'}; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${data.dependency_graph.metadata.version_conflicts_count > 0 ? '#1A1A1A' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${data.dependency_graph.metadata.version_conflicts_count || 0}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: ${data.dependency_graph.metadata.version_conflicts_count > 0 ? '#1A1A1A' : '#666666'};">Version Conflicts</div></div><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 24px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 8px; font-family: 'Courier New', monospace;">${escapeHtml(data.dependency_graph.metadata.ecosystem || 'N/A')}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Ecosystem</div></div></div></div></div>`;
                 }
 
-                if (recommendations) {
-                    html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">AI Recommendations</h3></div><div style="padding: 32px; background: #FAFAFA; border-left: 4px solid #1A1A1A;">`;
-                    if (typeof recommendations === 'string') {
-                        html += `<div style="line-height: 1.8; color: #666666; white-space: pre-wrap; font-size: 14px; background: #FFFFFF; padding: 20px; border: 1px solid #E5E5E5;">${escapeHtml(recommendations).split('\n\n').map(para => `<p style="margin-bottom: 16px; color: #1A1A1A;">${para}</p>`).join('')}</div>`;
-                    } else if (recommendations.immediate_actions) {
-                        if (recommendations.immediate_actions.length > 0) html += `<div style="margin-bottom: 24px;"><div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;"><div style="width: 4px; height: 24px; background: #DC2626;"></div><div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #1A1A1A;">Immediate Actions</div></div><div style="background: #FFFFFF; border: 1px solid #E5E5E5; border-left: 3px solid #DC2626; padding: 20px;"><ul style="margin: 0; padding-left: 20px; line-height: 1.8; color: #666666;">${recommendations.immediate_actions.map(action => `<li style="margin-bottom: 8px; color: #1A1A1A;">${escapeHtml(action)}</li>`).join('')}</ul></div></div>`;
-                        if (recommendations.short_term && recommendations.short_term.length > 0) html += `<div style="margin-bottom: 24px;"><div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;"><div style="width: 4px; height: 24px; background: #F59E0B;"></div><div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #1A1A1A;">Short-Term Actions</div></div><div style="background: #FFFFFF; border: 1px solid #E5E5E5; border-left: 3px solid #F59E0B; padding: 20px;"><ul style="margin: 0; padding-left: 20px; line-height: 1.8; color: #666666;">${recommendations.short_term.map(action => `<li style="margin-bottom: 8px; color: #1A1A1A;">${escapeHtml(action)}</li>`).join('')}</ul></div></div>`;
-                        if (recommendations.long_term && recommendations.long_term.length > 0) html += `<div><div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;"><div style="width: 4px; height: 24px; background: #1A1A1A;"></div><div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #1A1A1A;">Long-Term Strategy</div></div><div style="background: #FFFFFF; border: 1px solid #E5E5E5; border-left: 3px solid #1A1A1A; padding: 20px;"><ul style="margin: 0; padding-left: 20px; line-height: 1.8; color: #666666;">${recommendations.long_term.map(action => `<li style="margin-bottom: 8px; color: #1A1A1A;">${escapeHtml(action)}</li>`).join('')}</ul></div></div>`;
-                    } else { html += '<div style="color: #666666; font-size: 14px; background: #FFFFFF; padding: 20px; border: 1px solid #E5E5E5;">No recommendations available</div>'; }
+                // Recommendations section
+                const recommendations = data.recommendations || {};
+                if (recommendations && (recommendations.immediate_priority || recommendations.security_hardening || recommendations.ongoing_monitoring || recommendations.immediate_actions || typeof recommendations === 'string')) {
+                    html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 20px 32px;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">Security Recommendations</h3></div><div style="padding: 32px;">`;
+                    
+                    // New professional format
+                    if (recommendations.immediate_priority || recommendations.security_hardening || recommendations.ongoing_monitoring) {
+                        if (recommendations.summary) {
+                            html += `<div style="background: #F8FAFC; border-left: 4px solid #1A1A1A; padding: 16px 20px; margin-bottom: 24px; font-size: 15px; font-weight: 500; color: #1A1A1A;">${escapeHtml(recommendations.summary)}</div>`;
+                        }
+                        if (recommendations.immediate_priority) {
+                            html += `<div style="margin-bottom: 24px;"><h4 style="font-size: 14px; font-weight: 600; color: #DC2626; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.05em;">Immediate Priority</h4><p style="font-size: 14px; color: #374151; line-height: 1.8; margin: 0; text-align: justify;">${escapeHtml(recommendations.immediate_priority)}</p></div>`;
+                        }
+                        if (recommendations.security_hardening) {
+                            html += `<div style="margin-bottom: 24px;"><h4 style="font-size: 14px; font-weight: 600; color: #D97706; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.05em;">Security Hardening</h4><p style="font-size: 14px; color: #374151; line-height: 1.8; margin: 0; text-align: justify;">${escapeHtml(recommendations.security_hardening)}</p></div>`;
+                        }
+                        if (recommendations.ongoing_monitoring) {
+                            html += `<div><h4 style="font-size: 14px; font-weight: 600; color: #2563EB; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.05em;">Ongoing Monitoring</h4><p style="font-size: 14px; color: #374151; line-height: 1.8; margin: 0; text-align: justify;">${escapeHtml(recommendations.ongoing_monitoring)}</p></div>`;
+                        }
+                    }
+                    // Legacy format support
+                    else if (typeof recommendations === 'string') {
+                        html += `<p style="font-size: 14px; color: #374151; line-height: 1.8; margin: 0; text-align: justify;">${escapeHtml(recommendations)}</p>`;
+                    }
+                    // Old array format fallback
+                    else if (recommendations.immediate_actions) {
+                        const allRecs = [...(recommendations.immediate_actions || []), ...(recommendations.preventive_measures || []), ...(recommendations.monitoring || [])];
+                        html += `<div style="font-size: 14px; color: #374151; line-height: 1.8;">${allRecs.map(r => `<p style="margin-bottom: 16px;">${escapeHtml(r)}</p>`).join('')}</div>`;
+                    }
+                    
                     html += '</div></div>';
+                }
+
+                // Performance metrics section
+                if (data.performance_metrics) {
+                    const pm = data.performance_metrics;
+                    html += `<div class="report-section" style="background: #FFFFFF; border: 1px solid #E5E5E5; padding: 0;"><div style="background: #1A1A1A; color: #FFFFFF; padding: 16px 32px; border-bottom: 1px solid #E5E5E5;"><h3 style="margin: 0; color: #FFFFFF; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0;">Performance Metrics</h3></div><div style="padding: 32px;"><div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;"><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: #22C55E; line-height: 1; margin-bottom: 8px;">${pm.stages_completed || 0}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Stages Completed</div></div><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: ${pm.stages_failed > 0 ? '#DC2626' : '#D4D4D4'}; line-height: 1; margin-bottom: 8px;">${pm.stages_failed || 0}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Stages Failed</div></div><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 36px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 8px;">${(pm.total_duration_seconds || pm.agent_time || 0).toFixed(1)}s</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Analysis Time</div></div><div style="background: #FAFAFA; border: 1px solid #E5E5E5; padding: 24px; text-align: center;"><div style="font-size: 24px; font-weight: 700; color: #1A1A1A; line-height: 1; margin-bottom: 8px;">${supplyChainAnalysis.risk_level || 'N/A'}</div><div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #666666;">Risk Level</div></div></div></div></div>`;
                 }
                 
                 reportContent.innerHTML = html;
@@ -1031,10 +1167,10 @@
                         const metaResponse = await fetch(`/outputs/${report.filename}`);
                         const data = await metaResponse.json();
                         const metadata = data.metadata || {};
-                        let totalFindings = 0;
                         const securityFindings = data.security_findings || {};
                         const packages = securityFindings.packages || [];
-                        packages.forEach(pkg => { const pkgFindings = pkg.findings || pkg.vulnerabilities || []; totalFindings += pkgFindings.length; });
+                        let totalFindings = 0;
+                        packages.forEach(pkg => { totalFindings += (pkg.findings || []).length; });
                         return { ...report, index: reports.length - index, reportName: extractReportName(metadata.target), analysisType: metadata.analysis_type || 'unknown', target: metadata.target || 'N/A', totalFindings: totalFindings, totalPackages: metadata.total_packages || packages.length || 0, isBackup: false };
                     } catch (e) { return { ...report, index: reports.length - index, reportName: 'Unknown', analysisType: 'unknown', target: 'N/A', totalFindings: 0, totalPackages: 0, isBackup: false }; }
                 }));
@@ -1044,10 +1180,10 @@
                         const metaResponse = await fetch(`/outputs/${backup.filename}`);
                         const data = await metaResponse.json();
                         const metadata = data.metadata || {};
-                        let totalFindings = 0;
                         const securityFindings = data.security_findings || {};
                         const packages = securityFindings.packages || [];
-                        packages.forEach(pkg => { const pkgFindings = pkg.findings || pkg.vulnerabilities || []; totalFindings += pkgFindings.length; });
+                        let totalFindings = 0;
+                        packages.forEach(pkg => { totalFindings += (pkg.findings || []).length; });
                         return { ...backup, index: backups.length - index, reportName: extractReportName(metadata.target), analysisType: metadata.analysis_type || 'backup', target: metadata.target || 'N/A', totalFindings: totalFindings, totalPackages: metadata.total_packages || packages.length || 0, isBackup: true };
                     } catch (e) { return { ...backup, index: backups.length - index, reportName: 'Backup', analysisType: 'backup', target: 'N/A', totalFindings: 0, totalPackages: 0, isBackup: true }; }
                 }));
@@ -1178,6 +1314,19 @@
         }
 
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        function formatRecommendation(text) {
+            // First escape HTML, then apply formatting
+            let formatted = escapeHtml(text);
+            // Convert **bold** to <strong>
+            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #1A1A1A; font-weight: 700;">$1</strong>');
+            // Convert `code` to styled code
+            formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: #F3F4F6; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; color: #DC2626;">$1</code>');
+            // Convert CVE/GHSA IDs to links
+            formatted = formatted.replace(/(CVE-\d{4}-\d{4,})/gi, '<a href="https://nvd.nist.gov/vuln/detail/$1" target="_blank" style="color: #DC2626; font-weight: 600;">$1</a>');
+            formatted = formatted.replace(/(GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4})/gi, '<a href="https://github.com/advisories/$1" target="_blank" style="color: #DC2626; font-weight: 600;">$1</a>');
+            return formatted;
+        }
 
         function linkifyVulnerabilityIds(text) {
             const escaped = escapeHtml(text);

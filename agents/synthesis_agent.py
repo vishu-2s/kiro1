@@ -87,51 +87,51 @@ Always provide actionable, prioritized recommendations with clear reasoning."""
     
     def analyze(self, context: SharedContext, timeout: Optional[int] = None) -> Dict[str, Any]:
         """
-        Synthesize final JSON report from all agent results with LLM-powered recommendations.
+        Synthesize final JSON report from supply chain analysis with LLM recommendations.
         
-        **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5**
-        
-        Strategy:
-        1. Generate base report from all agent findings
-        2. Use LLM to analyze complete findings and generate intelligent recommendations
-        3. Combine base report with LLM insights
+        Required output sections:
+        - metadata, sbom_data, supply_chain_analysis, performance_metrics, dependency_graph
+        - security_findings (from supply_chain_analysis threats)
+        - recommendations (LLM-generated)
         
         Args:
             context: Shared context with all agent results
             timeout: Optional timeout override
         
         Returns:
-            Complete package-centric JSON report with LLM recommendations
+            Complete JSON report with security findings and recommendations
         """
         start_time = time.time()
         
         self._log("Starting synthesis with LLM-powered recommendations", "INFO")
         
-        # Step 1: Generate base report from all agent findings
+        # Step 1: Generate base report from supply chain analysis
         base_report = self._generate_fallback_report(context)
         
         # Step 2: Try to enhance with LLM recommendations
+        synthesis_method = "rule_based"
         try:
-            self._log("Generating LLM recommendations from complete analysis...", "INFO")
-            
-            llm_recommendations = self._generate_llm_recommendations(
-                context=context,
-                base_report=base_report,
-                timeout=timeout or 15
-            )
-            
-            # Replace recommendations with LLM-generated content
-            if llm_recommendations:
-                base_report["recommendations"] = llm_recommendations
-                self._log("LLM recommendations generated successfully", "INFO")
-                synthesis_method = "llm_enhanced"
+            if self.openai_client:
+                self._log("Generating LLM recommendations from complete analysis...", "INFO")
+                
+                llm_recommendations = self._generate_llm_recommendations(
+                    context=context,
+                    base_report=base_report,
+                    timeout=timeout or 15
+                )
+                
+                # Replace recommendations with LLM-generated content
+                if llm_recommendations:
+                    base_report["recommendations"] = llm_recommendations
+                    self._log("LLM recommendations generated successfully", "INFO")
+                    synthesis_method = "llm_enhanced"
+                else:
+                    self._log("LLM returned empty recommendations, using rule-based", "WARNING")
             else:
-                self._log("LLM returned empty recommendations, using rule-based", "WARNING")
-                synthesis_method = "rule_based"
-            
+                self._log("OpenAI client not available, using rule-based recommendations", "WARNING")
+                
         except Exception as e:
             self._log(f"LLM recommendation generation failed: {str(e)}, using rule-based recommendations", "WARNING")
-            synthesis_method = "rule_based"
         
         duration = time.time() - start_time
         base_report["metadata"]["synthesis_method"] = synthesis_method
@@ -523,35 +523,34 @@ IMPORTANT:
     
     def _generate_fallback_report(self, context: SharedContext) -> Dict[str, Any]:
         """
-        Generate fallback report when synthesis fails.
+        Generate report with required sections including security_findings and recommendations.
         
-        **Validates: Requirement 7.3 (fallback generation)**
+        Required sections:
+        - metadata, sbom_data, supply_chain_analysis, performance_metrics, dependency_graph
+        - security_findings (from supply_chain threats)
+        - recommendations (rule-based, can be enhanced by LLM)
         
         Args:
             context: Shared context
         
         Returns:
-            Fallback JSON report
+            JSON report with all required sections
         """
-        self._log("Generating fallback report from available data", "WARNING")
+        self._log("Generating report with security findings and recommendations", "INFO")
         
-        # Aggregate findings manually
-        packages_data = self.aggregate_findings(context)
+        # Get supply chain analysis data
+        supply_chain_data = self._get_supply_chain_detector_data(context)
         
-        # Generate simple text recommendations based on findings
-        recommendations = self._generate_simple_text_recommendations(context, packages_data)
+        # Build security_findings from supply_chain threats
+        security_findings = self._build_security_findings_from_supply_chain(supply_chain_data)
         
-        # Assess risk
-        risk_assessment = self.assess_project_risk(packages_data)
+        # Calculate severity summary from threats
+        severity_summary = self._calculate_severity_from_supply_chain(supply_chain_data)
         
-        # Build security_findings from rule-based findings only (keep agents separate)
-        security_findings = self._build_security_findings_from_rule_based(context)
+        # Generate rule-based recommendations
+        recommendations = self._generate_rule_based_recommendations(supply_chain_data, severity_summary)
         
-        # Extract agent-specific data (keep separate from rule-based)
-        supply_chain_data = self._extract_supply_chain_data(context)
-        code_analysis_data = self._extract_code_analysis_data(context)
-        
-        # Create fallback report
+        # Create report with all required sections
         return {
             "metadata": {
                 "analysis_id": f"analysis_{int(time.time())}",
@@ -560,33 +559,133 @@ IMPORTANT:
                 "start_time": time.strftime("%Y-%m-%dT%H:%M:%S"),
                 "end_time": time.strftime("%Y-%m-%dT%H:%M:%S"),
                 "total_packages": len(context.packages),
-                "total_findings": len(context.initial_findings),
+                "total_findings": severity_summary.get("total_findings", 0),
                 "confidence_threshold": 0.7,
                 "analysis_method": "hybrid",
-                "synthesis_status": "fallback"
+                "synthesis_status": "fallback",
+                "confidence": supply_chain_data.get("confidence", 0.85)
             },
-            "summary": self._calculate_severity_summary(context),
+            "summary": severity_summary,
             "sbom_data": {
                 "format": "multi-agent-security-sbom",
                 "version": "1.0",
                 "packages": []
             },
             "security_findings": security_findings,
-            "supply_chain_analysis": self._get_supply_chain_detector_data(context),
-            "code_analysis": code_analysis_data,
-            "suspicious_activities": [],
+            "supply_chain_analysis": supply_chain_data,
             "recommendations": recommendations,
-            "agent_insights": {
-                "synthesis": "Synthesis agent failed, using fallback report generation",
-                "risk_assessment": risk_assessment,
-                "confidence_breakdown": self._get_confidence_breakdown(context),
-                "agent_contributions": self._get_agent_contributions(context),
-                "supply_chain_detector": self._get_supply_chain_detector_summary(context)
-            },
-            "raw_data": {
-                "cache_statistics": {},
-                "performance_metrics": {}
+            "dependency_graph": context.dependency_graph,
+            "performance_metrics": {
+                "stages_completed": len([r for r in context.agent_results.values() if r.success]),
+                "stages_failed": len([r for r in context.agent_results.values() if not r.success]),
+                "total_analysis_time": 0,
+                "rule_based_time": 0,
+                "agent_time": sum(r.duration_seconds for r in context.agent_results.values())
             }
+        }
+    
+    def _build_security_findings_from_supply_chain(self, supply_chain_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Build security_findings structure from supply_chain_analysis threats."""
+        threats = supply_chain_data.get("threats", [])
+        
+        # Group threats by package
+        packages_dict = {}
+        for threat in threats:
+            pkg_name = threat.get("package_name", "unknown")
+            if pkg_name not in packages_dict:
+                packages_dict[pkg_name] = {
+                    "name": pkg_name,
+                    "version": threat.get("package_version", "*"),
+                    "ecosystem": threat.get("ecosystem", "npm"),
+                    "findings": [],
+                    "risk_score": 0.0,
+                    "risk_level": "low"
+                }
+            
+            packages_dict[pkg_name]["findings"].append({
+                "type": threat.get("threat_type", "security_advisory"),
+                "severity": threat.get("severity", "medium"),
+                "description": threat.get("description", ""),
+                "confidence": threat.get("confidence", 0.85),
+                "evidence": threat.get("evidence", {}),
+                "remediation": "; ".join(threat.get("recommendations", [])),
+                "source": threat.get("source", "supply_chain_detector")
+            })
+        
+        # Calculate risk scores
+        for pkg_data in packages_dict.values():
+            risk_score = 0.0
+            max_severity = "low"
+            for finding in pkg_data["findings"]:
+                severity = finding["severity"].lower()
+                severity_weight = {"critical": 1.0, "high": 0.7, "medium": 0.4, "low": 0.2}.get(severity, 0.2)
+                risk_score += severity_weight * finding["confidence"]
+                if severity in ["critical", "high"] and max_severity not in ["critical"]:
+                    max_severity = severity
+                elif severity == "critical":
+                    max_severity = "critical"
+            
+            pkg_data["risk_score"] = min(1.0, risk_score)
+            pkg_data["risk_level"] = max_severity if max_severity in ["critical", "high"] else ("medium" if risk_score > 0.3 else "low")
+        
+        return {"packages": list(packages_dict.values())}
+    
+    def _calculate_severity_from_supply_chain(self, supply_chain_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate severity summary from supply_chain_analysis."""
+        threats = supply_chain_data.get("threats", [])
+        severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0}
+        
+        for threat in threats:
+            severity = threat.get("severity", "medium").lower()
+            if severity in severity_counts:
+                severity_counts[severity] += 1
+        
+        unique_packages = set(t.get("package_name", "") for t in threats)
+        
+        return {
+            "total_packages": supply_chain_data.get("total_packages_checked", 0),
+            "total_findings": len(threats),
+            "critical_findings": severity_counts["critical"],
+            "high_findings": severity_counts["high"],
+            "medium_findings": severity_counts["medium"],
+            "low_findings": severity_counts["low"],
+            "ecosystems_analyzed": ["npm"]
+        }
+    
+    def _generate_rule_based_recommendations(self, supply_chain_data: Dict[str, Any], severity_summary: Dict[str, Any]) -> Dict[str, str]:
+        """Generate professional rule-based recommendations from analysis results."""
+        critical = severity_summary.get("critical_findings", 0)
+        high = severity_summary.get("high_findings", 0)
+        medium = severity_summary.get("medium_findings", 0)
+        total = severity_summary.get("total_findings", 0)
+        
+        # Build summary
+        if critical > 0:
+            summary = f"Security analysis identified {total} vulnerabilities including {critical} critical issues requiring immediate attention."
+        elif high > 0:
+            summary = f"Security analysis identified {total} vulnerabilities with {high} high-severity issues requiring prompt remediation."
+        elif total > 0:
+            summary = f"Security analysis identified {total} vulnerabilities. While no critical issues were found, remediation is recommended."
+        else:
+            summary = "Security analysis completed successfully with no vulnerabilities detected."
+        
+        # Immediate priority paragraph
+        if critical > 0 or high > 0:
+            immediate_priority = f"The analysis has identified {critical} critical and {high} high-severity vulnerabilities that require immediate remediation. These vulnerabilities expose the application to potential security breaches including remote code execution, denial of service, and data exposure. Development teams should prioritize updating affected dependencies to their latest patched versions within the next 48-72 hours. For packages without available patches, consider implementing temporary mitigations such as input validation, network segmentation, or replacing the dependency with a secure alternative. Document all remediation actions and verify fixes through re-scanning before deployment to production environments."
+        else:
+            immediate_priority = f"The analysis identified {medium} medium-severity vulnerabilities that should be addressed in the next development cycle. While these do not pose immediate critical risk, they represent technical debt that could escalate if left unaddressed. Schedule remediation work within the next sprint and prioritize based on the exploitability and exposure of each vulnerability. Review the detailed findings above to understand the specific risks and recommended fixes for each affected package."
+        
+        # Security hardening paragraph
+        security_hardening = "To prevent future vulnerabilities, implement a comprehensive dependency management strategy. First, enable automated dependency scanning in your CI/CD pipeline using tools like npm audit, pip-audit, Snyk, or GitHub Dependabot. Configure these tools to block deployments when critical vulnerabilities are detected. Second, enforce the use of lock files (package-lock.json, yarn.lock, or requirements.txt) and use deterministic installation commands to ensure reproducible builds. Third, establish a dependency review process where new packages are evaluated for security posture, maintenance status, and community trust before adoption. These measures significantly reduce your attack surface and catch vulnerabilities before they reach production."
+        
+        # Ongoing monitoring paragraph
+        ongoing_monitoring = "Establish a continuous security monitoring program to maintain long-term security posture. Subscribe to security advisory feeds from GitHub, NVD, and ecosystem-specific sources for real-time vulnerability notifications. Schedule weekly automated security scans and monthly manual dependency audits to identify newly disclosed vulnerabilities. Track key metrics including total dependency count, percentage of dependencies with known vulnerabilities, average time-to-patch, and dependency age distribution. Set organizational targets such as zero critical vulnerabilities in production and patch high-severity issues within 7 days. Regular reporting to stakeholders ensures accountability and demonstrates security program maturity."
+        
+        return {
+            "summary": summary,
+            "immediate_priority": immediate_priority,
+            "security_hardening": security_hardening,
+            "ongoing_monitoring": ongoing_monitoring
         }
     
     def _calculate_severity_summary(self, context: SharedContext) -> Dict[str, Any]:
@@ -866,27 +965,34 @@ IMPORTANT:
                 messages=[
                     {
                         "role": "system", 
-                        "content": """You are a senior security engineer writing recommendations for a development team.
+                        "content": """You are a Senior Security Architect writing an executive summary.
 
-Write clear, professional recommendations that:
-- Prioritize by risk and impact (not by listing every package)
-- Group similar issues together intelligently
-- Provide specific actions for critical issues
-- Include preventive measures and best practices
-- Are engaging and easy to read
+Write exactly 3 professional paragraphs (7-8 lines each):
+1. IMMEDIATE PRIORITY - Critical/high issues and remediation approach
+2. SECURITY HARDENING - Tools and practices to prevent future issues  
+3. ONGOING MONITORING - Sustainable monitoring strategy
 
-Write in flowing paragraphs, not bullet points. Be concise but thorough."""
+Rules:
+- Professional, executive-level tone
+- No emojis, no bullet points
+- Focus on strategy, not individual packages
+- Mention specific tools (Dependabot, Snyk, npm audit)
+- Include concrete timelines and metrics
+
+Return ONLY valid JSON:
+{"summary": "one line", "immediate_priority": "paragraph", "security_hardening": "paragraph", "ongoing_monitoring": "paragraph"}"""
                     },
                     {"role": "user", "content": prompt}
                 ],
+                response_format={"type": "json_object"},
                 temperature=0.3,
-                max_tokens=800,
+                max_tokens=1000,
                 timeout=timeout
             )
             
-            recommendations_text = response.choices[0].message.content.strip()
+            recommendations_json = json.loads(response.choices[0].message.content.strip())
             self._log("LLM recommendations generated successfully", "INFO")
-            return recommendations_text
+            return recommendations_json
             
         except Exception as e:
             self._log(f"LLM recommendation generation failed: {str(e)}", "ERROR")
@@ -1512,7 +1618,8 @@ Keep it concise but comprehensive. NO bullet points, NO JSON structure - just cl
             return {}
         
         data = sc_result.data
-        threats = data.get("threats_detected", [])
+        # Support both 'threats' and 'threats_detected' keys
+        threats = data.get("threats", data.get("threats_detected", []))
         
         # Format threats for UI display
         formatted_threats = []
